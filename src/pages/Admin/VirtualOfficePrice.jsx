@@ -4,7 +4,8 @@ import axios from "axios"; // ✅ Imported Axios
 import EditVirtualOfficePriceModal from "./EditVirtualOfficePriceModal";
 
 // ✅ Vite environment variable
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
 
 const VirtualOfficePrice = () => {
   const [priceList, setPriceList] = useState([]);
@@ -23,11 +24,14 @@ const VirtualOfficePrice = () => {
   const fetchPrices = async () => {
     try {
       // ✅ Using Axios with Authorization Header
-      const response = await axios.get(`${API_URL}/get_virtual_office_price_list.php`, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      });
+      const response = await axios.get(
+        `${API_URL}/get_virtual_office_price_list.php`,
+        {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        }
+      );
 
       const result = response.data;
       if (result.status === "success") {
@@ -51,12 +55,16 @@ const VirtualOfficePrice = () => {
   const handleUpdate = async (updatedData) => {
     try {
       // ✅ Using Axios POST with Authorization Header
-      const response = await axios.post(`${API_URL}/update_virtual_office_price.php`, updatedData, {
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      });
+      const response = await axios.post(
+        `${API_URL}/update_virtual_office_price.php`,
+        updatedData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        }
+      );
 
       const result = response.data;
       if (result.status === "success") {
@@ -88,6 +96,8 @@ const VirtualOfficePrice = () => {
                 <th className="py-2 px-4 border">Min Duration</th>
                 <th className="py-2 px-4 border">Max Duration</th>
                 <th className="py-2 px-4 border">Price</th>
+                <th className="py-2 px-4 border">GST</th>
+                <th className="py-2 px-4 border">Total Price</th>
                 <th className="py-2 px-4 border">Status</th>
                 <th className="py-2 px-4 border text-center">Actions</th>
               </tr>
@@ -100,13 +110,33 @@ const VirtualOfficePrice = () => {
                   </td>
                 </tr>
               ) : priceList.length > 0 ? (
-                priceList.map((item, index) => (
-                  <tr key={item.id} className="text-center hover:bg-orange-50 transition">
-                    <td className="py-2 px-4 border">{index + 1}</td>
-                    <td className="py-2 px-4 border">{item.min_duration}</td>
-                    <td className="py-2 px-4 border">{item.max_duration}</td>
-                    <td className="py-2 px-4 border">₹{item.price}</td>
-                    <td className="py-2 px-4 border">
+                priceList.map((item, index) => {
+                  const gstAmount =
+                    (Number(item.price) * Number(item.gst)) / 100;
+                  const totalPrice = Number(item.price) + gstAmount;
+
+                  return (
+                    <tr
+                      key={item.id}
+                      className="text-center hover:bg-orange-50 transition"
+                    >
+                      <td className="py-2 px-4 border">{index + 1}</td>
+
+                      <td className="py-2 px-4 border">{item.min_duration}</td>
+                      <td className="py-2 px-4 border">{item.max_duration}</td>
+
+                      <td className="py-2 px-4 border">₹{item.price}</td>
+
+                      {/* GST */}
+                      <td className="py-2 px-4 border">
+                        {item.gst}% (₹{gstAmount.toFixed(2)})
+                      </td>
+
+                      {/* Total */}
+                      <td className="py-2 px-4 border font-semibold text-green-700">
+                        ₹{totalPrice.toFixed(2)}
+                      </td>
+                      <td className="py-2 px-4 border">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${
                           statusColors[item.status] || "bg-gray-100 text-gray-500"
@@ -115,19 +145,21 @@ const VirtualOfficePrice = () => {
                         {item.status}
                       </span>
                     </td>
-                    <td className="py-2 px-4 border">
-                      <button
-                        className="border border-orange-500 text-orange-500 px-3 py-1 rounded hover:bg-orange-500 hover:text-white transition text-sm"
-                        onClick={() => {
-                          setSelectedItem(item);
-                          setShowModal(true);
-                        }}
-                      >
-                        Edit
-                      </button>
-                    </td>
-                  </tr>
-                ))
+
+                      <td className="py-2 px-4 border">
+                        <button
+                          className="border border-orange-500 text-orange-500 px-3 py-1 rounded hover:bg-orange-500 hover:text-white transition text-sm"
+                          onClick={() => {
+                            setSelectedItem(item);
+                            setShowModal(true);
+                          }}
+                        >
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
                   <td colSpan="6" className="text-center py-4 text-gray-500">

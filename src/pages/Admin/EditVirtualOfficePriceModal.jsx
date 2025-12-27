@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "react-toastify";
 
 const EditVirtualOfficePriceModal = ({ data, onClose, onSave }) => {
   const [formData, setFormData] = useState({
@@ -6,8 +7,13 @@ const EditVirtualOfficePriceModal = ({ data, onClose, onSave }) => {
     min_duration: data.min_duration,
     max_duration: data.max_duration,
     price: data.price,
+    gst: data.gst,
     status: data.status,
   });
+
+  /* ✅ AUTO GST CALCULATION — PLACE HERE */
+  const gstAmount = (Number(formData.price) * Number(formData.gst)) / 100;
+  const totalPrice = Number(formData.price) + gstAmount;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -15,6 +21,18 @@ const EditVirtualOfficePriceModal = ({ data, onClose, onSave }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    /* ✅ FRONTEND VALIDATION — PLACE HERE */
+    if (formData.gst < 0 || formData.gst > 28) {
+      toast.error("GST must be between 0% and 28%");
+      return;
+    }
+
+    if (formData.price <= 0) {
+      toast.error("Price must be greater than 0");
+      return;
+    }
+
     onSave(formData);
   };
 
@@ -27,7 +45,9 @@ const EditVirtualOfficePriceModal = ({ data, onClose, onSave }) => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Min Duration *</label>
+            <label className="block text-sm font-medium mb-1">
+              Min Duration *
+            </label>
             <input
               type="text"
               name="min_duration"
@@ -39,7 +59,9 @@ const EditVirtualOfficePriceModal = ({ data, onClose, onSave }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Max Duration *</label>
+            <label className="block text-sm font-medium mb-1">
+              Max Duration *
+            </label>
             <input
               type="text"
               name="max_duration"
@@ -60,6 +82,31 @@ const EditVirtualOfficePriceModal = ({ data, onClose, onSave }) => {
               required
               className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-400"
             />
+          </div>
+          {/* GST Input */}
+          <div>
+            <label className="block text-sm font-medium mb-1">GST (%) *</label>
+            <input
+              type="number"
+              name="gst"
+              value={formData.gst}
+              onChange={handleChange}
+              required
+              className="w-full border p-2 rounded focus:ring-2 focus:ring-orange-400"
+            />
+          </div>
+
+          {/* ✅ GST BREAKDOWN — PLACE HERE */}
+          <div className="bg-gray-50 border rounded p-3 text-sm space-y-1">
+            <p>
+              <strong>Base Price:</strong> ₹{formData.price}
+            </p>
+            <p>
+              <strong>GST ({formData.gst}%):</strong> ₹{gstAmount.toFixed(2)}
+            </p>
+            <p className="font-semibold text-green-700">
+              Total (Incl. GST): ₹{totalPrice.toFixed(2)}
+            </p>
           </div>
 
           <div>
