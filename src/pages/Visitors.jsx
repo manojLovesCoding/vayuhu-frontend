@@ -13,7 +13,8 @@ const Visitors = () => {
   const token = localStorage.getItem("token");
 
   // ✅ Use Vite environment variable with fallback
-  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
+  const API_BASE =
+    import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
 
   const [formData, setFormData] = useState({
     name: "",
@@ -58,7 +59,7 @@ const Visitors = () => {
     };
 
     fetchReservations();
-  }, [userId, token]);
+  }, [userId, token, API_BASE]);
 
   // ✅ Fetch company name automatically using Axios
   useEffect(() => {
@@ -83,7 +84,7 @@ const Visitors = () => {
         }
       })
       .catch(() => toast.error("Error fetching company name"));
-  }, [userId, token]);
+  }, [userId, token, API_BASE]);
 
   // ✅ Handle input changes
   const handleChange = (e) => {
@@ -91,7 +92,7 @@ const Visitors = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ✅ Handle form submit using Axios
+  // ✅ Handle form submit with Razorpay Integration
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -100,38 +101,138 @@ const Visitors = () => {
       return;
     }
 
-    // ✅ Make Visiting Date & Time mandatory always
     if (!formData.visitingDate || !formData.visitingTime) {
       toast.error("Visiting Date and Time are required!");
       return;
     }
 
+    const GUEST_PASS_FEE = 500; // Define your visitor pass fee here
+    const toastId = toast.loading("Initializing payment...");
+
     try {
-      const response = await axios.post(
-        `${API_BASE}/add_visitor.php`,
-        { ...formData, user_id: userId },
+      // 1. Create Razorpay Order
+      const orderRes = await axios.post(
+        `${API_BASE}/create_razorpay_order.php`,
+        { amount: GUEST_PASS_FEE },
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : "", // ✅ Bearer Token added
+            Authorization: token ? `Bearer ${token}` : "",
           },
         }
       );
 
-      const result = response.data;
-
-      if (result.success) {
-        toast.success("Visitor added successfully!");
-        setTimeout(() => navigate("/visitors-details"), 1500);
-      } else {
-        toast.error(result.message || "Failed to add visitor!");
+      if (!orderRes.data.success) {
+        throw new Error(orderRes.data.message || "Failed to create order");
       }
+
+      // 2. Open Razorpay Checkout
+      const options = {
+        key: orderRes.data.key,
+        amount: GUEST_PASS_FEE * 100, // Amount in paise
+        currency: "INR",
+        name: "Vayuhu Workspaces",
+        description: `Visitor Pass for ${formData.name}`,
+        order_id: orderRes.data.order_id,
+        handler: async (response) => {
+          toast.update(toastId, {
+            render: "Verifying payment...",
+            type: "info",
+            isLoading: true,
+          });
+
+          try {
+            // 3. Verify Payment Signature
+            const verifyRes = await axios.post(
+              `${API_BASE}/verify_payment.php`,
+              response,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: token ? `Bearer ${token}` : "",
+                },
+              }
+            );
+
+            if (verifyRes.data.success) {
+              // 4. Final Save: Add Visitor to DB
+              const saveResponse = await axios.post(
+                `${API_BASE}/add_visitor.php`,
+                {
+                  ...formData,
+                  user_id: userId,
+                  payment_id: response.razorpay_payment_id,
+                  amount_paid: GUEST_PASS_FEE,
+                },
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: token ? `Bearer ${token}` : "",
+                  },
+                }
+              );
+
+              if (saveResponse.data.success) {
+                toast.update(toastId, {
+                  render: "Visitor Registered Successfully!",
+                  type: "success",
+                  isLoading: false,
+                  autoClose: 2000,
+                });
+                setTimeout(() => navigate("/visitors-details"), 1500);
+              } else {
+                throw new Error(saveResponse.data.message);
+              }
+            } else {
+              throw new Error("Payment verification failed");
+            }
+          } catch (err) {
+            toast.update(toastId, {
+              render: err.message,
+              type: "error",
+              isLoading: false,
+              autoClose: 3000,
+            });
+          }
+        },
+        prefill: {
+          name: user?.name || "",
+          email: user?.email || "",
+          contact: formData.contact,
+        },
+        theme: { color: "#F97316" },
+        modal: {
+          ondismiss: function () {
+            toast.dismiss(toastId);
+            toast.warn("Payment cancelled by user");
+          },
+        },
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.open();
     } catch (error) {
       console.error("Error:", error);
-      const errorMsg = error.response?.data?.message || "Something went wrong!";
-      toast.error(errorMsg);
+      toast.update(toastId, {
+        render: error.message || "Something went wrong!",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
     }
   };
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      // Clean up the script when the component unmounts
+      document.body.removeChild(script);
+    };
+  }, []);
 
   return (
     <Layout>
@@ -271,7 +372,7 @@ const Visitors = () => {
               type="submit"
               className="bg-orange-500 hover:bg-orange-600 text-white font-medium px-6 py-2 rounded-lg shadow transition-all"
             >
-              Submit
+              Pay ₹500 & Register Visitor
             </button>
           </div>
         </form>

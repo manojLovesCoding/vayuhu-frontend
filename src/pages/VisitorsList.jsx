@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios"; // ✅ Imported Axios
+import axios from "axios";
 
 const VisitorsDetails = () => {
   const [visitors, setVisitors] = useState([]);
@@ -13,7 +13,6 @@ const VisitorsDetails = () => {
 
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.id;
-  // ✅ Retrieve Bearer Token for Authorization
   const token = localStorage.getItem("token");
 
   const API_BASE = import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
@@ -27,19 +26,17 @@ const VisitorsDetails = () => {
 
     const fetchVisitors = async () => {
       try {
-        // ✅ Switched to Axios POST request
         const response = await axios.post(`${API_BASE}/get_visitors.php`, 
-          { user_id: userId }, // Axios handles JSON stringification automatically
+          { user_id: userId },
           {
             headers: { 
               "Content-Type": "application/json",
-              // ✅ Added Bearer Token to headers
               Authorization: token ? `Bearer ${token}` : "" 
             },
           }
         );
 
-        const data = response.data; // Axios stores response in .data
+        const data = response.data;
 
         if (!data.success) {
           throw new Error(data.message || "Failed to load visitors.");
@@ -49,7 +46,6 @@ const VisitorsDetails = () => {
         setFilteredVisitors(data.visitors);
       } catch (err) {
         console.error(err);
-        // Axios error handling looks into response.data.message
         const errorMessage = err.response?.data?.message || err.message;
         setError(errorMessage);
       } finally {
@@ -58,12 +54,12 @@ const VisitorsDetails = () => {
     };
 
     fetchVisitors();
-  }, [userId, token]); // ✅ Added token to dependency array
+  }, [userId, token, API_BASE]);
 
-  // ✅ Search functionality
+  // ✅ Updated Search functionality to include Payment ID and Amount
   useEffect(() => {
     const filtered = visitors.filter((v) =>
-      [v.name, v.contact, v.email, v.company_name, v.reason]
+      [v.name, v.contact, v.email, v.company_name, v.reason, v.payment_id]
         .join(" ")
         .toLowerCase()
         .includes(searchTerm.toLowerCase())
@@ -85,7 +81,6 @@ const VisitorsDetails = () => {
 
         {!loading && !error && (
           <>
-            {/* Search + Entries Filter */}
             <div className="flex justify-between mb-4">
               <select className="border rounded-lg p-2 text-sm">
                 <option>Show 10 entries</option>
@@ -95,72 +90,81 @@ const VisitorsDetails = () => {
 
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder="Search name, contact, or payment ID..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="border rounded-lg px-3 py-2 text-sm"
+                className="border rounded-lg px-3 py-2 text-sm w-64"
               />
             </div>
 
-            {/* Visitors Table */}
-            <table className="w-full border-collapse text-sm">
-              <thead className="bg-orange-100 text-gray-700">
-                <tr>
-                  {[
-                    "S.No.",
-                    "Name",
-                    "Contact No",
-                    "Email",
-                    "Company Name",
-                    "Visiting Date",
-                    "Visiting Time",
-                    "Reason",
-                    "Added On",
-                  ].map((col) => (
-                    <th key={col} className="p-2 border text-left">
-                      {col}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-
-              <tbody>
-                {filteredVisitors.length === 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-sm">
+                <thead className="bg-orange-100 text-gray-700">
                   <tr>
-                    <td
-                      colSpan="9"
-                      className="text-center p-4 text-gray-500"
-                    >
-                      No visitors found
-                    </td>
+                    {[
+                      "S.No.",
+                      "Name",
+                      "Contact No",
+                      "Company",
+                      "Visit Date/Time",
+                      "Reason",
+                      "Payment Status", // ✅ New Column
+                      "Added On",
+                    ].map((col) => (
+                      <th key={col} className="p-2 border text-left">
+                        {col}
+                      </th>
+                    ))}
                   </tr>
-                ) : (
-                  filteredVisitors.map((visitor, index) => (
-                    <tr key={visitor.id} className="hover:bg-gray-50">
-                      <td className="p-2 border">{index + 1}</td>
-                      <td className="p-2 border">{visitor.name}</td>
-                      <td className="p-2 border">{visitor.contact}</td>
-                      <td className="p-2 border">{visitor.email || "—"}</td>
-                      <td className="p-2 border">{visitor.company_name}</td>
-                      <td className="p-2 border">
-                        {visitor.visiting_date || "—"}
-                      </td>
-                      <td className="p-2 border">
-                        {visitor.visiting_time
-                          ? visitor.visiting_time.slice(0, 5)
-                          : "—"}
-                      </td>
-                      <td className="p-2 border">{visitor.reason || "—"}</td>
-                      <td className="p-2 border text-gray-500">
-                        {new Date(visitor.added_on).toLocaleString()}
+                </thead>
+
+                <tbody>
+                  {filteredVisitors.length === 0 ? (
+                    <tr>
+                      <td colSpan="8" className="text-center p-4 text-gray-500">
+                        No visitors found
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    filteredVisitors.map((visitor, index) => (
+                      <tr key={visitor.id} className="hover:bg-gray-50">
+                        <td className="p-2 border">{index + 1}</td>
+                        <td className="p-2 border font-medium">{visitor.name}</td>
+                        <td className="p-2 border">{visitor.contact}</td>
+                        <td className="p-2 border">{visitor.company_name}</td>
+                        <td className="p-2 border">
+                          {visitor.visiting_date} <br />
+                          <span className="text-xs text-gray-500">
+                            {visitor.visiting_time ? visitor.visiting_time.slice(0, 5) : "—"}
+                          </span>
+                        </td>
+                        <td className="p-2 border truncate max-w-[150px]" title={visitor.reason}>
+                          {visitor.reason || "—"}
+                        </td>
+                        
+                        {/* ✅ Payment Status Logic */}
+                        <td className="p-2 border">
+                          {visitor.payment_id ? (
+                            <div className="flex flex-col">
+                              <span className="text-green-600 font-bold text-[10px] uppercase">Paid</span>
+                              <span className="text-gray-700 font-semibold">₹{visitor.amount_paid}</span>
+                              <span className="text-[10px] text-gray-400 select-all">{visitor.payment_id}</span>
+                            </div>
+                          ) : (
+                            <span className="text-red-500 italic text-xs">Unpaid / Manual</span>
+                          )}
+                        </td>
 
-            {/* Pagination */}
+                        <td className="p-2 border text-gray-500 text-[11px]">
+                          {new Date(visitor.added_on).toLocaleString()}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
             <div className="flex justify-between mt-4 text-gray-600">
               <p>
                 Showing {filteredVisitors.length > 0 ? 1 : 0} to{" "}
