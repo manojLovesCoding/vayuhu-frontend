@@ -56,10 +56,9 @@ const VisitorsDetails = () => {
     fetchVisitors();
   }, [userId, token, API_BASE]);
 
-  // ✅ Updated Search functionality to include Payment ID and Amount
   useEffect(() => {
     const filtered = visitors.filter((v) =>
-      [v.name, v.contact, v.email, v.company_name, v.reason, v.payment_id]
+      [v.name, v.contact, v.email, v.company_name, v.reason, v.payment_id, v.workspace]
         .join(" ")
         .toLowerCase()
         .includes(searchTerm.toLowerCase())
@@ -90,7 +89,7 @@ const VisitorsDetails = () => {
 
               <input
                 type="text"
-                placeholder="Search name, contact, or payment ID..."
+                placeholder="Search name, space, or ID..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="border rounded-lg px-3 py-2 text-sm w-64"
@@ -101,16 +100,7 @@ const VisitorsDetails = () => {
               <table className="w-full border-collapse text-sm">
                 <thead className="bg-orange-100 text-gray-700">
                   <tr>
-                    {[
-                      "S.No.",
-                      "Name",
-                      "Contact No",
-                      "Company",
-                      "Visit Date/Time",
-                      "Reason",
-                      "Payment Status", // ✅ New Column
-                      "Added On",
-                    ].map((col) => (
+                    {["S.No.", "Name", "Contact No", "Visited Workspace", "Visit Date/Time", "Reason", "Payment Status", "Added On"].map((col) => (
                       <th key={col} className="p-2 border text-left">
                         {col}
                       </th>
@@ -127,11 +117,17 @@ const VisitorsDetails = () => {
                     </tr>
                   ) : (
                     filteredVisitors.map((visitor, index) => (
+                      /* 🟢 Using visitor.id as the key is critical for proper React tracking */
                       <tr key={visitor.id} className="hover:bg-gray-50">
                         <td className="p-2 border">{index + 1}</td>
                         <td className="p-2 border font-medium">{visitor.name}</td>
                         <td className="p-2 border">{visitor.contact}</td>
-                        <td className="p-2 border">{visitor.company_name}</td>
+                        
+                        {/* ✅ Displaying the specific Workspace linked to this record */}
+                        <td className="p-2 border font-semibold text-orange-600">
+                          {visitor.workspace}
+                        </td>
+
                         <td className="p-2 border">
                           {visitor.visiting_date} <br />
                           <span className="text-xs text-gray-500">
@@ -142,16 +138,15 @@ const VisitorsDetails = () => {
                           {visitor.reason || "—"}
                         </td>
                         
-                        {/* ✅ Payment Status Logic */}
                         <td className="p-2 border">
                           {visitor.payment_id ? (
                             <div className="flex flex-col">
                               <span className="text-green-600 font-bold text-[10px] uppercase">Paid</span>
                               <span className="text-gray-700 font-semibold">₹{visitor.amount_paid}</span>
-                              <span className="text-[10px] text-gray-400 select-all">{visitor.payment_id}</span>
+                              <span className="text-[10px] text-gray-400 select-all font-mono">{visitor.payment_id}</span>
                             </div>
                           ) : (
-                            <span className="text-red-500 italic text-xs">Unpaid / Manual</span>
+                            <span className="text-red-500 italic text-xs font-medium">Unpaid</span>
                           )}
                         </td>
 

@@ -27,38 +27,34 @@ const Visitors = () => {
   });
 
   const [hasReservation, setHasReservation] = useState(false);
+  // ✅ NEW STATES FOR DYNAMIC PRICING
+  const [userBookings, setUserBookings] = useState([]);
+  const [selectedBooking, setSelectedBooking] = useState("");
+  const [guestFee, setGuestFee] = useState(0);
+  const [bookingDateLimit, setBookingDateLimit] = useState("");
 
   // ✅ Check if user has workspace bookings using Axios
   useEffect(() => {
     if (!userId) return;
 
-    const fetchReservations = async () => {
+    const fetchActiveReservations = async () => {
       try {
         const response = await axios.post(
-          `${API_BASE}/get_workspace_bookings.php`,
+          `${API_BASE}/get_active_bookings.php`, // ✅ Pointing to new endpoint
           { user_id: userId },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: token ? `Bearer ${token}` : "", // ✅ Bearer Token added
-            },
-          }
+          { headers: { Authorization: token ? `Bearer ${token}` : "" } }
         );
 
-        const data = response.data;
-
-        if (data.success && data.bookings) {
-          setHasReservation(data.bookings.length > 0);
-        } else {
-          setHasReservation(false);
+        if (response.data.success) {
+          setUserBookings(response.data.bookings);
+          setHasReservation(response.data.bookings.length > 0);
         }
       } catch (err) {
-        console.error("Error fetching reservations:", err);
-        setHasReservation(false);
+        console.error("Error fetching active reservations:", err);
       }
     };
 
-    fetchReservations();
+    fetchActiveReservations();
   }, [userId, token, API_BASE]);
 
   // ✅ Fetch company name automatically using Axios
@@ -86,6 +82,31 @@ const Visitors = () => {
       .catch(() => toast.error("Error fetching company name"));
   }, [userId, token, API_BASE]);
 
+  const handleBookingChange = (e) => {
+    const bookingId = e.target.value;
+    setSelectedBooking(bookingId);
+
+    const booking = userBookings.find((b) => b.booking_id == bookingId);
+    if (booking) {
+      // ✅ This now sets the Hourly Visitor Pass fee (₹100, ₹120, etc.) 
+      // even if the host has a Monthly/Daily pack.
+      setGuestFee(parseFloat(booking.price_per_unit) || 0);
+
+      // ✅ Store the booking date to validate against later
+      // Ensure your backend sends the raw date format (YYYY-MM-DD)
+      setBookingDateLimit(booking.start_date_raw || booking.start_date);
+
+      // Optional: Auto-set the visiting date to match the booking date
+      setFormData((prev) => ({
+        ...prev,
+        visitingDate: booking.start_date_raw || prev.visitingDate,
+      }));
+    } else {
+      setGuestFee(0);
+      setBookingDateLimit("");
+    }
+  };
+
   // ✅ Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -95,6 +116,20 @@ const Visitors = () => {
   // ✅ Handle form submit with Razorpay Integration
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!selectedBooking) {
+      toast.error("Please select an active booking first!");
+      return;
+    }
+
+    // ✅ New Date Validation Logic
+    // Convert both to date strings to ensure accurate comparison
+    if (formData.visitingDate !== bookingDateLimit) {
+      toast.error(
+        `Invalid Date! Your selected workspace is only booked for ${bookingDateLimit}.`
+      );
+      return;
+    }
 
     if (!formData.name || !formData.contact) {
       toast.error("Name and Contact No are required!");
@@ -106,14 +141,13 @@ const Visitors = () => {
       return;
     }
 
-    const GUEST_PASS_FEE = 500; // Define your visitor pass fee here
     const toastId = toast.loading("Initializing payment...");
 
     try {
-      // 1. Create Razorpay Order
+      // 1. Create Razorpay Order using dynamic guestFee
       const orderRes = await axios.post(
         `${API_BASE}/create_razorpay_order.php`,
-        { amount: GUEST_PASS_FEE },
+        { amount: guestFee },
         {
           headers: {
             "Content-Type": "application/json",
@@ -129,7 +163,7 @@ const Visitors = () => {
       // 2. Open Razorpay Checkout
       const options = {
         key: orderRes.data.key,
-        amount: GUEST_PASS_FEE * 100, // Amount in paise
+        amount: guestFee * 100, // Amount in paise
         currency: "INR",
         name: "Vayuhu Workspaces",
         description: `Visitor Pass for ${formData.name}`,
@@ -155,14 +189,15 @@ const Visitors = () => {
             );
 
             if (verifyRes.data.success) {
-              // 4. Final Save: Add Visitor to DB
+              // 4. Final Save: Add Visitor to DB with relationship
               const saveResponse = await axios.post(
                 `${API_BASE}/add_visitor.php`,
                 {
                   ...formData,
                   user_id: userId,
+                  booking_id: selectedBooking, // ✅ New relation
                   payment_id: response.razorpay_payment_id,
-                  amount_paid: GUEST_PASS_FEE,
+                  amount_paid: guestFee,
                 },
                 {
                   headers: {
@@ -230,9 +265,13 @@ const Visitors = () => {
 
     return () => {
       // Clean up the script when the component unmounts
-      document.body.removeChild(script);
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
   }, []);
+
+  // Inside Visitors.jsx
 
   return (
     <Layout>
@@ -255,6 +294,32 @@ const Visitors = () => {
           className="grid grid-cols-1 sm:grid-cols-2 gap-6"
           onSubmit={handleSubmit}
         >
+          {/* ✅ NEW: Booking Selector (Determines Pricing) */}
+          <div className="sm:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Select Your Active Workspace Booking{" "}
+              <span className="text-red-500">*</span>
+            </label>
+            {/* Booking Selector in Visitors.jsx */}
+            <select
+              className="w-full border border-gray-300 rounded-md p-2"
+              value={selectedBooking}
+              onChange={handleBookingChange}
+              required
+            >
+              <option value="">-- Select an Upcoming Booking --</option>
+              {userBookings.map((b) => (
+                <option key={b.booking_id} value={b.booking_id}>
+                  {b.workspace_title} ({b.start_date_display}) - Rate: ₹
+                  {b.price_per_unit}/hr
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-gray-500">
+              Visitor fee is based on the selected workspace rate.
+            </p>
+          </div>
+
           {/* Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -320,6 +385,7 @@ const Visitors = () => {
           {hasReservation && (
             <>
               {/* Visiting Date */}
+              {/* Inside the return JSX for the Visiting Date input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Visiting Date <span className="text-red-500">*</span>
@@ -329,9 +395,20 @@ const Visitors = () => {
                   name="visitingDate"
                   value={formData.visitingDate}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-md p-2 focus:ring-orange-500"
+                  // ✅ Lock the date picker to the booking date if one is selected
+                  min={bookingDateLimit}
+                  max={bookingDateLimit}
+                  className={`w-full border border-gray-300 rounded-md p-2 focus:ring-orange-500 ${
+                    selectedBooking ? "bg-gray-50 cursor-not-allowed" : ""
+                  }`}
                   required
+                  readOnly={!!selectedBooking} // Makes it read-only once a booking is picked
                 />
+                {selectedBooking && (
+                  <p className="text-[10px] text-orange-600 mt-1">
+                    Locked to match your workspace booking date.
+                  </p>
+                )}
               </div>
 
               {/* Visiting Time */}
@@ -372,7 +449,7 @@ const Visitors = () => {
               type="submit"
               className="bg-orange-500 hover:bg-orange-600 text-white font-medium px-6 py-2 rounded-lg shadow transition-all"
             >
-              Pay ₹500 & Register Visitor
+              Pay ₹{guestFee} for Hourly Visitor Pass
             </button>
           </div>
         </form>
