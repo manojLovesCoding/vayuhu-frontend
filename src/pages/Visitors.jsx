@@ -31,7 +31,9 @@ const Visitors = () => {
   const [userBookings, setUserBookings] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState("");
   const [guestFee, setGuestFee] = useState(0);
-  const [bookingDateLimit, setBookingDateLimit] = useState("");
+  const [bookingStartDate, setBookingStartDate] = useState("");
+const [bookingEndDate, setBookingEndDate] = useState("");
+
 
   // ✅ Check if user has workspace bookings using Axios
   useEffect(() => {
@@ -83,29 +85,22 @@ const Visitors = () => {
   }, [userId, token, API_BASE]);
 
   const handleBookingChange = (e) => {
-    const bookingId = e.target.value;
-    setSelectedBooking(bookingId);
+  const bookingId = e.target.value;
+  setSelectedBooking(bookingId);
 
-    const booking = userBookings.find((b) => b.booking_id == bookingId);
-    if (booking) {
-      // ✅ This now sets the Hourly Visitor Pass fee (₹100, ₹120, etc.) 
-      // even if the host has a Monthly/Daily pack.
-      setGuestFee(parseFloat(booking.price_per_unit) || 0);
+  const booking = userBookings.find((b) => b.booking_id == bookingId);
 
-      // ✅ Store the booking date to validate against later
-      // Ensure your backend sends the raw date format (YYYY-MM-DD)
-      setBookingDateLimit(booking.start_date_raw || booking.start_date);
+  if (booking) {
+    setGuestFee(parseFloat(booking.price_per_unit) || 0);
+    setBookingStartDate(booking.start_date);
+    setBookingEndDate(booking.end_date);
+  } else {
+    setGuestFee(0);
+    setBookingStartDate("");
+    setBookingEndDate("");
+  }
+};
 
-      // Optional: Auto-set the visiting date to match the booking date
-      setFormData((prev) => ({
-        ...prev,
-        visitingDate: booking.start_date_raw || prev.visitingDate,
-      }));
-    } else {
-      setGuestFee(0);
-      setBookingDateLimit("");
-    }
-  };
 
   // ✅ Handle input changes
   const handleChange = (e) => {
@@ -122,14 +117,6 @@ const Visitors = () => {
       return;
     }
 
-    // ✅ New Date Validation Logic
-    // Convert both to date strings to ensure accurate comparison
-    if (formData.visitingDate !== bookingDateLimit) {
-      toast.error(
-        `Invalid Date! Your selected workspace is only booked for ${bookingDateLimit}.`
-      );
-      return;
-    }
 
     if (!formData.name || !formData.contact) {
       toast.error("Name and Contact No are required!");
@@ -391,24 +378,22 @@ const Visitors = () => {
                   Visiting Date <span className="text-red-500">*</span>
                 </label>
                 <input
-                  type="date"
-                  name="visitingDate"
-                  value={formData.visitingDate}
-                  onChange={handleChange}
-                  // ✅ Lock the date picker to the booking date if one is selected
-                  min={bookingDateLimit}
-                  max={bookingDateLimit}
-                  className={`w-full border border-gray-300 rounded-md p-2 focus:ring-orange-500 ${
-                    selectedBooking ? "bg-gray-50 cursor-not-allowed" : ""
-                  }`}
-                  required
-                  readOnly={!!selectedBooking} // Makes it read-only once a booking is picked
-                />
-                {selectedBooking && (
-                  <p className="text-[10px] text-orange-600 mt-1">
-                    Locked to match your workspace booking date.
-                  </p>
-                )}
+  type="date"
+  name="visitingDate"
+  value={formData.visitingDate}
+  onChange={handleChange}
+  min={bookingStartDate}
+  max={bookingEndDate}
+  className="w-full border border-gray-300 rounded-md p-2 focus:ring-orange-500"
+  required
+/>
+{selectedBooking && (
+  <p className="text-[10px] text-gray-500 mt-1">
+    Allowed between {bookingStartDate} and {bookingEndDate}
+  </p>
+)}
+
+                
               </div>
 
               {/* Visiting Time */}
