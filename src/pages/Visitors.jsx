@@ -32,8 +32,7 @@ const Visitors = () => {
   const [selectedBooking, setSelectedBooking] = useState("");
   const [guestFee, setGuestFee] = useState(0);
   const [bookingStartDate, setBookingStartDate] = useState("");
-const [bookingEndDate, setBookingEndDate] = useState("");
-
+  const [bookingEndDate, setBookingEndDate] = useState("");
 
   // ✅ Check if user has workspace bookings using Axios
   useEffect(() => {
@@ -85,22 +84,21 @@ const [bookingEndDate, setBookingEndDate] = useState("");
   }, [userId, token, API_BASE]);
 
   const handleBookingChange = (e) => {
-  const bookingId = e.target.value;
-  setSelectedBooking(bookingId);
+    const bookingId = e.target.value;
+    setSelectedBooking(bookingId);
 
-  const booking = userBookings.find((b) => b.booking_id == bookingId);
+    const booking = userBookings.find((b) => b.booking_id == bookingId);
 
-  if (booking) {
-    setGuestFee(parseFloat(booking.price_per_unit) || 0);
-    setBookingStartDate(booking.start_date);
-    setBookingEndDate(booking.end_date);
-  } else {
-    setGuestFee(0);
-    setBookingStartDate("");
-    setBookingEndDate("");
-  }
-};
-
+    if (booking) {
+      setGuestFee(parseFloat(booking.price_per_unit) || 0);
+      setBookingStartDate(booking.start_date);
+      setBookingEndDate(booking.end_date);
+    } else {
+      setGuestFee(0);
+      setBookingStartDate("");
+      setBookingEndDate("");
+    }
+  };
 
   // ✅ Handle input changes
   const handleChange = (e) => {
@@ -108,15 +106,14 @@ const [bookingEndDate, setBookingEndDate] = useState("");
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ✅ Handle form submit with Razorpay Integration
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // ---------------- BASIC CHECKS ----------------
     if (!selectedBooking) {
       toast.error("Please select an active booking first!");
       return;
     }
-
 
     if (!formData.name || !formData.contact) {
       toast.error("Name and Contact No are required!");
@@ -128,10 +125,47 @@ const [bookingEndDate, setBookingEndDate] = useState("");
       return;
     }
 
+    // ---------------- FRONTEND DATE CHECK ----------------
+    if (
+      formData.visitingDate < bookingStartDate ||
+      formData.visitingDate > bookingEndDate
+    ) {
+      toast.error(
+        `Visiting date must be between ${bookingStartDate} and ${bookingEndDate}`
+      );
+      return;
+    }
+
+    // ---------------- BACKEND PRE-VALIDATION ----------------
+    try {
+      const validateRes = await axios.post(
+        `${API_BASE}/validate_visitor_date.php`,
+        {
+          user_id: userId,
+          booking_id: selectedBooking,
+          visitingDate: formData.visitingDate,
+        },
+        {
+          headers: {
+            Authorization: token ? `Bearer ${token}` : "",
+          },
+        }
+      );
+
+      if (!validateRes.data.success) {
+        toast.error(validateRes.data.message);
+        return; // ❌ STOP — DO NOT OPEN PAYMENT
+      }
+    } catch (error) {
+      toast.error("Unable to validate visiting date. Please try again.");
+      return;
+    }
+
+    // ---------------- PAYMENT STARTS ----------------
     const toastId = toast.loading("Initializing payment...");
 
     try {
-      // 1. Create Razorpay Order using dynamic guestFee
+      // 1️⃣ Create Razorpay Order
       const orderRes = await axios.post(
         `${API_BASE}/create_razorpay_order.php`,
         { amount: guestFee },
@@ -147,14 +181,15 @@ const [bookingEndDate, setBookingEndDate] = useState("");
         throw new Error(orderRes.data.message || "Failed to create order");
       }
 
-      // 2. Open Razorpay Checkout
+      // 2️⃣ Razorpay Options
       const options = {
         key: orderRes.data.key,
-        amount: guestFee * 100, // Amount in paise
+        amount: guestFee * 100,
         currency: "INR",
         name: "Vayuhu Workspaces",
         description: `Visitor Pass for ${formData.name}`,
         order_id: orderRes.data.order_id,
+
         handler: async (response) => {
           toast.update(toastId, {
             render: "Verifying payment...",
@@ -163,7 +198,7 @@ const [bookingEndDate, setBookingEndDate] = useState("");
           });
 
           try {
-            // 3. Verify Payment Signature
+            // 3️⃣ Verify Payment
             const verifyRes = await axios.post(
               `${API_BASE}/verify_payment.php`,
               response,
@@ -175,56 +210,60 @@ const [bookingEndDate, setBookingEndDate] = useState("");
               }
             );
 
-            if (verifyRes.data.success) {
-              // 4. Final Save: Add Visitor to DB with relationship
-              const saveResponse = await axios.post(
-                `${API_BASE}/add_visitor.php`,
-                {
-                  ...formData,
-                  user_id: userId,
-                  booking_id: selectedBooking, // ✅ New relation
-                  payment_id: response.razorpay_payment_id,
-                  amount_paid: guestFee,
-                },
-                {
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: token ? `Bearer ${token}` : "",
-                  },
-                }
-              );
-
-              if (saveResponse.data.success) {
-                toast.update(toastId, {
-                  render: "Visitor Registered Successfully!",
-                  type: "success",
-                  isLoading: false,
-                  autoClose: 2000,
-                });
-                setTimeout(() => navigate("/visitors-details"), 1500);
-              } else {
-                throw new Error(saveResponse.data.message);
-              }
-            } else {
+            if (!verifyRes.data.success) {
               throw new Error("Payment verification failed");
+            }
+
+            // 4️⃣ Save Visitor
+            const saveResponse = await axios.post(
+              `${API_BASE}/add_visitor.php`,
+              {
+                ...formData,
+                user_id: userId,
+                booking_id: selectedBooking,
+                payment_id: response.razorpay_payment_id,
+                amount_paid: guestFee,
+              },
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: token ? `Bearer ${token}` : "",
+                },
+              }
+            );
+
+            if (saveResponse.data.success) {
+              toast.update(toastId, {
+                render: "Visitor Registered Successfully!",
+                type: "success",
+                isLoading: false,
+                autoClose: 2000,
+              });
+
+              setTimeout(() => navigate("/visitors-details"), 1500);
+            } else {
+              throw new Error(saveResponse.data.message);
             }
           } catch (err) {
             toast.update(toastId, {
-              render: err.message,
+              render: err.message || "Something went wrong!",
               type: "error",
               isLoading: false,
               autoClose: 3000,
             });
           }
         },
+
         prefill: {
           name: user?.name || "",
           email: user?.email || "",
           contact: formData.contact,
         },
+
         theme: { color: "#F97316" },
+
         modal: {
-          ondismiss: function () {
+          ondismiss: () => {
             toast.dismiss(toastId);
             toast.warn("Payment cancelled by user");
           },
@@ -234,7 +273,6 @@ const [bookingEndDate, setBookingEndDate] = useState("");
       const rzp1 = new window.Razorpay(options);
       rzp1.open();
     } catch (error) {
-      console.error("Error:", error);
       toast.update(toastId, {
         render: error.message || "Something went wrong!",
         type: "error",
@@ -378,22 +416,20 @@ const [bookingEndDate, setBookingEndDate] = useState("");
                   Visiting Date <span className="text-red-500">*</span>
                 </label>
                 <input
-  type="date"
-  name="visitingDate"
-  value={formData.visitingDate}
-  onChange={handleChange}
-  min={bookingStartDate}
-  max={bookingEndDate}
-  className="w-full border border-gray-300 rounded-md p-2 focus:ring-orange-500"
-  required
-/>
-{selectedBooking && (
-  <p className="text-[10px] text-gray-500 mt-1">
-    Allowed between {bookingStartDate} and {bookingEndDate}
-  </p>
-)}
-
-                
+                  type="date"
+                  name="visitingDate"
+                  value={formData.visitingDate}
+                  onChange={handleChange}
+                  min={bookingStartDate}
+                  max={bookingEndDate}
+                  className="w-full border border-gray-300 rounded-md p-2 focus:ring-orange-500"
+                  required
+                />
+                {selectedBooking && (
+                  <p className="text-[10px] text-gray-500 mt-1">
+                    Allowed between {bookingStartDate} and {bookingEndDate}
+                  </p>
+                )}
               </div>
 
               {/* Visiting Time */}
