@@ -9,10 +9,8 @@ const Visitors = () => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.id;
-  // ✅ Retrieve Bearer Token for Authorization
   const token = localStorage.getItem("token");
 
-  // ✅ Use Vite environment variable with fallback
   const API_BASE =
     import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
 
@@ -27,21 +25,18 @@ const Visitors = () => {
   });
 
   const [hasReservation, setHasReservation] = useState(false);
-  // ✅ NEW STATES FOR DYNAMIC PRICING
   const [userBookings, setUserBookings] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState("");
   const [guestFee, setGuestFee] = useState(0);
-  const [bookingStartDate, setBookingStartDate] = useState("");
-  const [bookingEndDate, setBookingEndDate] = useState("");
 
-  // ✅ Check if user has workspace bookings using Axios
+  // Fetch active bookings
   useEffect(() => {
     if (!userId) return;
 
     const fetchActiveReservations = async () => {
       try {
         const response = await axios.post(
-          `${API_BASE}/get_active_bookings.php`, // ✅ Pointing to new endpoint
+          `${API_BASE}/get_active_bookings.php`,
           { user_id: userId },
           { headers: { Authorization: token ? `Bearer ${token}` : "" } }
         );
@@ -58,7 +53,7 @@ const Visitors = () => {
     fetchActiveReservations();
   }, [userId, token, API_BASE]);
 
-  // ✅ Fetch company name automatically using Axios
+  // Fetch company profile
   useEffect(() => {
     if (!userId) return;
 
@@ -66,7 +61,7 @@ const Visitors = () => {
       .get(`${API_BASE}/get_company_profile.php`, {
         params: { user_id: userId },
         headers: {
-          Authorization: token ? `Bearer ${token}` : "", // ✅ Bearer Token added
+          Authorization: token ? `Bearer ${token}` : "",
         },
       })
       .then((res) => {
@@ -91,16 +86,11 @@ const Visitors = () => {
 
     if (booking) {
       setGuestFee(parseFloat(booking.price_per_unit) || 0);
-      setBookingStartDate(booking.start_date);
-      setBookingEndDate(booking.end_date);
     } else {
       setGuestFee(0);
-      setBookingStartDate("");
-      setBookingEndDate("");
     }
   };
 
-  // ✅ Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -122,17 +112,6 @@ const Visitors = () => {
 
     if (!formData.visitingDate || !formData.visitingTime) {
       toast.error("Visiting Date and Time are required!");
-      return;
-    }
-
-    // ---------------- FRONTEND DATE CHECK ----------------
-    if (
-      formData.visitingDate < bookingStartDate ||
-      formData.visitingDate > bookingEndDate
-    ) {
-      toast.error(
-        `Visiting date must be between ${bookingStartDate} and ${bookingEndDate}`
-      );
       return;
     }
 
@@ -165,7 +144,6 @@ const Visitors = () => {
     const toastId = toast.loading("Initializing payment...");
 
     try {
-      // 1️⃣ Create Razorpay Order
       const orderRes = await axios.post(
         `${API_BASE}/create_razorpay_order.php`,
         { amount: guestFee },
@@ -181,7 +159,6 @@ const Visitors = () => {
         throw new Error(orderRes.data.message || "Failed to create order");
       }
 
-      // 2️⃣ Razorpay Options
       const options = {
         key: orderRes.data.key,
         amount: guestFee * 100,
@@ -198,7 +175,6 @@ const Visitors = () => {
           });
 
           try {
-            // 3️⃣ Verify Payment
             const verifyRes = await axios.post(
               `${API_BASE}/verify_payment.php`,
               response,
@@ -214,7 +190,6 @@ const Visitors = () => {
               throw new Error("Payment verification failed");
             }
 
-            // 4️⃣ Save Visitor
             const saveResponse = await axios.post(
               `${API_BASE}/add_visitor.php`,
               {
@@ -289,20 +264,16 @@ const Visitors = () => {
     document.body.appendChild(script);
 
     return () => {
-      // Clean up the script when the component unmounts
       if (document.body.contains(script)) {
         document.body.removeChild(script);
       }
     };
   }, []);
 
-  // Inside Visitors.jsx
-
   return (
     <Layout>
       <ToastContainer position="top-right" autoClose={3000} />
 
-      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-800">Visitors</h1>
         <button
@@ -313,19 +284,17 @@ const Visitors = () => {
         </button>
       </div>
 
-      {/* Form */}
       <div className="bg-white rounded-2xl shadow p-6">
         <form
           className="grid grid-cols-1 sm:grid-cols-2 gap-6"
           onSubmit={handleSubmit}
         >
-          {/* ✅ NEW: Booking Selector (Determines Pricing) */}
+          {/* Booking Selector */}
           <div className="sm:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Select Your Active Workspace Booking{" "}
               <span className="text-red-500">*</span>
             </label>
-            {/* Booking Selector in Visitors.jsx */}
             <select
               className="w-full border border-gray-300 rounded-md p-2"
               value={selectedBooking}
@@ -392,7 +361,7 @@ const Visitors = () => {
             />
           </div>
 
-          {/* Company Name (readonly) */}
+          {/* Company Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Company Name
@@ -406,11 +375,9 @@ const Visitors = () => {
             />
           </div>
 
-          {/* Visiting Date & Time only if user has reservation */}
+          {/* Visiting Date & Time */}
           {hasReservation && (
             <>
-              {/* Visiting Date */}
-              {/* Inside the return JSX for the Visiting Date input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Visiting Date <span className="text-red-500">*</span>
@@ -420,19 +387,14 @@ const Visitors = () => {
                   name="visitingDate"
                   value={formData.visitingDate}
                   onChange={handleChange}
-                  min={bookingStartDate}
-                  max={bookingEndDate}
                   className="w-full border border-gray-300 rounded-md p-2 focus:ring-orange-500"
                   required
                 />
-                {selectedBooking && (
-                  <p className="text-[10px] text-gray-500 mt-1">
-                    Allowed between {bookingStartDate} and {bookingEndDate}
-                  </p>
-                )}
+                <p className="text-[10px] text-gray-500 mt-1">
+                  You can select any date for visiting.
+                </p>
               </div>
 
-              {/* Visiting Time */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Visiting Time <span className="text-red-500">*</span>
