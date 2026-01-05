@@ -2,16 +2,17 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../context/CartContext";
 import { toast } from "react-toastify";
-import axios from "axios"; // ✅ Added Axios
+import axios from "axios"; 
 
-// ✅ Dynamic API base URL via Vite env
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
 
 const CartDrawer = ({ open, onClose }) => {
   const { cart, removeFromCart, clearCart, totalAmount } = useCart();
-
-  // ✅ Retrieve Bearer Token
   const token = localStorage.getItem("token");
+
+  // Calculated Totals for the Summary UI
+  const subtotalTotal = totalAmount / 1.18;
+  const gstTotal = totalAmount - subtotalTotal;
 
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
@@ -34,7 +35,6 @@ const CartDrawer = ({ open, onClose }) => {
     if (!loaded) return toast.error("Razorpay SDK failed to load.");
 
     try {
-      // 1. Create Order using Axios
       const createOrderRes = await axios.post(`${API_URL}/create_razorpay_order.php`, 
         { amount: totalAmount },
         {
@@ -57,9 +57,7 @@ const CartDrawer = ({ open, onClose }) => {
         order_id: orderData.order_id,
         theme: { color: "#F97316" },
         handler: async function (response) {
-          
           try {
-            // 2. Verify Payment using Axios
             const verifyRes = await axios.post(`${API_URL}/verify_payment.php`, response, {
               headers: {
                 "Content-Type": "application/json",
@@ -70,31 +68,40 @@ const CartDrawer = ({ open, onClose }) => {
             const verifyData = verifyRes.data;
             if (!verifyData.success) return toast.error("Payment verification failed!");
 
-            // 3. Prepare Bulk Data
             const user = JSON.parse(localStorage.getItem("user"));
             const userId = user?.id || null;
 
-            const bulkBookingData = cart.map((booking) => ({
-                user_id: userId,
-                space_id: booking.id,
-                workspace_title: booking.title,
-                plan_type: booking.plan_type,
-                start_date: booking.start_date,
-                end_date: booking.end_date,
-                start_time: booking.start_time,
-                end_time: booking.end_time,
-                total_days: booking.total_days,
-                total_hours: booking.total_hours,
-                num_attendees: booking.num_attendees,
-                final_amount: booking.final_amount,
-                coupon_code: booking.coupon_code || null,
-                referral_source: booking.referral || null,
-                terms_accepted: 1,
-                payment_id: response.razorpay_payment_id,
-                seat_codes: booking.seat_codes || "" 
-            }));
+            // Updated Mapping with Breakdown
+            const bulkBookingData = cart.map((booking) => {
+                const final = parseFloat(booking.final_amount);
+                const base = final / 1.18;
+                const gst = final - base;
 
-            // 4. Send Bulk Request using Axios
+                return {
+                    user_id: userId,
+                    space_id: booking.id,
+                    workspace_title: booking.title,
+                    plan_type: booking.plan_type,
+                    start_date: booking.start_date,
+                    end_date: booking.end_date,
+                    start_time: booking.start_time,
+                    end_time: booking.end_time,
+                    total_days: booking.total_days,
+                    total_hours: booking.total_hours,
+                    num_attendees: booking.num_attendees,
+                    // Sending individual breakdowns to PHP
+                    base_amount: base.toFixed(2),
+                    gst_amount: gst.toFixed(2),
+                    final_amount: final,
+                    price_per_unit: booking.price_per_unit || 0,
+                    coupon_code: booking.coupon_code || null,
+                    referral_source: booking.referral || null,
+                    terms_accepted: 1,
+                    payment_id: response.razorpay_payment_id,
+                    seat_codes: booking.seat_codes || "" 
+                };
+            });
+
             const bookingRes = await axios.post(`${API_URL}/add_bulk_bookings.php`, 
               { bookings: bulkBookingData },
               {
@@ -109,11 +116,12 @@ const CartDrawer = ({ open, onClose }) => {
                 throw new Error(bookingRes.data.message);
             }
 
-            // 5. Send Email using Axios
             const emailPayload = {
                 user_id: userId,
                 user_email: user?.email,
                 total_amount: totalAmount,
+                subtotal: subtotalTotal.toFixed(2),
+                gst_amount: gstTotal.toFixed(2),
                 bookings: cart 
             };
 
@@ -162,9 +170,7 @@ const CartDrawer = ({ open, onClose }) => {
           >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold">Your Cart</h3>
-              <button onClick={onClose} className="text-gray-500 text-2xl">
-                ✕
-              </button>
+              <button onClick={onClose} className="text-gray-500 text-2xl">✕</button>
             </div>
 
             {cart.length === 0 ? (
@@ -176,44 +182,35 @@ const CartDrawer = ({ open, onClose }) => {
                     <div key={idx} className="border-b py-3">
                       <h4 className="font-semibold text-gray-800">{item.title}</h4>
                       <p className="text-sm text-gray-600">{item.plan_type}</p>
-                      
                       {item.seat_codes && (
                         <p className="text-xs text-blue-600 font-medium mt-1">
                             Seats: {item.seat_codes}
                         </p>
                       )}
-
-                      <p className="text-sm text-gray-500 mt-1">
-                        {item.start_date} → {item.end_date}
-                      </p>
+                      <p className="text-sm text-gray-500 mt-1">{item.start_date} → {item.end_date}</p>
                       <p className="text-orange-600 font-medium">₹{item.final_amount}</p>
-                      <button
-                        onClick={() => removeFromCart(item.id)}
-                        className="text-red-500 text-sm mt-1"
-                      >
-                        Remove
-                      </button>
+                      <button onClick={() => removeFromCart(item.id)} className="text-red-500 text-sm mt-1">Remove</button>
                     </div>
                   ))}
                 </div>
 
-                <div className="border-t mt-4 pt-4">
-                  <div className="flex justify-between font-semibold text-gray-800">
-                    <span>Total:</span> <span>₹{totalAmount}</span>
+                <div className="border-t mt-4 pt-4 bg-gray-50 p-4 rounded-lg">
+                  <div className="flex justify-between text-sm text-gray-600 mb-1">
+                    <span>Subtotal (Base):</span>
+                    <span>₹{subtotalTotal.toFixed(2)}</span>
                   </div>
+                  <div className="flex justify-between text-sm text-gray-600 mb-2">
+                    <span>GST (18%):</span>
+                    <span>₹{gstTotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-lg text-gray-800 border-t pt-2">
+                    <span>Total:</span>
+                    <span>₹{totalAmount}</span>
+                  </div>
+                  
                   <div className="flex justify-between mt-4">
-                    <button
-                      onClick={clearCart}
-                      className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
-                    >
-                      Clear Cart
-                    </button>
-                    <button
-                      onClick={handleCheckout}
-                      className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
-                    >
-                      Checkout »
-                    </button>
+                    <button onClick={clearCart} className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300">Clear Cart</button>
+                    <button onClick={handleCheckout} className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600">Checkout »</button>
                   </div>
                 </div>
               </>
