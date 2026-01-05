@@ -156,7 +156,7 @@ const WorkspacePricing = () => {
   // Seat selection modal
   const [codeSelectModal, setCodeSelectModal] = useState(null);
 
-  const { addToCart } = useCart();
+  const { cart, addToCart } = useCart(); // Ensure cart is destructured here
   const [cartOpen, setCartOpen] = useState(false);
 
   // ✅ Retrieve Bearer Token
@@ -164,7 +164,8 @@ const WorkspacePricing = () => {
 
   useEffect(() => {
     // ✅ Switched to Axios
-    axios.get(`${API_BASE_URL}/get_spaces.php`)
+    axios
+      .get(`${API_BASE_URL}/get_spaces.php`)
       .then((response) => {
         const data = response.data;
         if (data.success) {
@@ -269,18 +270,22 @@ const WorkspacePricing = () => {
 
     try {
       // ✅ Switched to Axios with Authorization header
-      const res = await axios.post(`${API_BASE_URL}/apply_coupon.php`, {
+      const res = await axios.post(
+        `${API_BASE_URL}/apply_coupon.php`,
+        {
           coupon_code: coupon,
           workspace_title: modalData?.title,
           plan_type: modalData?.planType,
           total_amount: calculateBaseAmount(),
           user_id: getUserId(),
-        }, {
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "" 
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
         }
-      });
+      );
 
       const data = res.data;
 
@@ -345,24 +350,23 @@ const WorkspacePricing = () => {
     }
 
     const normalizedPlan =
-      planType.toLowerCase() === "hourly"
-        ? "Hourly"
-        : planType.toLowerCase() === "daily"
-        ? "Daily"
-        : "Monthly";
+      planType.charAt(0).toUpperCase() + planType.slice(1).toLowerCase();
+
+    // 1. Search the cart for this specific group/plan
+    const itemInCart = cart.find(
+      (c) => c.title === group.title && c.plan_type === normalizedPlan
+    );
+
+    // 2. Extract the IDs we previously saved
+    const rememberedIds = itemInCart?.all_space_ids || [];
 
     if (group.items.length > 1) {
       setCodeSelectModal({
         groupTitle: group.title,
         codes: group.items,
         planType: normalizedPlan,
-        price:
-          normalizedPlan === "Hourly"
-            ? group.hourly
-            : normalizedPlan === "Daily"
-            ? group.daily
-            : group.monthly,
-        selectedIds: [],
+        price: normalizedPlan === "Hourly" ? group.hourly : group.daily,
+        selectedIds: rememberedIds, // ✅ MODAL NOW OPENS WITH PRE-SELECTED SEATS
       });
       return;
     }
@@ -445,6 +449,7 @@ const WorkspacePricing = () => {
           ? primary.daily
           : primary.monthly,
       raw: primary.raw,
+      all_space_ids: selectedIds, // ✅ Store the IDs array so we can find it later
       seatCount: selectedIds.length,
       selectedCodes: codesString,
     });
@@ -493,7 +498,9 @@ const WorkspacePricing = () => {
       }
 
       // ✅ Switched to Axios with Authorization header
-      const response = await axios.post(`${API_BASE_URL}/check_workspace_availability.php`, {
+      const response = await axios.post(
+        `${API_BASE_URL}/check_workspace_availability.php`,
+        {
           space_id: modalData.id,
           plan_type: modalData.planType.toLowerCase(),
           start_date: startDate,
@@ -501,12 +508,14 @@ const WorkspacePricing = () => {
           start_time: startTime,
           end_time: endTime,
           all_space_ids: modalData.allIds || [modalData.id],
-        }, {
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : ""
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
+          },
         }
-      });
+      );
 
       const data = response.data;
       toast.dismiss(toastId);
@@ -907,12 +916,12 @@ const WorkspacePricing = () => {
                       return;
                     }
                     // Check if selected day is Sunday
-                    const day = new Date(dateStr).getUTCDay(); 
+                    const day = new Date(dateStr).getUTCDay();
                     if (day === 0) {
                       toast.error(
                         "Workspaces are closed on Sundays. Please select another date."
                       );
-                      setStartDate(""); 
+                      setStartDate("");
                     } else {
                       setStartDate(dateStr);
                     }
@@ -1445,22 +1454,35 @@ const WorkspacePricing = () => {
                     onClick={async () => {
                       // ✅ Start of Pay & Book logical chain using Axios
                       try {
-                        const availabilityResponse = await axios.post(`${API_BASE_URL}/check_workspace_availability.php`, {
-                          space_id: modalData.id,
-                          plan_type: modalData.planType.toLowerCase(),
-                          start_date: startDate,
-                          end_date: endDate,
-                          start_time: startTime,
-                          end_time: endTime,
-                          all_space_ids: modalData.allIds || [modalData.id],
-                        }, { headers: { Authorization: token ? `Bearer ${token}` : "" } });
+                        const availabilityResponse = await axios.post(
+                          `${API_BASE_URL}/check_workspace_availability.php`,
+                          {
+                            space_id: modalData.id,
+                            plan_type: modalData.planType.toLowerCase(),
+                            start_date: startDate,
+                            end_date: endDate,
+                            start_time: startTime,
+                            end_time: endTime,
+                            all_space_ids: modalData.allIds || [modalData.id],
+                          },
+                          {
+                            headers: {
+                              Authorization: token ? `Bearer ${token}` : "",
+                            },
+                          }
+                        );
 
                         const availData = availabilityResponse.data;
 
                         if (!availData.success) {
                           if (availData.available_slots?.length) {
-                            const slots = availData.available_slots.map((slot) => `• ${slot}`).join("\n");
-                            toast.error(`${availData.message}\n\nAvailable Slots:\n${slots}`, { autoClose: 5000 });
+                            const slots = availData.available_slots
+                              .map((slot) => `• ${slot}`)
+                              .join("\n");
+                            toast.error(
+                              `${availData.message}\n\nAvailable Slots:\n${slots}`,
+                              { autoClose: 5000 }
+                            );
                           } else {
                             toast.error(availData.message);
                           }
@@ -1469,7 +1491,8 @@ const WorkspacePricing = () => {
 
                         // Load Razorpay Script
                         const script = document.createElement("script");
-                        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+                        script.src =
+                          "https://checkout.razorpay.com/v1/checkout.js";
                         script.onload = async () => {
                           const bookingData = {
                             user_id: getUserId(),
@@ -1496,12 +1519,21 @@ const WorkspacePricing = () => {
                           };
 
                           // 1. Create Razorpay Order
-                          const orderRes = await axios.post(`${API_BASE_URL}/create_razorpay_order.php`, {
-                            amount: bookingData.final_amount,
-                          }, { headers: { Authorization: token ? `Bearer ${token}` : "" } });
+                          const orderRes = await axios.post(
+                            `${API_BASE_URL}/create_razorpay_order.php`,
+                            {
+                              amount: bookingData.final_amount,
+                            },
+                            {
+                              headers: {
+                                Authorization: token ? `Bearer ${token}` : "",
+                              },
+                            }
+                          );
 
                           const orderData = orderRes.data;
-                          if (!orderData.success) throw new Error(orderData.message);
+                          if (!orderData.success)
+                            throw new Error(orderData.message);
 
                           const options = {
                             key: orderData.key,
@@ -1512,40 +1544,74 @@ const WorkspacePricing = () => {
                             order_id: orderData.order_id,
                             handler: async (response) => {
                               // 2. Verify Payment
-                              const verifyRes = await axios.post(`${API_BASE_URL}/verify_payment.php`, response, {
-                                headers: { Authorization: token ? `Bearer ${token}` : "" }
-                              });
+                              const verifyRes = await axios.post(
+                                `${API_BASE_URL}/verify_payment.php`,
+                                response,
+                                {
+                                  headers: {
+                                    Authorization: token
+                                      ? `Bearer ${token}`
+                                      : "",
+                                  },
+                                }
+                              );
 
                               if (verifyRes.data.success) {
                                 // 3. Finalize Booking
-                                const finalBooking = await axios.post(`${API_BASE_URL}/add_workspace_booking.php`, bookingData, {
-                                  headers: { Authorization: token ? `Bearer ${token}` : "" }
-                                });
+                                const finalBooking = await axios.post(
+                                  `${API_BASE_URL}/add_workspace_booking.php`,
+                                  bookingData,
+                                  {
+                                    headers: {
+                                      Authorization: token
+                                        ? `Bearer ${token}`
+                                        : "",
+                                    },
+                                  }
+                                );
 
                                 if (finalBooking.data.success) {
                                   toast.success("🎉 Booking confirmed!");
-                                  const userData = JSON.parse(localStorage.getItem("user"));
-                                  const bookingId = finalBooking.data.booking_id || finalBooking.data.id || 0;
+                                  const userData = JSON.parse(
+                                    localStorage.getItem("user")
+                                  );
+                                  const bookingId =
+                                    finalBooking.data.booking_id ||
+                                    finalBooking.data.id ||
+                                    0;
 
                                   // 4. Send Confirmation Email
-                                  await axios.post(`${API_BASE_URL}/send_booking_email.php`, {
-                                    booking_id: bookingId,
-                                    user_name: userData?.name || "Customer",
-                                    user_id: getUserId(),
-                                    user_email: userData?.email || "",
-                                    workspace_title: modalData.title,
-                                    plan_type: modalData.planType,
-                                    start_date: startDate,
-                                    end_date: endDate,
-                                    start_time: startTime,
-                                    end_time: endTime,
-                                    total_amount: finalTotal,
-                                    seat_codes: modalData.selectedCodes,
-                                  }, { headers: { Authorization: token ? `Bearer ${token}` : "" } });
+                                  await axios.post(
+                                    `${API_BASE_URL}/send_booking_email.php`,
+                                    {
+                                      booking_id: bookingId,
+                                      user_name: userData?.name || "Customer",
+                                      user_id: getUserId(),
+                                      user_email: userData?.email || "",
+                                      workspace_title: modalData.title,
+                                      plan_type: modalData.planType,
+                                      start_date: startDate,
+                                      end_date: endDate,
+                                      start_time: startTime,
+                                      end_time: endTime,
+                                      total_amount: finalTotal,
+                                      seat_codes: modalData.selectedCodes,
+                                    },
+                                    {
+                                      headers: {
+                                        Authorization: token
+                                          ? `Bearer ${token}`
+                                          : "",
+                                      },
+                                    }
+                                  );
 
                                   setTimeout(() => resetState(), 2000);
                                 } else {
-                                  toast.error(finalBooking.data.message || "Booking registration failed");
+                                  toast.error(
+                                    finalBooking.data.message ||
+                                      "Booking registration failed"
+                                  );
                                 }
                               } else {
                                 toast.error("Payment verification failed!");
@@ -1557,7 +1623,10 @@ const WorkspacePricing = () => {
                         };
                         document.body.appendChild(script);
                       } catch (err) {
-                        toast.error("Process failed: " + (err.response?.data?.message || err.message));
+                        toast.error(
+                          "Process failed: " +
+                            (err.response?.data?.message || err.message)
+                        );
                       }
                     }}
                     className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
