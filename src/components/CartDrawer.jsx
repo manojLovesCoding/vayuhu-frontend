@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../context/CartContext";
 import { toast } from "react-toastify";
@@ -7,7 +7,6 @@ import { Trash2, X, Calendar, MapPin, Clock, ChevronDown, ChevronUp } from "luci
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
 
-// ...imports stay the same
 const CartDrawer = ({ open, onClose }) => {
   const { cart, removeFromCart, clearCart, totalAmount } = useCart();
   const token = localStorage.getItem("token");
@@ -15,6 +14,25 @@ const CartDrawer = ({ open, onClose }) => {
   // Rounded breakdown
   const subtotalTotal = Math.round(totalAmount / 1.18);
   const gstTotal = Math.round(totalAmount - subtotalTotal);
+
+  // State to track price breakdown open for each item by ID
+  const [breakdowns, setBreakdowns] = useState({});
+
+  // Sync breakdowns when cart changes (persist open state for existing items)
+  useEffect(() => {
+    const newBreakdowns = {};
+    cart.forEach((item) => {
+      newBreakdowns[item.id] = breakdowns[item.id] || false;
+    });
+    setBreakdowns(newBreakdowns);
+  }, [cart]);
+
+  const toggleBreakdown = (id) => {
+    setBreakdowns((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
@@ -140,7 +158,9 @@ const CartDrawer = ({ open, onClose }) => {
             onClose();
           } catch (error) {
             console.error("Booking Process Error:", error);
-            const msg = error.response?.data?.message || "Payment successful, but booking failed. Contact support.";
+            const msg =
+              error.response?.data?.message ||
+              "Payment successful, but booking failed. Contact support.";
             toast.error(msg);
           }
         },
@@ -197,7 +217,6 @@ const CartDrawer = ({ open, onClose }) => {
                 </div>
               ) : (
                 cart.map((item, idx) => {
-                  const [openBreakdown, setOpenBreakdown] = React.useState(false);
                   const base = Math.round(item.final_amount / 1.18);
                   const gst = item.final_amount - base;
 
@@ -211,7 +230,10 @@ const CartDrawer = ({ open, onClose }) => {
                         <span className="px-2 py-1 bg-orange-50 text-orange-600 text-[10px] font-bold uppercase rounded tracking-wide">
                           {item.plan_type}
                         </span>
-                        <button onClick={() => removeFromCart(item.id)} className="text-gray-300 hover:text-red-500 transition-colors">
+                        <button
+                          onClick={() => removeFromCart(item.id)}
+                          className="text-gray-300 hover:text-red-500 transition-colors"
+                        >
                           <Trash2 size={16} />
                         </button>
                       </div>
@@ -237,11 +259,14 @@ const CartDrawer = ({ open, onClose }) => {
                       </div>
 
                       {/* Price */}
-                      <div className="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center cursor-pointer" onClick={() => setOpenBreakdown(!openBreakdown)}>
+                      <div
+                        className="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center cursor-pointer"
+                        onClick={() => toggleBreakdown(item.id)}
+                      >
                         <p className="text-sm text-gray-500">Price Breakdown</p>
-                        {openBreakdown ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                        {breakdowns[item.id] ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                       </div>
-                      {openBreakdown && (
+                      {breakdowns[item.id] && (
                         <div className="mt-2 text-gray-600 text-sm space-y-1 pl-2">
                           <div className="flex justify-between">
                             <span>Base Amount</span>

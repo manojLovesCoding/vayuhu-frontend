@@ -641,9 +641,9 @@ const WorkspacePricing = () => {
       <ToastContainer position="top-center" autoClose={2000} />
 
       <div className="text-center mb-12">
-        <h6 className="uppercase text-orange-500 tracking-widest font-medium">
+        {/*<h6 className="uppercase text-orange-500 tracking-widest font-medium">
           Pricing
-        </h6>
+        </h6> */}
         <h2 className="text-3xl sm:text-5xl font-bold text-gray-800 mt-2">
           Workspace Plans
         </h2>

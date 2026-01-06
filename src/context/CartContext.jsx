@@ -3,7 +3,11 @@ import React, { createContext, useContext, useState } from "react";
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);
+  // Load cart from localStorage on first render
+  const [cart, setCart] = useState(() => {
+    const storedCart = localStorage.getItem("cart");
+    return storedCart ? JSON.parse(storedCart) : [];
+  });
 
   const addToCart = (newItem) => {
     setCart((prev) => {
@@ -12,20 +16,34 @@ export const CartProvider = ({ children }) => {
         (i) => i.id === newItem.id && i.plan_type === newItem.plan_type
       );
 
+      let newCart;
       if (existingIndex !== -1) {
         // Update existing item (remembers the new seat selection)
-        const newCart = [...prev];
+        newCart = [...prev];
         newCart[existingIndex] = newItem;
-        return newCart;
+      } else {
+        // Add new item
+        newCart = [...prev, newItem];
       }
-      // Add new item
-      return [...prev, newItem];
+
+      // Save updated cart to localStorage
+      localStorage.setItem("cart", JSON.stringify(newCart));
+      return newCart;
     });
   };
 
-  const removeFromCart = (id) => setCart((prev) => prev.filter((i) => i.id !== id));
+  const removeFromCart = (id) => {
+    setCart((prev) => {
+      const newCart = prev.filter((i) => i.id !== id);
+      localStorage.setItem("cart", JSON.stringify(newCart));
+      return newCart;
+    });
+  };
 
-  const clearCart = () => setCart([]);
+  const clearCart = () => {
+    setCart([]);
+    localStorage.removeItem("cart");
+  };
 
   const totalAmount = cart.reduce((sum, item) => sum + Number(item.final_amount || 0), 0);
 
