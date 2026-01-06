@@ -253,7 +253,7 @@ const App = () => {
             }
           />
 
-          {/* 4️⃣ Visitors */}
+          {/* 4️⃣ Visitors 
           <Route
             path="/admin/visitors"
             element={
@@ -263,10 +263,10 @@ const App = () => {
                 </AdminLayout>
               </ProtectedRouteAdmin>
             }
-          />
+          />*/}
 
           <Route
-            path="/admin/visitorsoverview"
+            path="/admin/visitorsOverview"
             element={
               <ProtectedRouteAdmin>
                 <AdminLayout>

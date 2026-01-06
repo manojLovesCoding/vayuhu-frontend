@@ -155,7 +155,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
 
                 {/* --- Visitors --- */}
                 <NavLink
-                    to="/admin/visitors"
+                    to="/admin/visitorsOverview"
                     className={linkClasses}
                     onClick={handleLinkClick}
                 >
