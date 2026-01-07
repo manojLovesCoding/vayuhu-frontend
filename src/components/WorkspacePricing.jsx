@@ -497,7 +497,6 @@ const WorkspacePricing = () => {
         checkEndDate = startDate;
       }
 
-      // ✅ Switched to Axios with Authorization header
       const response = await axios.post(
         `${API_BASE_URL}/check_workspace_availability.php`,
         {
@@ -523,10 +522,27 @@ const WorkspacePricing = () => {
       if (data.success) {
         setStep(2);
       } else {
+        // ✅ CASE 1: FULL DATE BLOCKED (monthly/daily booking exists)
+        if (data.available_dates?.from) {
+          toast.error(
+            <div>
+              <p className="font-bold">{data.message}</p>
+              <div className="mt-2 text-sm bg-white text-red-600 p-2 rounded">
+                <strong>Available From:</strong>
+                <p>{data.available_dates.from}</p>
+              </div>
+            </div>,
+            { autoClose: 8000 }
+          );
+          return;
+        }
+
+        // ✅ CASE 2: HOURLY TIME CONFLICT
         if (data.available_slots?.length) {
           const slots = data.available_slots
             .map((slot) => `• ${slot}`)
             .join("\n");
+
           toast.error(
             <div>
               <p className="font-bold">{data.message}</p>
@@ -537,9 +553,11 @@ const WorkspacePricing = () => {
             </div>,
             { autoClose: 8000 }
           );
-        } else {
-          toast.error(data.message || "Selected slot is unavailable.");
+          return;
         }
+
+        // ✅ FALLBACK
+        toast.error(data.message || "Selected slot is unavailable.");
       }
     } catch (err) {
       toast.dismiss(toastId);
