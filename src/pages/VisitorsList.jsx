@@ -15,7 +15,8 @@ const VisitorsDetails = () => {
   const userId = user?.id;
   const token = localStorage.getItem("token");
 
-  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
+  const API_BASE =
+    import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
 
   useEffect(() => {
     if (!userId) {
@@ -26,12 +27,13 @@ const VisitorsDetails = () => {
 
     const fetchVisitors = async () => {
       try {
-        const response = await axios.post(`${API_BASE}/get_visitors.php`, 
+        const response = await axios.post(
+          `${API_BASE}/get_visitors.php`,
           { user_id: userId },
           {
-            headers: { 
+            headers: {
               "Content-Type": "application/json",
-              Authorization: token ? `Bearer ${token}` : "" 
+              Authorization: token ? `Bearer ${token}` : "",
             },
           }
         );
@@ -58,7 +60,15 @@ const VisitorsDetails = () => {
 
   useEffect(() => {
     const filtered = visitors.filter((v) =>
-      [v.name, v.contact, v.email, v.company_name, v.reason, v.payment_id, v.workspace]
+      [
+        v.name,
+        v.contact,
+        v.email,
+        v.company_name,
+        v.reason,
+        v.payment_id,
+        v.workspace,
+      ]
         .join(" ")
         .toLowerCase()
         .includes(searchTerm.toLowerCase())
@@ -100,7 +110,17 @@ const VisitorsDetails = () => {
               <table className="w-full border-collapse text-sm">
                 <thead className="bg-orange-100 text-gray-700">
                   <tr>
-                    {["S.No.", "Name", "Contact No", "Visited Workspace", "Visit Date/Time", "Reason", "Payment Status", "Added On"].map((col) => (
+                    {[
+                      "S.No.",
+                      "Name",
+                      "Contact No",
+                      "Visited Workspace",
+                      "Attendees",
+                      "Visit Date/Time",
+                      "Reason",
+                      "Payment Status",
+                      "Added On",
+                    ].map((col) => (
                       <th key={col} className="p-2 border text-left">
                         {col}
                       </th>
@@ -119,37 +139,72 @@ const VisitorsDetails = () => {
                     filteredVisitors.map((visitor, index) => (
                       /* 🟢 Using visitor.id as the key is critical for proper React tracking */
                       <tr key={visitor.id} className="hover:bg-gray-50">
-                        <td className="p-2 border">{index + 1}</td>
-                        <td className="p-2 border font-medium">{visitor.name}</td>
+                        {/* S.No. */}
+                        <td className="p-2 border text-center">{index + 1}</td>
+
+                        {/* Name */}
+                        <td className="p-2 border font-medium">
+                          {visitor.name}
+                        </td>
+
+                        {/* Contact No */}
                         <td className="p-2 border">{visitor.contact}</td>
-                        
-                        {/* ✅ Displaying the specific Workspace linked to this record */}
+
+                        {/* Visited Workspace */}
                         <td className="p-2 border font-semibold text-orange-600">
                           {visitor.workspace}
                         </td>
 
+                        {/* Attendees */}
+                        <td className="p-2 border text-center">
+                          {visitor.attendees || 1}
+                        </td>
+
+                        {/* Visit Date / Time */}
                         <td className="p-2 border">
                           {visitor.visiting_date} <br />
                           <span className="text-xs text-gray-500">
-                            {visitor.visiting_time ? visitor.visiting_time.slice(0, 5) : "—"}
+                            {visitor.check_in_time?.slice(0, 5)} -{" "}
+                            {visitor.check_out_time?.slice(0, 5)}
                           </span>
                         </td>
-                        <td className="p-2 border truncate max-w-[150px]" title={visitor.reason}>
+
+                        {/* Reason */}
+                        <td
+                          className="p-2 border truncate max-w-[150px]"
+                          title={visitor.reason}
+                        >
                           {visitor.reason || "—"}
                         </td>
-                        
+
+                        {/* Payment Status */}
                         <td className="p-2 border">
                           {visitor.payment_id ? (
                             <div className="flex flex-col">
-                              <span className="text-green-600 font-bold text-[10px] uppercase">Paid</span>
-                              <span className="text-gray-700 font-semibold">₹{visitor.amount_paid}</span>
-                              <span className="text-[10px] text-gray-400 select-all font-mono">{visitor.payment_id}</span>
+                              <span className="text-green-600 font-bold text-[10px] uppercase">
+                                Paid
+                              </span>
+
+                              <span className="text-gray-700 font-semibold">
+                                ₹{visitor.amount_paid}{" "}
+                                {/*<span className="text-gray-500 text-xs font-normal">
+                                  (for {visitor.attendees || 1} attendee
+                                  {visitor.attendees > 1 ? "s" : ""})
+                                </span>*/}
+                              </span>
+
+                              {/*<span className="text-[10px] text-gray-400 select-all font-mono">
+                                {visitor.payment_id}
+                              </span>*/}
                             </div>
                           ) : (
-                            <span className="text-red-500 italic text-xs font-medium">Unpaid</span>
+                            <span className="text-red-500 italic text-xs font-medium">
+                              Unpaid
+                            </span>
                           )}
                         </td>
 
+                        {/* Added On */}
                         <td className="p-2 border text-gray-500 text-[11px]">
                           {new Date(visitor.added_on).toLocaleString()}
                         </td>

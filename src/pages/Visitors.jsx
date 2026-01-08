@@ -20,8 +20,10 @@ const Visitors = () => {
     email: "",
     companyName: "",
     visitingDate: "",
-    visitingTime: "",
+    checkInTime: "",
+    checkOutTime: "",
     reason: "",
+    attendees: 1, // 🟢 New field
   });
 
   const [hasReservation, setHasReservation] = useState(false);
@@ -83,9 +85,12 @@ const Visitors = () => {
     setSelectedBooking(bookingId);
 
     const booking = userBookings.find((b) => b.booking_id == bookingId);
-
     if (booking) {
-      setGuestFee(parseFloat(booking.price_per_unit) || 0);
+      const baseRate = parseFloat(booking.price_per_unit) || 0;
+      const attendees = parseInt(formData.attendees) || 1;
+      const subtotal = baseRate * attendees;
+      const gst = subtotal * 0.18; // 18% GST
+      setGuestFee(subtotal + gst);
     } else {
       setGuestFee(0);
     }
@@ -94,6 +99,17 @@ const Visitors = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "attendees" && selectedBooking) {
+      const booking = userBookings.find((b) => b.booking_id == selectedBooking);
+      if (booking) {
+        const baseRate = parseFloat(booking.price_per_unit) || 0;
+        const attendees = parseInt(value) || 1;
+        const subtotal = baseRate * attendees;
+        const gst = subtotal * 0.18;
+        setGuestFee(subtotal + gst);
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -110,8 +126,12 @@ const Visitors = () => {
       return;
     }
 
-    if (!formData.visitingDate || !formData.visitingTime) {
-      toast.error("Visiting Date and Time are required!");
+    if (
+      !formData.visitingDate ||
+      !formData.checkInTime ||
+      !formData.checkOutTime
+    ) {
+      toast.error("Visiting Date, Check-In, and Check-Out Time are required!");
       return;
     }
 
@@ -314,6 +334,26 @@ const Visitors = () => {
             </p>
           </div>
 
+          {/* Number of Attendees */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Number of Attendees <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              name="attendees"
+              min="1"
+              value={formData.attendees}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-orange-500"
+              required
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Each attendee is charged per hour based on workspace rate + 18%
+              GST.
+            </p>
+          </div>
+
           {/* Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -397,12 +437,26 @@ const Visitors = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Visiting Time <span className="text-red-500">*</span>
+                  Check-In Time <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="time"
-                  name="visitingTime"
-                  value={formData.visitingTime}
+                  name="checkInTime"
+                  value={formData.checkInTime}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-md p-2 focus:ring-orange-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Check-Out Time <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="time"
+                  name="checkOutTime"
+                  value={formData.checkOutTime}
                   onChange={handleChange}
                   className="w-full border border-gray-300 rounded-md p-2 focus:ring-orange-500"
                   required
@@ -432,7 +486,7 @@ const Visitors = () => {
               type="submit"
               className="bg-orange-500 hover:bg-orange-600 text-white font-medium px-6 py-2 rounded-lg shadow transition-all"
             >
-              Pay ₹{guestFee} for Hourly Visitor Pass
+              Pay ₹{guestFee.toFixed(2)} (incl. 18% GST)
             </button>
           </div>
         </form>

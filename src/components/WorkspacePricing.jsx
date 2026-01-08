@@ -343,34 +343,34 @@ const WorkspacePricing = () => {
   };
 
   const handlePlanClick = (group, planType) => {
-    if (!isAuthenticated()) {
-      toast.error("Please log in to book a workspace!");
-      setTimeout(() => navigate("/auth"), 1000);
-      return;
-    }
+  if (!isAuthenticated()) {
+    toast.error("Please log in to book a workspace!");
+    setTimeout(() => navigate("/auth"), 1000);
+    return;
+  }
 
-    const normalizedPlan =
-      planType.charAt(0).toUpperCase() + planType.slice(1).toLowerCase();
+  const normalizedPlan = planType.charAt(0).toUpperCase() + planType.slice(1).toLowerCase();
 
-    // 1. Search the cart for this specific group/plan
-    const itemInCart = cart.find(
-      (c) => c.title === group.title && c.plan_type === normalizedPlan
-    );
+  // 1. Search the cart for this specific group/plan
+  // We match by Title and Plan Type to find the correct "entry"
+  const itemInCart = cart.find(
+    (c) => c.title === group.title && c.plan_type === normalizedPlan
+  );
 
-    // 2. Extract the IDs we previously saved
-    const rememberedIds = itemInCart?.all_space_ids || [];
+  // 2. Extract the IDs we previously saved
+  // If the item exists in cart, use its saved IDs, otherwise empty array
+  const rememberedIds = itemInCart?.all_space_ids || [];
 
-    if (group.items.length > 1) {
-      setCodeSelectModal({
-        groupTitle: group.title,
-        codes: group.items,
-        planType: normalizedPlan,
-        price: normalizedPlan === "Hourly" ? group.hourly : group.daily,
-        selectedIds: rememberedIds, // ✅ MODAL NOW OPENS WITH PRE-SELECTED SEATS
-      });
-      return;
-    }
-
+  if (group.items.length > 1) {
+    setCodeSelectModal({
+      groupTitle: group.title,
+      codes: group.items,
+      planType: normalizedPlan,
+      price: normalizedPlan === "Hourly" ? group.hourly : group.daily,
+      selectedIds: rememberedIds, // ✅ Now correctly passes current cart selection
+    });
+    return;
+  }
     const sole = group.items[0];
     const chosenRaw = sole.raw;
 
@@ -1447,6 +1447,7 @@ const WorkspacePricing = () => {
                     onClick={() => {
                       const bookingItem = {
                         id: modalData.id,
+                        all_space_ids: modalData.all_space_ids, // ✅ Critical: Save the array of IDs
                         title: modalData.title,
                         plan_type: modalData.planType,
                         start_date: startDate,
