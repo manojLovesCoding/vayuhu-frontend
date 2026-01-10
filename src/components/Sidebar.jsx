@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   Home,
   Users,
@@ -15,9 +15,10 @@ import {
   ClipboardList,
 } from "lucide-react";
 import { assets } from "../assets/assets";
+import { useAuth } from "../context/AuthContext"; // ✅ Import Auth context
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
-  const navigate = useNavigate();
+  const { logoutUser } = useAuth(); // ✅ Get logout function from context
 
   // ✅ Submenu toggles
   const [isUsersOpen, setIsUsersOpen] = useState(false);
@@ -25,23 +26,16 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
   const linkClasses = ({ isActive }) =>
     `flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-200
-     ${isActive
-      ? "bg-orange-500 text-white shadow-sm"
-      : "text-gray-700 hover:bg-orange-100 hover:text-orange-600"
-    }`;
+     ${
+       isActive
+         ? "bg-orange-500 text-white shadow-sm"
+         : "text-gray-700 hover:bg-orange-100 hover:text-orange-600"
+     }`;
 
+  // ✅ Updated logout handler
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    window.dispatchEvent(new Event("userUpdated"));
-    navigate("/auth"); // redirect to auth page
-    setTimeout(() => {
-      window.scrollTo({
-        top: document.body.scrollHeight, // scrolls to bottom (auth component)
-        behavior: "smooth",
-      });
-    }, 300); // small delay to ensure navigation finishes
+    logoutUser();
   };
-
 
   return (
     <aside
@@ -66,14 +60,18 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           src={assets.brandLogo}
           alt="Vayuhu Logo"
           className="w-32 cursor-pointer"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => setIsOpen(false)}
         />
       </div>
 
       {/* --- Navigation --- */}
       <nav className="mt-6 space-y-1 px-2 flex-1 overflow-y-auto">
         {/* Go Back */}
-        <NavLink to="/" className={linkClasses} onClick={() => setIsOpen(false)}>
+        <NavLink
+          to="/"
+          className={linkClasses}
+          onClick={() => setIsOpen(false)}
+        >
           <ArrowLeft size={18} /> Go Back To Website
         </NavLink>
 
@@ -171,7 +169,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       {/* --- Footer --- */}
       <footer className="border-t bg-white">
         <button
-          onClick={handleLogout}
+          onClick={handleLogout} // ✅ Uses context logout
           className="w-full flex items-center justify-center gap-2 py-3 border-t text-red-500 hover:bg-red-50 
      font-medium text-sm transition-all duration-200"
         >
@@ -179,12 +177,10 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         </button>
       </footer>
 
-
       {/* --- Copyright --- */}
       <div className="text-center text-xs text-gray-500 py-3">
         <p>Vayuhu © {new Date().getFullYear()}</p>
         <span className="text-orange-500">
-          {" "}
           Built with passion for modern professionals.
         </span>
       </div>

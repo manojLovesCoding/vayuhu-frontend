@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
-import axios from "axios"; // ✅ Imported Axios
+import api from "../api/axios"; // ✅ Use Axios instance
+import { useAuth } from "../context/AuthContext";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(false);
@@ -10,34 +11,25 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+ const { loginUser } = useAuth();
 
-  const BASE_URL = import.meta.env.VITE_API_URL;
 
-  // ✅ Optimized Axios Call with Bearer Token
+  // ✅ Handle login/signup
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
 
-    const url = isLogin ? `${BASE_URL}/login.php` : `${BASE_URL}/signup.php`;
+    const url = isLogin ? "/login.php" : "/signup.php";
     const payload = { email, password, ...(isLogin ? {} : { name }) };
 
     try {
-      const { data } = await axios.post(url, payload, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const { data } = await api.post(url, payload); // ✅ Using Axios instance
 
       setMessage(data.message);
 
-      if (data.status === "success" && data.user) {
-        if (data.token) {
-          // ✅ Save the Bearer Token
-          localStorage.setItem("token", data.token);
-        }
-        localStorage.setItem("user", JSON.stringify(data.user));
-        
-        // Notify other components (like Navbar) that user logged in
-        window.dispatchEvent(new Event("userUpdated"));
-        
+      if (data.status === "success" && data.user && data.token) {
+       loginUser(data.user, data.token);
+
         setTimeout(() => navigate("/dashboard"), 800);
       }
     } catch (error) {
@@ -46,20 +38,10 @@ const Auth = () => {
     }
   };
 
-  // ✅ Axios GET request using Bearer Token
+  // ✅ Example protected route check
   const checkProtected = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.log("No token found");
-      return;
-    }
-
     try {
-      const { data } = await axios.get(`${BASE_URL}/protected.php`, {
-        headers: { 
-          Authorization: `Bearer ${token}` // ✅ Sending Bearer Token
-        },
-      });
+      const { data } = await api.get("/protected.php"); // ✅ Using Axios instance
       console.log("Protected route data:", data);
     } catch (err) {
       console.error("Error accessing protected route:", err.response?.data || err);

@@ -8,11 +8,11 @@ import Footer from "../components/Footer";
 import WorkspacePricing from "../components/WorkspacePricing";
 
 // IMPORT THE PROMO COMPONENT
-import CoworkingPromo from "../components/CoworkingPromo";
+//import CoworkingPromo from "../components/CoworkingPromo";
 import Amenities from "../components/Amenities";
 
 const Home = () => {
-  const [showPopup, setShowPopup] = useState(false);
+   {/*const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     const alreadyShown = sessionStorage.getItem("visitPopup");
@@ -25,11 +25,11 @@ const Home = () => {
 
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, []);*/}
 
   return (
     <>
-      {/* ---------- POPUP MODAL ----------- */}
+      {/* ---------- POPUP MODAL ----------- 
       {showPopup && (
         <div
           className="
@@ -44,7 +44,7 @@ const Home = () => {
               max-w-4xl w-[95%] overflow-hidden
             "
           >
-            {/* Close Button */}
+           
             <button
               className="
                 absolute top-3 right-3 bg-black text-white 
@@ -56,11 +56,10 @@ const Home = () => {
               ✕
             </button>
 
-            {/* The Promo Component */}
             <CoworkingPromo />
           </div>
         </div>
-      )}
+      )}*/}
 
       {/* ---------- PAGE CONTENT ----------- */}
       <About />

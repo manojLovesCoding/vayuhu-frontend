@@ -22,9 +22,11 @@ import {
     Settings,
 } from "lucide-react";
 import { assets } from "../assets/assets";
+import { useAuth } from "../context/AuthContext";
 
 const AdminSidebar = ({ isOpen, setIsOpen }) => {
     const navigate = useNavigate();
+    const { admin, logoutAdmin } = useAuth(); // ✅ Use context
 
     // --- Load saved submenu states from localStorage ---
     const [submenus, setSubmenus] = useState(() => {
@@ -57,10 +59,8 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
         }`;
 
     const handleLogout = () => {
-        localStorage.removeItem("admin");
-        window.dispatchEvent(new Event("adminUpdated"));
-        navigate("/admin-login");
-    };
+    logoutAdmin();
+  };
 
     // --- Renders submenus dynamically ---
     const renderSubMenuButton = (label, Icon, key, children) => (
