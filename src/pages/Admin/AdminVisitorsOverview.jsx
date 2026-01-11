@@ -201,6 +201,7 @@ const AdminVisitorsOverview = () => {
                     "Date",
                     "Check-In Time",
                     "Check-Out Time",
+                    "Amount Paid", // ✅ add
                     "Reason",
                     "Added By",
                   ].map((col) => (
@@ -235,6 +236,10 @@ const AdminVisitorsOverview = () => {
                     <td className="p-3 text-gray-500">
                       {formatTime(v.check_out_time)}
                     </td>
+                    <td className="p-3 text-gray-600">
+                      {v.amount_paid ? `₹${v.amount_paid}` : "-"}
+                    </td>
+
                     <td className="p-3 text-gray-500">{v.reason || "-"}</td>
                     <td className="p-3 text-orange-600 font-medium">
                       {v.user_name ? (

@@ -103,7 +103,7 @@ const Navbar = () => {
             {/* User Button */}
             <button
               onClick={() => navigate(user ? "/dashboard" : "/auth")} // ✅ Always goes to user auth
-              className="hidden md:block bg-black text-white font-semibold px-6 py-3 rounded-full hover:bg-orange-500 transition-all duration-300"
+               className="hidden md:block bg-black text-white font-semibold px-6 py-3 rounded-full hover:text-white hover: bg-orange-500 transition-all duration-300"
             >
               {user ? "My Account" : "Sign up / Login"}
             </button>
