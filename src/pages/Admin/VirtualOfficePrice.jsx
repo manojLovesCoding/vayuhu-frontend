@@ -14,7 +14,7 @@ const VirtualOfficePrice = () => {
   const [showModal, setShowModal] = useState(false);
 
   // ✅ Get token from localStorage
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   const statusColors = {
     Active: "text-green-600 bg-green-100",

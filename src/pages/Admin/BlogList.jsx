@@ -16,7 +16,7 @@ const BlogList = () => {
   const [selectedBlog, setSelectedBlog] = useState(null);
 
   // ✅ Get token from localStorage
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   // Fetch Blog List
   const fetchBlogs = async () => {

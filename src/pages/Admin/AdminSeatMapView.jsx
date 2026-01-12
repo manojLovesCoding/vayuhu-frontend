@@ -10,7 +10,7 @@ const AdminSeatMapView = () => {
   const [loading, setLoading] = useState(true);
 
   // ✅ Retrieve Bearer Token for Authorization
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   const fetchData = () => {
     setLoading(true);

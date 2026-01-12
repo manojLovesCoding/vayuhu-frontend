@@ -160,7 +160,7 @@ const WorkspacePricing = () => {
   const [cartOpen, setCartOpen] = useState(false);
 
   // ✅ Retrieve Bearer Token
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("userToken");
 
   useEffect(() => {
     // ✅ Switched to Axios

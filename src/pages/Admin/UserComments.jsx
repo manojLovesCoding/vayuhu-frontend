@@ -20,7 +20,7 @@ const UserComments = ({ user, onBack, onStatusUpdate }) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   // ✅ Retrieve Bearer Token
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   // ✅ Fetch comments dynamically using Axios
   useEffect(() => {

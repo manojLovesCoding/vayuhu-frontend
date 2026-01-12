@@ -22,7 +22,7 @@ const VirtualOfficeBookingModal = ({ isOpen, onClose }) => {
   const [userName, setUserName] = useState("");
 
   // ✅ Retrieve Bearer Token
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("userToken");
 
   const today = new Date().toISOString().split("T")[0];
 

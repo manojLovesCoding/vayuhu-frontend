@@ -13,7 +13,7 @@ const Reservations = () => {
   const [entriesPerPage, setEntriesPerPage] = useState(10);
 
   // ✅ Retrieve Bearer Token for Authorization
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   // ✅ Fetch Reservations using Axios
   const fetchReservations = async () => {

@@ -19,7 +19,7 @@ const EditContact = () => {
   const [message, setMessage] = useState("");
 
   // ✅ Get token from localStorage
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   // ✅ Fetch contact details for editing
   useEffect(() => {

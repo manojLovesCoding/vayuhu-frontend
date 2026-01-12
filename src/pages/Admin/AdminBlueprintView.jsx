@@ -10,7 +10,7 @@ const AdminBlueprintView = () => {
   const [loading, setLoading] = useState(true);
 
   // ✅ Get Bearer Token from localStorage
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   const fetchData = () => {
     setLoading(true);

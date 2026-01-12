@@ -20,7 +20,7 @@ const UserList = () => {
   const [selectedCommentUser, setSelectedCommentUser] = useState(null);
 
   // ✅ Retrieve token from localStorage
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   const statusColors = {
     Pending: "text-yellow-600 bg-yellow-100",

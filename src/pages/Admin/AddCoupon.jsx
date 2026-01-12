@@ -61,7 +61,7 @@ const AddCoupon = () => {
     setLoading(true);
 
     // ✅ Retrieve token from localStorage
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("adminToken");
     if (!token) {
       toast.error("You must be logged in to add a coupon.");
       setLoading(false);

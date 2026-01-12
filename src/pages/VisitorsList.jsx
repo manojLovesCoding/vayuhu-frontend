@@ -11,7 +11,8 @@ const VisitorsDetails = () => {
 
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.id;
-  const token = localStorage.getItem("token");
+
+  const token = localStorage.getItem("userToken");
 
   const API_BASE =
     import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
@@ -85,6 +86,9 @@ const VisitorsDetails = () => {
 
         setVisitors(res.data.visitors);
       } catch (err) {
+        if (err.response?.status === 401) {
+          window.dispatchEvent(new Event("logout"));
+        }
         toast.error(err.response?.data?.message || err.message);
       } finally {
         setLoading(false);

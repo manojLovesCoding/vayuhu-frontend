@@ -22,7 +22,7 @@ const Profile = () => {
   // ✅ Get logged-in user info and token
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.id;
-  const token = localStorage.getItem("token"); // ✅ Retrieve Bearer Token
+  const token = localStorage.getItem("userToken");
 
   // ✅ Fetch user data
   useEffect(() => {

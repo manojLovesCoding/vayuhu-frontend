@@ -8,18 +8,6 @@ const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
 
 // -----------------------------
-// Axios Instance
-// -----------------------------
-const token = localStorage.getItem("token");
-
-const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    Authorization: token ? `Bearer ${token}` : "",
-  },
-});
-
-// -----------------------------
 // Helper Functions
 // -----------------------------
 const formatDate = (dateStr) =>
@@ -87,40 +75,56 @@ const AdminDashboard = () => {
   const [revenue, setRevenue] = useState({ categories: [], data: [] });
   const [loading, setLoading] = useState(true);
 
-  // -----------------------------
-  // Load Dashboard Data
-  // -----------------------------
   useEffect(() => {
-    const loadDashboard = async () => {
-      try {
-        setLoading(true);
+  const loadDashboard = async () => {
+    try {
+      setLoading(true);
 
-        const [resReservations, resRevenue] = await Promise.all([
-          api.get("/get_reservations.php"),
-          api.get("/get_monthly_revenue.php"),
-        ]);
+      const token = localStorage.getItem("adminToken");
 
-        if (resReservations.data.success) {
-          setReservations(resReservations.data.reservations || []);
-        }
 
-        if (resRevenue.data.success) {
-          setRevenue({
-            categories: resRevenue.data.revenue.map((r) => r.month),
-            data: resRevenue.data.revenue.map((r) =>
-              Number(r.total_revenue)
-            ),
-          });
-        }
-      } catch (error) {
-        toast.error("Failed to load dashboard data");
-      } finally {
-        setLoading(false);
+      if (!token) {
+        toast.error("Session expired. Please login again.");
+        return;
       }
-    };
 
-    loadDashboard();
-  }, []);
+      const authHeaders = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const [resReservations, resRevenue] = await Promise.all([
+        axios.get(`${API_URL}/get_reservations.php`, authHeaders),
+        axios.get(`${API_URL}/get_monthly_revenue.php`, authHeaders),
+      ]);
+
+      if (resReservations.data.success) {
+        setReservations(resReservations.data.reservations || []);
+      }
+
+      if (resRevenue.data.success) {
+        setRevenue({
+          categories: resRevenue.data.revenue.map(r => r.month),
+          data: resRevenue.data.revenue.map(r => Number(r.total_revenue)),
+        });
+      }
+    } catch (error) {
+     if (error.response?.status === 401) {
+  toast.error("Session expired. Please login again.");
+  window.dispatchEvent(new Event("logout"));
+}
+else {
+        toast.error("Failed to load dashboard data");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  loadDashboard();
+}, []);
+
 
   // -----------------------------
   // Summary Stats (Memoized)
@@ -138,9 +142,13 @@ const AdminDashboard = () => {
       (r) => new Date(r.date) < now
     ).length;
 
+    const ongoingReservations = reservations.filter(
+  (r) => new Date(r.date) >= now
+).length;
+
     return [
       { label: "New Reservations", value: newReservations },
-      { label: "Ongoing Reservations", value: reservations.length },
+      { label: "Ongoing Reservations", value: ongoingReservations },
       { label: "Completed Reservations", value: completedReservations },
       //{ label: "Today's Contact Request", value: 0 },
     ];

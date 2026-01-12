@@ -10,27 +10,29 @@ export const AuthProvider = ({ children }) => {
   const [admin, setAdmin] = useState(() => JSON.parse(localStorage.getItem("admin")));
 
   const loginUser = (userData, token) => {
-    localStorage.setItem("token", token);
+    localStorage.setItem("userToken", token);
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
   };
 
   const loginAdmin = (adminData, token) => {
-    localStorage.setItem("token", token);
+    localStorage.setItem("adminToken", token);
     localStorage.setItem("admin", JSON.stringify(adminData));
     setAdmin(adminData);
   };
 
   const logoutUser = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
-    navigate("/auth", { replace: true });
-  };
+  localStorage.removeItem("userToken");
+  localStorage.removeItem("user");
+  setUser(null);
+  navigate("/auth", { replace: true });
+};
+
 
   const logoutAdmin = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("adminToken");
     localStorage.removeItem("admin");
+    localStorage.removeItem("adminSidebarState"); // ✅ ADD THIS
     setAdmin(null);
     navigate("/admin-login", { replace: true });
   };

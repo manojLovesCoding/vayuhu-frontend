@@ -38,20 +38,9 @@ const Auth = () => {
     }
   };
 
-  // ✅ Example protected route check
-  const checkProtected = async () => {
-    try {
-      const { data } = await api.get("/protected.php"); // ✅ Using Axios instance
-      console.log("Protected route data:", data);
-    } catch (err) {
-      console.error("Error accessing protected route:", err.response?.data || err);
-    }
-  };
-
   useEffect(() => {
-    window.scrollTo({ top: 700, behavior: "smooth" });
-    checkProtected();
-  }, []);
+  window.scrollTo({ top: 700, behavior: "smooth" });
+}, []);
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-orange-100 overflow-hidden">

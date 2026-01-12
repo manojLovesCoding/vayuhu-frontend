@@ -27,7 +27,7 @@ const AdminVisitorsOverview = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedVisitorId, setSelectedVisitorId] = useState(null);
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
   const adminData = JSON.parse(localStorage.getItem("admin") || "{}");
   const CURRENT_ADMIN_ID = adminData.id || 3;
 

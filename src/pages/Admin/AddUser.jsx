@@ -20,7 +20,7 @@ const AddUser = () => {
     setMessage("");
 
     // ✅ Get Bearer Token from localStorage
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("adminToken");
 
     try {
       // ✅ Using Axios with Authorization Header

@@ -11,7 +11,7 @@ const ContactList = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   // ✅ Retrieve Bearer Token for Authorization
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   // Fetch contact data
   useEffect(() => {

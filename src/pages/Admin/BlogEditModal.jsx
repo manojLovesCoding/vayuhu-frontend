@@ -83,7 +83,7 @@ const BlogEditModal = ({ blog, onClose, onSave }) => {
     }
 
     // ✅ Get token from localStorage
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("adminToken");
 
     try {
       // ✅ Axios POST with Authorization Header

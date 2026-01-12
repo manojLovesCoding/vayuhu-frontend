@@ -22,7 +22,7 @@ const AddContact = () => {
     setMessage("");
 
     // ✅ Get token from localStorage
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("adminToken");
 
     try {
       // ✅ Using Axios for POST request

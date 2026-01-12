@@ -16,7 +16,7 @@ const Dashboard = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.id;
   // ✅ Get the token for Authorization
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("userToken");
 
   useEffect(() => {
     if (!userId) {
@@ -52,7 +52,9 @@ const Dashboard = () => {
         setBookings(data.bookings || []);
         setSummary(data.summary || {});
       } catch (err) {
-        // Axios errors store the server message in err.response.data
+        if (err.response?.status === 401) {
+          window.dispatchEvent(new Event("logout"));
+        }
         const errorMessage = err.response?.data?.message || err.message;
         setError(errorMessage);
       } finally {

@@ -31,7 +31,7 @@ const AdminOccupancyDashboard = () => {
   const [activeTab, setActiveTab] = useState("All");
 
   // ✅ Retrieve Bearer Token for Authorization
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("userToken");
 
   const fetchData = () => {
     setLoading(true);

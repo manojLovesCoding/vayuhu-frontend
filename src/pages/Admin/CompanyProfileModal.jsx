@@ -17,7 +17,7 @@ const CompanyProfileModal = ({ userId, onClose, isAdmin = false }) => {
   const [loading, setLoading] = useState(true);
   const fileInputRef = useRef(null);
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   useEffect(() => {
     if (!userId) return;

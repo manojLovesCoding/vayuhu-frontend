@@ -8,9 +8,11 @@ const Reservations = () => {
   const [error, setError] = useState("");
 
   const user = JSON.parse(localStorage.getItem("user"));
+  
   const userId = user?.id;
   // ✅ Retrieve Bearer Token for Authorization
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("userToken");
+
 
   useEffect(() => {
     if (!userId) {
@@ -45,10 +47,13 @@ const Reservations = () => {
 
         setBookings(data.bookings);
       } catch (err) {
-        // Axios error handling looks into response.data.message
-        const errorMessage = err.response?.data?.message || err.message;
-        setError(errorMessage);
-      } finally {
+  if (err.response?.status === 401) {
+    window.dispatchEvent(new Event("logout"));
+  }
+  const errorMessage = err.response?.data?.message || err.message;
+  setError(errorMessage);
+}
+ finally {
         setLoading(false);
       }
     };

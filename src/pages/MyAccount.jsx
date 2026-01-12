@@ -30,7 +30,8 @@ const MyAccount = () => {
 
     const handleLogout = () => {
         localStorage.removeItem("user");
-        window.dispatchEvent(new Event("userUpdated"));
+        window.dispatchEvent(new Event("logout"));
+
         navigate("/auth");
     };
 

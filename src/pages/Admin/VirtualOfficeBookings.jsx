@@ -23,7 +23,7 @@ const VirtualOfficeBookings = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // ✅ Retrieve Bearer Token for Authorization
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   // ✅ Fetch Bookings Function
   const fetchBookings = async () => {

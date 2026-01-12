@@ -12,7 +12,7 @@ const BlogPage = () => {
     const fetchBlogs = async () => {
         try {
             // ✅ Retrieve token from localStorage
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem("userToken");
 
             // ✅ Switched to Axios to send Bearer Token
             const res = await axios.get(`${API_URL}/blog_list.php`, {

@@ -11,7 +11,7 @@ const VirtualOfficeEnquiries = () => {
   const [loading, setLoading] = useState(false);
 
   // ✅ Retrieve Bearer Token for Authorization
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   // -------------------------------
   // Fetch Enquiries

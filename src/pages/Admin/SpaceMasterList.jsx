@@ -16,7 +16,7 @@ const SpaceMasterList = () => {
   const [showEditModal, setShowEditModal] = useState(false);
 
   // ✅ Retrieve Bearer Token for Authorization
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   const statusColors = {
     Active: "text-green-600 bg-green-100",

@@ -67,7 +67,7 @@ const AddSpaceMaster = () => {
   const [bulkImage, setBulkImage] = useState(null);
 
   // ✅ Retrieve Bearer Token
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   // Fetch existing codes using Axios
   const fetchExistingCodes = useCallback(async () => {

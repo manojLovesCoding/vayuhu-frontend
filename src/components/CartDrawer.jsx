@@ -9,7 +9,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend
 
 const CartDrawer = ({ open, onClose }) => {
   const { cart, removeFromCart, clearCart, totalAmount } = useCart();
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("userToken");
 
   // Rounded breakdown
   const subtotalTotal = Math.round(totalAmount / 1.18);

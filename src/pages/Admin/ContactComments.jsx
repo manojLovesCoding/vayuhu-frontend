@@ -20,7 +20,7 @@ const ContactComments = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // ✅ Retrieve token from localStorage
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("adminToken");
 
   // ✅ Fetch contact details using Axios
   useEffect(() => {

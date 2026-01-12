@@ -7,26 +7,49 @@ const api = axios.create({
   },
 });
 
-// ✅ Attach token automatically
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// -----------------------------
+// Request Interceptor
+// -----------------------------
+api.interceptors.request.use(
+  (config) => {
+    const adminToken = localStorage.getItem("adminToken");
+    const userToken = localStorage.getItem("userToken");
 
-// ✅ Auto logout on 401
+    const token = adminToken || userToken;
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// -----------------------------
+// Response Interceptor
+// -----------------------------
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+    const status = error.response?.status;
 
-      // notify app
-      window.dispatchEvent(new Event("logout"));
+    // Logout ONLY if token existed and session was active
+    if (status === 401) {
+      const hasAdmin = localStorage.getItem("admin");
+      const hasUser = localStorage.getItem("user");
+
+      if (hasAdmin || hasUser) {
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("userToken");
+        localStorage.removeItem("admin");
+        localStorage.removeItem("user");
+
+        // notify app (AuthContext)
+        window.dispatchEvent(new Event("logout"));
+      }
     }
+
     return Promise.reject(error);
   }
 );
