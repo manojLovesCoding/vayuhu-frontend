@@ -74,7 +74,6 @@ const AdminVisitorsOverview = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Logic to trigger the "Add Hour" (Update Same Row)
   const openExtendModal = (v) => {
     setIsEditing(true);
     setSelectedVisitorId(v.id);
@@ -140,12 +139,12 @@ const AdminVisitorsOverview = () => {
     (v) =>
       v.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (v.company_name &&
-        v.company_name.toLowerCase().includes(searchTerm.toLowerCase()))
+        v.company_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (v.email && v.email.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const totalVisitors = visitors.length;
 
-  // Correctly sums up revenue by splitting pipe-separated payment strings
   const totalRevenue = visitors.reduce((sum, v) => {
     const amounts = String(v.amount_paid).split(/[|]/);
     const rowTotal = amounts.reduce((s, a) => s + (Number(a.trim()) || 0), 0);
@@ -156,15 +155,9 @@ const AdminVisitorsOverview = () => {
     visitors.map((v) => v.user_id).filter((id) => id !== null)
   ).size;
 
-  /**
-   * Helper to render multiple values in one cell
-   * Splits string by '|' and renders each part with optional currency symbol
-   */
   const renderStackedCell = (value, isCurrency = false) => {
     if (!value) return "-";
-
     const items = String(value).split(/[|]/);
-
     return (
       <div className="flex flex-col gap-1">
         {items.map((item, idx) => (
@@ -178,6 +171,32 @@ const AdminVisitorsOverview = () => {
           >
             {isCurrency && item.trim() !== "" ? `₹${item.trim()}` : item.trim()}
           </span>
+        ))}
+      </div>
+    );
+  };
+
+  const renderVisitSlots = (checkIn, checkOut) => {
+    const ins = String(checkIn || "")
+      .split("|")
+      .map((v) => v.trim());
+    const outs = String(checkOut || "")
+      .split("|")
+      .map((v) => v.trim());
+    const max = Math.max(ins.length, outs.length);
+    if (!max) return "-";
+
+    return (
+      <div className="flex flex-col gap-1 text-xs">
+        {Array.from({ length: max }).map((_, i) => (
+          <div
+            key={i}
+            className={
+              i > 0 ? "border-t border-gray-100 pt-1 text-orange-600" : ""
+            }
+          >
+            {ins[i] || "-"} → {outs[i] || "-"}
+          </div>
         ))}
       </div>
     );
@@ -256,7 +275,7 @@ const AdminVisitorsOverview = () => {
         />
         <input
           type="text"
-          placeholder="Search by visitor name..."
+          placeholder="Search by visitor name, email, company..."
           className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none transition text-sm"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -286,10 +305,12 @@ const AdminVisitorsOverview = () => {
                   "Visitor Name",
                   "Attendees",
                   "Contact",
+                  "Email",
+                  "Company",
                   "Date",
-                  "Check-In",
-                  "Check-Out",
+                  "Visit Slots",
                   "Amount Paid",
+                  "Reason",
                   "Added By",
                   "Action",
                 ].map((col) => (
@@ -313,16 +334,16 @@ const AdminVisitorsOverview = () => {
                     </span>
                   </td>
                   <td className="p-4 text-gray-600">{v.contact}</td>
+                  <td className="p-4 text-gray-600">{v.email || "-"}</td>
+                  <td className="p-4 text-gray-600">{v.company_name || "-"}</td>
                   <td className="p-4 text-gray-500">{v.visiting_date}</td>
                   <td className="p-4 text-gray-500">
-                    {renderStackedCell(v.check_in_time)}
-                  </td>
-                  <td className="p-4 text-gray-500">
-                    {renderStackedCell(v.check_out_time)}
+                    {renderVisitSlots(v.check_in_time, v.check_out_time)}
                   </td>
                   <td className="p-4 font-bold text-green-600">
                     {renderStackedCell(v.amount_paid, true)}
                   </td>
+                  <td className="p-4">{renderStackedCell(v.reason)}</td>
                   <td className="p-4">{renderStackedCell(v.user_name)}</td>
                   <td className="p-4">
                     <button
@@ -357,6 +378,7 @@ const AdminVisitorsOverview = () => {
               </button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              {/* Name & Contact */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase">
@@ -388,6 +410,37 @@ const AdminVisitorsOverview = () => {
                 </div>
               </div>
 
+              {/* Email & Company */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border rounded-lg text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase">
+                    Company
+                  </label>
+                  <input
+                    type="text"
+                    name="company_name"
+                    required
+                    value={formData.company_name}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border rounded-lg text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Date, Check-In, Check-Out */}
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase">
@@ -429,6 +482,22 @@ const AdminVisitorsOverview = () => {
                 </div>
               </div>
 
+              {/* Reason */}
+              <div>
+                <label className="text-xs font-bold text-gray-500 uppercase">
+                  Reason
+                </label>
+                <textarea
+                  name="reason"
+                  required
+                  value={formData.reason}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border rounded-lg text-sm resize-none"
+                  rows={2}
+                />
+              </div>
+
+              {/* Amount */}
               <div className="bg-orange-50 p-3 rounded-xl border border-orange-200">
                 <label className="block text-xs font-bold text-orange-700 mb-1 uppercase">
                   Amount for this slot (₹)
@@ -450,6 +519,7 @@ const AdminVisitorsOverview = () => {
                 </div>
               </div>
 
+              {/* Modal Actions */}
               <div className="pt-2 flex justify-end gap-3">
                 <button
                   type="button"

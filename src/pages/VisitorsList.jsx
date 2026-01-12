@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Layout from "../components/Layout";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -6,10 +6,8 @@ import axios from "axios";
 
 const VisitorsDetails = () => {
   const [visitors, setVisitors] = useState([]);
-  const [filteredVisitors, setFilteredVisitors] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.id;
@@ -18,16 +16,59 @@ const VisitorsDetails = () => {
   const API_BASE =
     import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
 
+  // -----------------------------
+  // Helpers
+  // -----------------------------
+  const splitStack = (value) =>
+    value
+      ? String(value)
+          .split("|")
+          .map((v) => v.trim())
+          .filter(Boolean)
+      : [];
+
+  const renderVisitSlots = (checkIn, checkOut) => {
+    const ins = splitStack(checkIn);
+    const outs = splitStack(checkOut);
+
+    if (ins.length === 0 && outs.length === 0) return "—";
+
+    const max = Math.max(ins.length, outs.length);
+
+    return (
+      <div className="flex flex-col gap-1 text-xs">
+        {Array.from({ length: max }).map((_, i) => (
+          <div
+            key={i}
+            className={`flex items-center gap-1 ${
+              i > 0 ? "border-t pt-1 text-orange-600" : ""
+            }`}
+          >
+            <span>{ins[i] || "—"}</span>
+            <span className="text-gray-400">→</span>
+            <span>{outs[i] || "—"}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const totalAmount = (value) =>
+    splitStack(value).reduce((sum, v) => sum + (Number(v) || 0), 0);
+
+  // -----------------------------
+  // Fetch Visitors
+  // -----------------------------
   useEffect(() => {
     if (!userId) {
-      setError("User not logged in.");
+      toast.error("User not logged in");
       setLoading(false);
       return;
     }
 
     const fetchVisitors = async () => {
       try {
-        const response = await axios.post(
+        const res = await axios.post(
           `${API_BASE}/get_visitors.php`,
           { user_id: userId },
           {
@@ -38,18 +79,13 @@ const VisitorsDetails = () => {
           }
         );
 
-        const data = response.data;
-
-        if (!data.success) {
-          throw new Error(data.message || "Failed to load visitors.");
+        if (!res.data.success) {
+          throw new Error(res.data.message || "Failed to load visitors");
         }
 
-        setVisitors(data.visitors);
-        setFilteredVisitors(data.visitors);
+        setVisitors(res.data.visitors);
       } catch (err) {
-        console.error(err);
-        const errorMessage = err.response?.data?.message || err.message;
-        setError(errorMessage);
+        toast.error(err.response?.data?.message || err.message);
       } finally {
         setLoading(false);
       }
@@ -58,22 +94,17 @@ const VisitorsDetails = () => {
     fetchVisitors();
   }, [userId, token, API_BASE]);
 
-  useEffect(() => {
-    const filtered = visitors.filter((v) =>
-      [
-        v.name,
-        v.contact,
-        v.email,
-        v.company_name,
-        v.reason,
-        v.payment_id,
-        v.workspace,
-      ]
-        .join(" ")
+  // -----------------------------
+  // Search (Optimized)
+  // -----------------------------
+  const filteredVisitors = useMemo(() => {
+    const term = searchTerm.toLowerCase();
+
+    return visitors.filter((v) =>
+      `${v.name} ${v.contact} ${v.email} ${v.company_name} ${v.reason}`
         .toLowerCase()
-        .includes(searchTerm.toLowerCase())
+        .includes(term)
     );
-    setFilteredVisitors(filtered);
   }, [searchTerm, visitors]);
 
   return (
@@ -85,27 +116,24 @@ const VisitorsDetails = () => {
       </h1>
 
       <div className="bg-white p-6 rounded-2xl shadow text-sm">
-        {loading && <p className="text-center p-4">Loading visitors...</p>}
-        {error && <p className="text-center p-4 text-red-500">{error}</p>}
-
-        {!loading && !error && (
+        {loading ? (
+          <div className="text-center py-8 text-gray-500">
+            Loading visitor records…
+          </div>
+        ) : (
           <>
-            <div className="flex justify-between mb-4">
-              <select className="border rounded-lg p-2 text-sm">
-                <option>Show 10 entries</option>
-                <option>Show 25 entries</option>
-                <option>Show 50 entries</option>
-              </select>
-
+            {/* Search */}
+            <div className="flex justify-end mb-4">
               <input
                 type="text"
-                placeholder="Search name, space, or ID..."
+                placeholder="Search visitors..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="border rounded-lg px-3 py-2 text-sm w-64"
               />
             </div>
 
+            {/* Table */}
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-sm">
                 <thead className="bg-orange-100 text-gray-700">
@@ -113,12 +141,12 @@ const VisitorsDetails = () => {
                     {[
                       "S.No.",
                       "Name",
-                      "Contact No",
-                      "Visited Workspace",
+                      "Contact",
+                      "Workspace",
                       "Attendees",
-                      "Visit Date/Time",
+                      "Visit Slots",
                       "Reason",
-                      "Payment Status",
+                      "Payment",
                       "Added On",
                     ].map((col) => (
                       <th key={col} className="p-2 border text-left">
@@ -131,82 +159,61 @@ const VisitorsDetails = () => {
                 <tbody>
                   {filteredVisitors.length === 0 ? (
                     <tr>
-                      <td colSpan="8" className="text-center p-4 text-gray-500">
+                      <td colSpan="9" className="text-center p-6 text-gray-500">
                         No visitors found
                       </td>
                     </tr>
                   ) : (
-                    filteredVisitors.map((visitor, index) => (
-                      /* 🟢 Using visitor.id as the key is critical for proper React tracking */
-                      <tr key={visitor.id} className="hover:bg-gray-50">
-                        {/* S.No. */}
+                    filteredVisitors.map((v, index) => (
+                      <tr key={v.id} className="hover:bg-gray-50 transition">
                         <td className="p-2 border text-center">{index + 1}</td>
 
-                        {/* Name */}
-                        <td className="p-2 border font-medium">
-                          {visitor.name}
+                        <td className="p-2 border font-medium">{v.name}</td>
+
+                        <td className="p-2 border">{v.contact}</td>
+
+                        <td className="p-2 border text-orange-600 font-semibold">
+                          {v.workspace || "—"}
                         </td>
 
-                        {/* Contact No */}
-                        <td className="p-2 border">{visitor.contact}</td>
-
-                        {/* Visited Workspace */}
-                        <td className="p-2 border font-semibold text-orange-600">
-                          {visitor.workspace}
-                        </td>
-
-                        {/* Attendees */}
                         <td className="p-2 border text-center">
-                          {visitor.attendees || 1}
+                          {v.attendees || 1}
                         </td>
 
-                        {/* Visit Date / Time */}
+                        {/* Visit Slots */}
                         <td className="p-2 border">
-                          {visitor.visiting_date} <br />
-                          <span className="text-xs text-gray-500">
-                            {visitor.check_in_time?.slice(0, 5)} -{" "}
-                            {visitor.check_out_time?.slice(0, 5)}
-                          </span>
+                          {renderVisitSlots(v.check_in_time, v.check_out_time)}
                         </td>
 
                         {/* Reason */}
                         <td
                           className="p-2 border truncate max-w-[150px]"
-                          title={visitor.reason}
+                          title={v.reason}
                         >
-                          {visitor.reason || "—"}
+                          {v.reason || "—"}
                         </td>
 
-                        {/* Payment Status */}
+                        {/* Payment */}
                         <td className="p-2 border">
-                          {visitor.payment_id ? (
+                          {totalAmount(v.amount_paid) > 0 ? (
                             <div className="flex flex-col">
-                              <span className="text-green-600 font-bold text-[10px] uppercase">
+                              <span className="text-green-600 text-xs font-bold uppercase">
                                 Paid
                               </span>
-
-                              <span className="text-gray-700 font-semibold">
-                                ₹{visitor.amount_paid}{" "}
-                                {/*<span className="text-gray-500 text-xs font-normal">
-                                  (for {visitor.attendees || 1} attendee
-                                  {visitor.attendees > 1 ? "s" : ""})
-                                </span>*/}
+                              <span className="font-semibold">
+                                ₹{totalAmount(v.amount_paid)}
                               </span>
-
-                              {/*<span className="text-[10px] text-gray-400 select-all font-mono">
-                                {visitor.payment_id}
-                              </span>*/}
                             </div>
                           ) : (
-                            <span className="text-red-500 italic text-xs font-medium">
+                            <span className="text-red-500 italic text-xs">
                               Unpaid
                             </span>
                           )}
                         </td>
 
                         {/* Added On */}
-                        <td className="p-2 border text-gray-500 text-[11px]">
-                          {new Date(visitor.added_on).toLocaleString()}
+                        <td className="p-2 border text-[11px] text-gray-500">
+                          {new Date(v.added_on).toLocaleString()}
                         </td>
                       </tr>
                     ))
@@ -215,20 +222,10 @@ const VisitorsDetails = () => {
               </table>
             </div>
 
-            <div className="flex justify-between mt-4 text-gray-600">
-              <p>
-                Showing {filteredVisitors.length > 0 ? 1 : 0} to{" "}
-                {filteredVisitors.length} of {filteredVisitors.length} entries
-              </p>
-
-              <div className="flex gap-2">
-                <button className="px-3 py-1 border rounded-lg hover:bg-orange-100">
-                  Previous
-                </button>
-                <button className="px-3 py-1 border rounded-lg hover:bg-orange-100">
-                  Next
-                </button>
-              </div>
+            {/* Footer */}
+            <div className="mt-4 text-gray-600 text-sm">
+              Showing {filteredVisitors.length} of {filteredVisitors.length}{" "}
+              entries
             </div>
           </>
         )}
