@@ -631,7 +631,8 @@ const WorkspacePricing = () => {
     const options = [];
     const start = new Date(startDate);
 
-    for (let i = 1; i <= 12; i++) {
+   // Change '12' to '2' to restrict the dropdown to only 2 months
+  for (let i = 1; i <= 2; i++) {
       const end = new Date(start);
       end.setMonth(start.getMonth() + i);
       end.setDate(end.getDate() - 1);

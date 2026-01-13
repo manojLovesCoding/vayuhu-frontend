@@ -100,11 +100,14 @@ const VirtualOfficeBookingModal = ({ isOpen, onClose }) => {
     if (isOpen) fetchPlan();
   }, [isOpen, token]);
 
-  // ✅ Auto-calculate End Date
+  // ✅ Auto-calculate End Date (11 months after start date)
   useEffect(() => {
     if (startDate) {
       const newEnd = new Date(startDate);
-      newEnd.setFullYear(newEnd.getFullYear() + 1);
+
+      // Add 11 months
+      newEnd.setMonth(newEnd.getMonth() + 11);
+
       setEndDate(newEnd.toISOString().split("T")[0]);
     } else {
       setEndDate("");

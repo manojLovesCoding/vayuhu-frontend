@@ -302,6 +302,7 @@ const AdminVisitorsOverview = () => {
               <tr>
                 {[
                   "S.No",
+                  "space code",
                   "Visitor Name",
                   "Attendees",
                   "Contact",
@@ -327,6 +328,10 @@ const AdminVisitorsOverview = () => {
                   className="hover:bg-orange-50/50 transition duration-150"
                 >
                   <td className="p-4 text-gray-400">{i + 1}</td>
+                  <td className="p-4 font-semibold text-orange-700">
+                    {v.space_code || "VC01"}
+                  </td>
+
                   <td className="p-4 font-bold text-gray-800">{v.name}</td>
                   <td className="p-4 text-center">
                     <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs font-bold">

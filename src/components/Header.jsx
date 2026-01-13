@@ -40,13 +40,12 @@ const Header = () => {
         transition={{ duration: 1.2, ease: "easeOut" }}
         className="relative z-10 flex flex-col items-center justify-center text-center px-6 sm:px-10 md:px-16 lg:px-32 py-20 md:py-28 flex-grow"
       >
-        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-[80px] font-bold leading-tight text-white max-w-4xl mx-auto drop-shadow-[0_2px_4px_rgba(0,0,0,0.15)]">
-  Work. Connect. <span className="bg-gradient-to-r from-orange-400 via-orange-500 to-red-500 bg-clip-text text-transparent">Grow.</span>
-</h1>
-
-
-
-
+        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-[80px] font-bold leading-tight max-w-4xl mx-auto drop-shadow-[0_2px_4px_rgba(0,0,0,0.15)]">
+          <span className="text-[#800000]">Work. Connect.</span>{" "}
+          <span className="bg-gradient-to-r from-orange-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
+            Grow.
+          </span>
+        </h1>
 
         <p className="mt-6 max-w-2xl text-base sm:text-lg md:text-xl text-red-900 px-4">
           Discover flexible and inspiring coworking spaces at{" "}
