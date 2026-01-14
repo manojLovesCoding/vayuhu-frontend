@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios"; // ✅ Imported Axios
+import axios from "axios";
 
 const CompanyProfile = () => {
   const [logo, setLogo] = useState(null);
@@ -14,32 +14,28 @@ const CompanyProfile = () => {
     contact: "",
     address: "",
   });
-  const [profileId, setProfileId] = useState(null); // track existing profile
+  const [profileId, setProfileId] = useState(null);
 
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.id;
-  // ✅ Retrieve token for Authorization
-  const token = localStorage.getItem("userToken");
 
   const API_BASE =
     import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
 
-  // Fetch company profile on mount
+  // ✅ Fetch company profile using HttpOnly cookie (no Authorization header)
   useEffect(() => {
     if (!userId) return;
 
-    // ✅ Using Axios GET with Bearer Token
-    axios.get(`${API_BASE}/get_company_profile.php`, {
-      params: { user_id: userId },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      }
-    })
+    axios
+      .get(`${API_BASE}/get_company_profile.php`, {
+        params: { user_id: userId },
+        withCredentials: true, // ✅ Needed to send HttpOnly cookie
+      })
       .then((response) => {
         const data = response.data;
         if (data.success && data.profile) {
           const profile = data.profile;
-          setProfileId(profile.id); // existing profile
+          setProfileId(profile.id);
           setFormData({
             companyName: profile.company_name || "",
             gstNo: profile.gst_no || "",
@@ -50,8 +46,10 @@ const CompanyProfile = () => {
           if (profile.logo) setPreview(profile.logo);
         }
       })
-      .catch((err) => console.error("Error fetching company profile:", err));
-  }, [userId, token]);
+      .catch((err) =>
+        console.error("Error fetching company profile:", err)
+      );
+  }, [userId]);
 
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
@@ -80,19 +78,14 @@ const CompanyProfile = () => {
       payload.append("contact", formData.contact);
       payload.append("address", formData.address);
       if (logo) payload.append("logo", logo);
-      if (profileId) payload.append("id", profileId); // for update
+      if (profileId) payload.append("id", profileId);
 
       const url = profileId
         ? `${API_BASE}/update_company_profile.php`
         : `${API_BASE}/add_company_profile.php`;
 
-      // ✅ Using Axios POST with Bearer Token
-      // Note: Do not set Content-Type header manually when sending FormData
-      const response = await axios.post(url, payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // ✅ Send request with HttpOnly cookie (no Authorization header)
+      const response = await axios.post(url, payload, { withCredentials: true });
 
       const result = response.data;
       if (result.success) {
@@ -186,7 +179,7 @@ const CompanyProfile = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              readOnly={!!profileId} // read-only if profile exists
+              readOnly={!!profileId}
               className={`w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-orange-500 ${
                 profileId ? "bg-gray-100 text-gray-500 cursor-not-allowed" : ""
               }`}

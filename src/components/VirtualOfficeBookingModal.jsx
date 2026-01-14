@@ -71,7 +71,7 @@ const VirtualOfficeBookingModal = ({ isOpen, onClose }) => {
         const response = await axios.get(
           `${API_URL}/get_virtual_office_price_list.php`,
           {
-            headers: { Authorization: token ? `Bearer ${token}` : "" },
+            withCredentials: true,
           }
         );
 
@@ -147,7 +147,8 @@ const VirtualOfficeBookingModal = ({ isOpen, onClose }) => {
       const checkResponse = await axios.post(
         `${API_URL}/virtualoffice_booking.php`,
         { user_id: userId, check_only: true },
-        { headers: { Authorization: token ? `Bearer ${token}` : "" } }
+        { withCredentials: true
+ }
       );
 
       const checkData = checkResponse.data;
@@ -169,7 +170,8 @@ const VirtualOfficeBookingModal = ({ isOpen, onClose }) => {
       const orderResponse = await axios.post(
         `${API_URL}/create_razorpay_order.php`,
         { amount: totalPrice },
-        { headers: { Authorization: token ? `Bearer ${token}` : "" } }
+        { withCredentials: true
+}
       );
 
       const orderData = orderResponse.data;
@@ -190,7 +192,8 @@ const VirtualOfficeBookingModal = ({ isOpen, onClose }) => {
               `${API_URL}/verify_payment.php`,
               response,
               {
-                headers: { Authorization: token ? `Bearer ${token}` : "" },
+                withCredentials: true
+
               }
             );
 
@@ -241,7 +244,8 @@ const VirtualOfficeBookingModal = ({ isOpen, onClose }) => {
           payment_status: "Paid",
         },
         {
-          headers: { Authorization: token ? `Bearer ${token}` : "" },
+         withCredentials: true
+
         }
       );
 

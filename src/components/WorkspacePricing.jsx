@@ -159,8 +159,7 @@ const WorkspacePricing = () => {
   const { cart, addToCart } = useCart(); // Ensure cart is destructured here
   const [cartOpen, setCartOpen] = useState(false);
 
-  // ✅ Retrieve Bearer Token
-  const token = localStorage.getItem("userToken");
+  
 
   useEffect(() => {
     // ✅ Switched to Axios
@@ -279,12 +278,7 @@ const WorkspacePricing = () => {
           total_amount: calculateBaseAmount(),
           user_id: getUserId(),
         },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-        }
+        { withCredentials: true } // important for HttpOnly cookie
       );
 
       const data = res.data;
@@ -508,12 +502,7 @@ const WorkspacePricing = () => {
           end_time: endTime,
           all_space_ids: modalData.allIds || [modalData.id],
         },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-        }
+       { withCredentials: true } // important for HttpOnly cookie
       );
 
       const data = response.data;
@@ -1485,11 +1474,7 @@ const WorkspacePricing = () => {
                             end_time: endTime,
                             all_space_ids: modalData.allIds || [modalData.id],
                           },
-                          {
-                            headers: {
-                              Authorization: token ? `Bearer ${token}` : "",
-                            },
-                          }
+                          { withCredentials: true } // important for HttpOnly cookie
                         );
 
                         const availData = availabilityResponse.data;
@@ -1544,11 +1529,7 @@ const WorkspacePricing = () => {
                             {
                               amount: bookingData.final_amount,
                             },
-                            {
-                              headers: {
-                                Authorization: token ? `Bearer ${token}` : "",
-                              },
-                            }
+                            { withCredentials: true } // important for HttpOnly cookie
                           );
 
                           const orderData = orderRes.data;
@@ -1567,13 +1548,7 @@ const WorkspacePricing = () => {
                               const verifyRes = await axios.post(
                                 `${API_BASE_URL}/verify_payment.php`,
                                 response,
-                                {
-                                  headers: {
-                                    Authorization: token
-                                      ? `Bearer ${token}`
-                                      : "",
-                                  },
-                                }
+                               { withCredentials: true } // important for HttpOnly cookie
                               );
 
                               if (verifyRes.data.success) {
@@ -1581,13 +1556,7 @@ const WorkspacePricing = () => {
                                 const finalBooking = await axios.post(
                                   `${API_BASE_URL}/add_workspace_booking.php`,
                                   bookingData,
-                                  {
-                                    headers: {
-                                      Authorization: token
-                                        ? `Bearer ${token}`
-                                        : "",
-                                    },
-                                  }
+                                  { withCredentials: true } // important for HttpOnly cookie
                                 );
 
                                 if (finalBooking.data.success) {
@@ -1617,13 +1586,7 @@ const WorkspacePricing = () => {
                                       total_amount: finalTotal,
                                       seat_codes: modalData.selectedCodes,
                                     },
-                                    {
-                                      headers: {
-                                        Authorization: token
-                                          ? `Bearer ${token}`
-                                          : "",
-                                      },
-                                    }
+                                    { withCredentials: true } // important for HttpOnly cookie
                                   );
 
                                   setTimeout(() => resetState(), 2000);

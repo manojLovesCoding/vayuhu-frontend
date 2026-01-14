@@ -3,14 +3,12 @@ import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios"; // ✅ Imported Axios
+import axios from "axios";
 
 const Visitors = () => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.id;
-  const token = localStorage.getItem("userToken");
-
 
   const API_BASE =
     import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
@@ -24,7 +22,7 @@ const Visitors = () => {
     checkInTime: "",
     checkOutTime: "",
     reason: "",
-    attendees: 1, // 🟢 New field
+    attendees: 1,
   });
 
   const [hasReservation, setHasReservation] = useState(false);
@@ -32,7 +30,7 @@ const Visitors = () => {
   const [selectedBooking, setSelectedBooking] = useState("");
   const [guestFee, setGuestFee] = useState(0);
 
-  // Fetch active bookings
+  // ---------------- FETCH ACTIVE BOOKINGS ----------------
   useEffect(() => {
     if (!userId) return;
 
@@ -41,7 +39,7 @@ const Visitors = () => {
         const response = await axios.post(
           `${API_BASE}/get_active_bookings.php`,
           { user_id: userId },
-          { headers: { Authorization: token ? `Bearer ${token}` : "" } }
+          { withCredentials: true } // ✅ Send HttpOnly cookie
         );
 
         if (response.data.success) {
@@ -54,18 +52,16 @@ const Visitors = () => {
     };
 
     fetchActiveReservations();
-  }, [userId, token, API_BASE]);
+  }, [userId, API_BASE]);
 
-  // Fetch company profile
+  // ---------------- FETCH COMPANY PROFILE ----------------
   useEffect(() => {
     if (!userId) return;
 
     axios
       .get(`${API_BASE}/get_company_profile.php`, {
         params: { user_id: userId },
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
+        withCredentials: true, // ✅ Send HttpOnly cookie
       })
       .then((res) => {
         const data = res.data;
@@ -79,8 +75,9 @@ const Visitors = () => {
         }
       })
       .catch(() => toast.error("Error fetching company name"));
-  }, [userId, token, API_BASE]);
+  }, [userId, API_BASE]);
 
+  // ---------------- HANDLE BOOKING CHANGE ----------------
   const handleBookingChange = (e) => {
     const bookingId = e.target.value;
     setSelectedBooking(bookingId);
@@ -97,6 +94,7 @@ const Visitors = () => {
     }
   };
 
+  // ---------------- HANDLE FORM INPUT CHANGE ----------------
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -113,10 +111,10 @@ const Visitors = () => {
     }
   };
 
+  // ---------------- HANDLE FORM SUBMIT ----------------
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ---------------- BASIC CHECKS ----------------
     if (!selectedBooking) {
       toast.error("Please select an active booking first!");
       return;
@@ -127,16 +125,12 @@ const Visitors = () => {
       return;
     }
 
-    if (
-      !formData.visitingDate ||
-      !formData.checkInTime ||
-      !formData.checkOutTime
-    ) {
+    if (!formData.visitingDate || !formData.checkInTime || !formData.checkOutTime) {
       toast.error("Visiting Date, Check-In, and Check-Out Time are required!");
       return;
     }
 
-    // ---------------- BACKEND PRE-VALIDATION ----------------
+    // ---------------- BACKEND DATE VALIDATION ----------------
     try {
       const validateRes = await axios.post(
         `${API_BASE}/validate_visitor_date.php`,
@@ -145,35 +139,26 @@ const Visitors = () => {
           booking_id: selectedBooking,
           visitingDate: formData.visitingDate,
         },
-        {
-          headers: {
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-        }
+        { withCredentials: true } // ✅ Send HttpOnly cookie
       );
 
       if (!validateRes.data.success) {
         toast.error(validateRes.data.message);
-        return; // ❌ STOP — DO NOT OPEN PAYMENT
+        return;
       }
-    } catch (error) {
+    } catch {
       toast.error("Unable to validate visiting date. Please try again.");
       return;
     }
 
-    // ---------------- PAYMENT STARTS ----------------
+    // ---------------- PAYMENT ----------------
     const toastId = toast.loading("Initializing payment...");
 
     try {
       const orderRes = await axios.post(
         `${API_BASE}/create_razorpay_order.php`,
         { amount: guestFee },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-        }
+        { withCredentials: true } // ✅ Send HttpOnly cookie
       );
 
       if (!orderRes.data.success) {
@@ -199,12 +184,7 @@ const Visitors = () => {
             const verifyRes = await axios.post(
               `${API_BASE}/verify_payment.php`,
               response,
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: token ? `Bearer ${token}` : "",
-                },
-              }
+              { withCredentials: true } // ✅ Send HttpOnly cookie
             );
 
             if (!verifyRes.data.success) {
@@ -220,12 +200,7 @@ const Visitors = () => {
                 payment_id: response.razorpay_payment_id,
                 amount_paid: guestFee,
               },
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: token ? `Bearer ${token}` : "",
-                },
-              }
+              { withCredentials: true } // ✅ Send HttpOnly cookie
             );
 
             if (saveResponse.data.success) {
@@ -291,6 +266,7 @@ const Visitors = () => {
     };
   }, []);
 
+  // ---------------- JSX ----------------
   return (
     <Layout>
       <ToastContainer position="top-right" autoClose={3000} />
@@ -306,15 +282,11 @@ const Visitors = () => {
       </div>
 
       <div className="bg-white rounded-2xl shadow p-6">
-        <form
-          className="grid grid-cols-1 sm:grid-cols-2 gap-6"
-          onSubmit={handleSubmit}
-        >
+        <form className="grid grid-cols-1 sm:grid-cols-2 gap-6" onSubmit={handleSubmit}>
           {/* Booking Selector */}
           <div className="sm:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Select Your Active Workspace Booking{" "}
-              <span className="text-red-500">*</span>
+              Select Your Active Workspace Booking <span className="text-red-500">*</span>
             </label>
             <select
               className="w-full border border-gray-300 rounded-md p-2"
@@ -325,8 +297,7 @@ const Visitors = () => {
               <option value="">-- Select an Upcoming Booking --</option>
               {userBookings.map((b) => (
                 <option key={b.booking_id} value={b.booking_id}>
-                  {b.workspace_title} ({b.start_date_display}) - Rate: ₹
-                  {b.price_per_unit}/hr
+                  {b.workspace_title} ({b.start_date_display}) - Rate: ₹{b.price_per_unit}/hr
                 </option>
               ))}
             </select>
@@ -350,8 +321,7 @@ const Visitors = () => {
               required
             />
             <p className="text-xs text-gray-500 mt-1">
-              Each attendee is charged per hour based on workspace rate + 18%
-              GST.
+              Each attendee is charged per hour based on workspace rate + 18% GST.
             </p>
           </div>
 
@@ -389,9 +359,7 @@ const Visitors = () => {
 
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email Id
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email Id</label>
             <input
               type="email"
               name="email"
@@ -404,9 +372,7 @@ const Visitors = () => {
 
           {/* Company Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Company Name
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
             <input
               type="text"
               name="companyName"
@@ -431,9 +397,6 @@ const Visitors = () => {
                   className="w-full border border-gray-300 rounded-md p-2 focus:ring-orange-500"
                   required
                 />
-                <p className="text-[10px] text-gray-500 mt-1">
-                  You can select any date for visiting.
-                </p>
               </div>
 
               <div>
@@ -468,9 +431,7 @@ const Visitors = () => {
 
           {/* Reason */}
           <div className="sm:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Reason
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
             <textarea
               name="reason"
               rows="3"

@@ -8,11 +8,10 @@ const Reservations = () => {
   const [error, setError] = useState("");
 
   const user = JSON.parse(localStorage.getItem("user"));
-  
+
   const userId = user?.id;
   // ✅ Retrieve Bearer Token for Authorization
   const token = localStorage.getItem("userToken");
-
 
   useEffect(() => {
     if (!userId) {
@@ -26,20 +25,14 @@ const Reservations = () => {
         const API_BASE =
           import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
 
-        // ✅ Switched to Axios POST request
+        // ✅ Send POST with credentials to include HttpOnly cookie
         const response = await axios.post(
           `${API_BASE}/get_workspace_bookings.php`,
-          { user_id: userId }, // Axios handles JSON stringification automatically
-          {
-            headers: {
-              "Content-Type": "application/json",
-              // ✅ Added Bearer Token to headers
-              Authorization: token ? `Bearer ${token}` : "",
-            },
-          }
+          { user_id: userId },
+          { withCredentials: true } // important for HttpOnly cookie
         );
 
-        const data = response.data; // Axios stores response in .data
+        const data = response.data;
 
         if (!data.success) {
           throw new Error(data.message || "Failed to load reservations.");
@@ -47,19 +40,18 @@ const Reservations = () => {
 
         setBookings(data.bookings);
       } catch (err) {
-  if (err.response?.status === 401) {
-    window.dispatchEvent(new Event("logout"));
-  }
-  const errorMessage = err.response?.data?.message || err.message;
-  setError(errorMessage);
-}
- finally {
+        if (err.response?.status === 401) {
+          window.dispatchEvent(new Event("logout"));
+        }
+        const errorMessage = err.response?.data?.message || err.message;
+        setError(errorMessage);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchBookings();
-  }, [userId, token]); // ✅ Added token to dependency array
+  }, [userId]); // no token needed anymore
 
   return (
     <Layout>

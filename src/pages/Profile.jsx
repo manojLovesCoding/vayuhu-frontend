@@ -5,7 +5,6 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from "axios"; // ✅ Imported Axios
 
 const Profile = () => {
-  // ✅ Existing States
   const [profilePic, setProfilePic] = useState(null);
   const [preview, setPreview] = useState(null);
   const [formData, setFormData] = useState({
@@ -19,12 +18,13 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const API_BASE = import.meta.env.VITE_API_URL;
 
-  // ✅ Get logged-in user info and token
+  // ✅ Get logged-in user info
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.id;
-  const token = localStorage.getItem("userToken");
 
-  // ✅ Fetch user data
+  // -----------------------------
+  // Fetch user data from cookie-based JWT
+  // -----------------------------
   useEffect(() => {
     if (!userId) {
       toast.error("User not logged in!");
@@ -32,12 +32,9 @@ const Profile = () => {
       return;
     }
 
-    // ✅ Using Axios with Bearer Token
     axios.get(`${API_BASE}/get_user_profile.php`, {
       params: { id: userId },
-      headers: {
-        Authorization: `Bearer ${token}` // ✅ Added Authorization Header
-      }
+      withCredentials: true // ✅ Important: Send cookies
     })
       .then((res) => {
         const data = res.data;
@@ -60,7 +57,7 @@ const Profile = () => {
         toast.error("Error fetching profile");
       })
       .finally(() => setLoading(false));
-  }, [userId, token]);
+  }, [userId, API_BASE]);
 
   // ✅ Handlers
   const handleImageChange = (e) => {
@@ -91,19 +88,20 @@ const Profile = () => {
       formDataToSend.append("address", formData.address);
       if (profilePic) formDataToSend.append("profilePic", profilePic);
 
-      // ✅ Using Axios POST with Bearer Token
-      const response = await axios.post(`${API_BASE}/update_user_profile.php`, formDataToSend, {
-        headers: {
-          Authorization: `Bearer ${token}` // ✅ Added Authorization Header
-          // Note: Axios automatically sets multipart/form-data for FormData objects
-        },
-      });
+      // ✅ Send POST request with cookies
+      const response = await axios.post(
+        `${API_BASE}/update_user_profile.php`,
+        formDataToSend,
+        {
+          withCredentials: true // ✅ Include JWT cookie automatically
+        }
+      );
 
       const result = response.data;
 
       if (result.success) {
         toast.success("Profile updated successfully!");
-        setProfilePic(null); // Keep form populated, only clear profilePic input
+        setProfilePic(null); 
       } else {
         toast.error("Failed to update profile: " + result.message);
       }
@@ -124,9 +122,7 @@ const Profile = () => {
 
   return (
     <Layout>
-      {/* Toast container */}
       <ToastContainer position="top-right" autoClose={3000} />
-
       <h1 className="text-2xl font-semibold mb-6 text-gray-800">User Profile</h1>
 
       <div className="bg-white rounded-2xl shadow p-6 mt-6">

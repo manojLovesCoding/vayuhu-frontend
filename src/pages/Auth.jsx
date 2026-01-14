@@ -27,8 +27,8 @@ const Auth = () => {
 
       setMessage(data.message);
 
-      if (data.status === "success" && data.user && data.token) {
-       loginUser(data.user, data.token);
+       if (data.status === "success" && data.user) {
+  loginUser(data.user);
 
         setTimeout(() => navigate("/dashboard"), 800);
       }

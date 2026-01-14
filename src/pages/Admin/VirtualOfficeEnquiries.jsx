@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios"; // ✅ Imported Axios
+import axios from "axios";
 
 const VirtualOfficeEnquiries = () => {
   const API_BASE =
@@ -10,24 +10,18 @@ const VirtualOfficeEnquiries = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ Retrieve Bearer Token for Authorization
-  const token = localStorage.getItem("adminToken");
-
   // -------------------------------
   // Fetch Enquiries
   // -------------------------------
   const fetchEnquiries = async () => {
     try {
       setLoading(true);
-      // ✅ Switched to Axios with Authorization Header
+      // ✅ No need for Authorization header; JWT is in HttpOnly cookie
       const response = await axios.get(`${API_BASE}/get_virtual_office_enquiries.php`, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
         withCredentials: true,
       });
 
-      const data = response.data; // Axios stores response body in .data
+      const data = response.data;
       setEnquiries(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching enquiries:", error);
@@ -45,16 +39,12 @@ const VirtualOfficeEnquiries = () => {
   // -------------------------------
   const updateStatus = async (id, status) => {
     try {
-      // ✅ Switched to Axios POST with Authorization Header
       const response = await axios.post(
         `${API_BASE}/get_virtual_office_enquiries.php`,
         { id, status },
         {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : "",
-          },
-          withCredentials: true,
+          
+          withCredentials: true, // ✅ Send cookie
         }
       );
 
@@ -81,16 +71,11 @@ const VirtualOfficeEnquiries = () => {
       item.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.phone?.includes(searchTerm) ||
-      item.referral_source
-        ?.toLowerCase()
-        .includes(searchTerm.toLowerCase());
+      item.referral_source?.toLowerCase().includes(searchTerm.toLowerCase());
 
     return matchesStatus && matchesSearch;
   });
 
-  // -------------------------------
-  // UI
-  // -------------------------------
   return (
     <div className="p-4 sm:p-8 bg-white rounded-lg shadow-sm border-t">
       {/* Header */}
@@ -152,28 +137,17 @@ const VirtualOfficeEnquiries = () => {
               </tr>
             ) : filteredEnquiries.length > 0 ? (
               filteredEnquiries.map((item, index) => (
-                <tr
-                  key={item.id}
-                  className="border-b hover:bg-orange-50 transition"
-                >
+                <tr key={item.id} className="border-b hover:bg-orange-50 transition">
                   <td className="py-2 px-3">{index + 1}</td>
-                  <td className="py-2 px-3 font-medium text-orange-700">
-                    {item.name || "-"}
-                  </td>
+                  <td className="py-2 px-3 font-medium text-orange-700">{item.name || "-"}</td>
                   <td className="py-2 px-3">{item.phone || "-"}</td>
                   <td className="py-2 px-3">{item.email || "-"}</td>
-                  <td className="py-2 px-3">
-                    {item.referral_source || "-"}
-                  </td>
-                  <td className="py-2 px-3 whitespace-nowrap">
-                    {item.created_at || "-"}
-                  </td>
+                  <td className="py-2 px-3">{item.referral_source || "-"}</td>
+                  <td className="py-2 px-3 whitespace-nowrap">{item.created_at || "-"}</td>
                   <td className="py-2 px-3">
                     <select
                       value={item.status}
-                      onChange={(e) =>
-                        updateStatus(item.id, e.target.value)
-                      }
+                      onChange={(e) => updateStatus(item.id, e.target.value)}
                       className="border border-orange-400 rounded px-2 py-1 text-sm focus:outline-none"
                     >
                       <option value="Pending">Pending</option>
@@ -186,10 +160,7 @@ const VirtualOfficeEnquiries = () => {
               ))
             ) : (
               <tr>
-                <td
-                  colSpan="7"
-                  className="text-center py-6 text-gray-500 italic"
-                >
+                <td colSpan="7" className="text-center py-6 text-gray-500 italic">
                   No enquiries found.
                 </td>
               </tr>
@@ -200,8 +171,7 @@ const VirtualOfficeEnquiries = () => {
 
       {/* Footer */}
       <div className="mt-4 text-sm text-gray-600">
-        Showing <b>{filteredEnquiries.length}</b> of{" "}
-        <b>{enquiries.length}</b> entries
+        Showing <b>{filteredEnquiries.length}</b> of <b>{enquiries.length}</b> entries
       </div>
     </div>
   );

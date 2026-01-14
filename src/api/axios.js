@@ -5,6 +5,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
 // -----------------------------
@@ -12,14 +13,7 @@ const api = axios.create({
 // -----------------------------
 api.interceptors.request.use(
   (config) => {
-    const adminToken = localStorage.getItem("adminToken");
-    const userToken = localStorage.getItem("userToken");
-
-    const token = adminToken || userToken;
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    
 
     return config;
   },
@@ -40,8 +34,7 @@ api.interceptors.response.use(
       const hasUser = localStorage.getItem("user");
 
       if (hasAdmin || hasUser) {
-        localStorage.removeItem("adminToken");
-        localStorage.removeItem("userToken");
+        
         localStorage.removeItem("admin");
         localStorage.removeItem("user");
 

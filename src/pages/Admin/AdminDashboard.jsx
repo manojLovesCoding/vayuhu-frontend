@@ -7,17 +7,12 @@ import "react-toastify/dist/ReactToastify.css";
 const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
 
-// -----------------------------
 // Helper Functions
-// -----------------------------
 const formatDate = (dateStr) =>
   dateStr ? new Date(dateStr).toLocaleDateString("en-GB") : "-";
-
 const formatCurrency = (val) => `₹${Number(val || 0).toLocaleString()}`;
 
-// -----------------------------
 // Reservations Table (Memoized)
-// -----------------------------
 const ReservationsTable = React.memo(({ reservations }) => (
   <div className="overflow-x-auto">
     <table className="w-full text-sm text-left border-collapse">
@@ -67,68 +62,54 @@ const ReservationsTable = React.memo(({ reservations }) => (
   </div>
 ));
 
-// -----------------------------
 // Main Component
-// -----------------------------
 const AdminDashboard = () => {
   const [reservations, setReservations] = useState([]);
   const [revenue, setRevenue] = useState({ categories: [], data: [] });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  const loadDashboard = async () => {
-    try {
-      setLoading(true);
+    const loadDashboard = async () => {
+      try {
+        setLoading(true);
 
-      const token = localStorage.getItem("adminToken");
+        const authHeaders = {
+          withCredentials: true, // <-- IMPORTANT: send cookies
+        };
 
+        const [resReservations, resRevenue] = await Promise.all([
+          axios.get(`${API_URL}/get_reservations.php`, authHeaders),
+          axios.get(`${API_URL}/get_monthly_revenue.php`, authHeaders),
+        ]);
 
-      if (!token) {
-        toast.error("Session expired. Please login again.");
-        return;
+        if (resReservations.data.success) {
+          setReservations(resReservations.data.reservations || []);
+        }
+
+        if (resRevenue.data.success) {
+          setRevenue({
+            categories: resRevenue.data.revenue.map((r) => r.month),
+            data: resRevenue.data.revenue.map((r) =>
+              Number(r.total_revenue)
+            ),
+          });
+        }
+      } catch (error) {
+        if (error.response?.status === 401) {
+          toast.error("Session expired. Please login again.");
+          window.dispatchEvent(new Event("logout"));
+        } else {
+          toast.error("Failed to load dashboard data");
+        }
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const authHeaders = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
+    loadDashboard();
+  }, []);
 
-      const [resReservations, resRevenue] = await Promise.all([
-        axios.get(`${API_URL}/get_reservations.php`, authHeaders),
-        axios.get(`${API_URL}/get_monthly_revenue.php`, authHeaders),
-      ]);
-
-      if (resReservations.data.success) {
-        setReservations(resReservations.data.reservations || []);
-      }
-
-      if (resRevenue.data.success) {
-        setRevenue({
-          categories: resRevenue.data.revenue.map(r => r.month),
-          data: resRevenue.data.revenue.map(r => Number(r.total_revenue)),
-        });
-      }
-    } catch (error) {
-     if (error.response?.status === 401) {
-  toast.error("Session expired. Please login again.");
-  window.dispatchEvent(new Event("logout"));
-}
-else {
-        toast.error("Failed to load dashboard data");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  loadDashboard();
-}, []);
-
-
-  // -----------------------------
   // Summary Stats (Memoized)
-  // -----------------------------
   const stats = useMemo(() => {
     const now = new Date();
     const last7Days = new Date();
@@ -143,20 +124,17 @@ else {
     ).length;
 
     const ongoingReservations = reservations.filter(
-  (r) => new Date(r.date) >= now
-).length;
+      (r) => new Date(r.date) >= now
+    ).length;
 
     return [
       { label: "New Reservations", value: newReservations },
       { label: "Ongoing Reservations", value: ongoingReservations },
       { label: "Completed Reservations", value: completedReservations },
-      //{ label: "Today's Contact Request", value: 0 },
     ];
   }, [reservations]);
 
-  // -----------------------------
   // Chart Options (Memoized)
-  // -----------------------------
   const chartOptions = useMemo(
     () => ({
       chart: { id: "monthly-revenue", toolbar: { show: true } },
@@ -165,36 +143,25 @@ else {
         labels: { rotate: -45 },
       },
       yaxis: {
-        labels: {
-          formatter: (val) => `₹${val.toLocaleString()}`,
-        },
+        labels: { formatter: (val) => `₹${val.toLocaleString()}` },
       },
-      plotOptions: {
-        bar: { borderRadius: 6, columnWidth: "50%" },
-      },
+      plotOptions: { bar: { borderRadius: 6, columnWidth: "50%" } },
       colors: ["#f97316"],
       dataLabels: { enabled: false },
     }),
     [revenue.categories]
   );
 
-  // -----------------------------
   // Render
-  // -----------------------------
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      {/* Header */}
       <div className="mb-6">
-        <h1 className="text-xl font-semibold text-orange-600">
-          Dashboard
-        </h1>
+        <h1 className="text-xl font-semibold text-orange-600">Dashboard</h1>
         <p className="text-sm text-gray-500">
-          Vayuhu: Elevate Your Workday, Where Collaboration Meets
-          Innovation
+          Vayuhu: Elevate Your Workday, Where Collaboration Meets Innovation
         </p>
       </div>
 
-      {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         {stats.map((stat) => (
           <div
@@ -202,23 +169,17 @@ else {
             className="bg-white border border-orange-100 rounded-2xl p-4"
           >
             <h2 className="text-sm text-gray-500">{stat.label}</h2>
-            <p className="text-2xl font-bold text-orange-600">
-              {stat.value}
-            </p>
+            <p className="text-2xl font-bold text-orange-600">{stat.value}</p>
           </div>
         ))}
       </div>
 
-      {/* Revenue Chart */}
       <div className="bg-white border border-orange-100 rounded-2xl p-4 mb-8">
         <h2 className="text-lg font-semibold text-center text-orange-600 mb-4">
           Monthly Revenue
         </h2>
-
         {loading ? (
-          <p className="text-center text-gray-500 py-10">
-            Loading revenue data...
-          </p>
+          <p className="text-center text-gray-500 py-10">Loading revenue data...</p>
         ) : (
           <Chart
             options={chartOptions}
@@ -229,20 +190,14 @@ else {
         )}
       </div>
 
-      {/* Reservations Table */}
       <div className="bg-white border border-orange-100 rounded-2xl p-4">
         <h2 className="text-lg font-semibold mb-4 text-orange-600">
           Reservations
         </h2>
-
         {loading ? (
-          <p className="text-center text-gray-500 py-10">
-            Loading reservations...
-          </p>
+          <p className="text-center text-gray-500 py-10">Loading reservations...</p>
         ) : reservations.length === 0 ? (
-          <p className="text-center text-gray-500 py-10">
-            No reservations found.
-          </p>
+          <p className="text-center text-gray-500 py-10">No reservations found.</p>
         ) : (
           <ReservationsTable reservations={reservations} />
         )}

@@ -12,8 +12,6 @@ const VisitorsDetails = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.id;
 
-  const token = localStorage.getItem("userToken");
-
   const API_BASE =
     import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
 
@@ -75,8 +73,8 @@ const VisitorsDetails = () => {
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: token ? `Bearer ${token}` : "",
             },
+            withCredentials: true, // ✅ Send HttpOnly cookie
           }
         );
 
@@ -96,7 +94,7 @@ const VisitorsDetails = () => {
     };
 
     fetchVisitors();
-  }, [userId, token, API_BASE]);
+  }, [userId, API_BASE]);
 
   // -----------------------------
   // Search (Optimized)
@@ -228,8 +226,7 @@ const VisitorsDetails = () => {
 
             {/* Footer */}
             <div className="mt-4 text-gray-600 text-sm">
-              Showing {filteredVisitors.length} of {filteredVisitors.length}{" "}
-              entries
+              Showing {filteredVisitors.length} of {filteredVisitors.length} entries
             </div>
           </>
         )}

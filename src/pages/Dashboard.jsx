@@ -15,8 +15,6 @@ const Dashboard = () => {
 
   const user = JSON.parse(localStorage.getItem("user"));
   const userId = user?.id;
-  // ✅ Get the token for Authorization
-  const token = localStorage.getItem("userToken");
 
   useEffect(() => {
     if (!userId) {
@@ -30,16 +28,15 @@ const Dashboard = () => {
         const API_BASE =
           import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
 
-        // ✅ Using Axios POST request
+        // ✅ Removed Authorization header because JWT is in HttpOnly cookie
         const response = await axios.post(
           `${API_BASE}/get_booking_summary.php`,
-          { user_id: userId }, // Axios sends this as JSON automatically
+          { user_id: userId },
           {
             headers: {
               "Content-Type": "application/json",
-              // ✅ Added Bearer Token to Axios headers
-              Authorization: token ? `Bearer ${token}` : "",
             },
+            withCredentials: true, // ✅ Needed to send cookies with requests
           }
         );
 
@@ -63,7 +60,7 @@ const Dashboard = () => {
     };
 
     fetchDashboardData();
-  }, [userId, token]);
+  }, [userId]);
 
   // 🧾 Today's reservations (frontend filter)
   const today = new Date().toISOString().split("T")[0];

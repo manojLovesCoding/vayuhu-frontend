@@ -6,28 +6,45 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user")));
-  const [admin, setAdmin] = useState(() => JSON.parse(localStorage.getItem("admin")));
+  const [user, setUser] = useState(() =>
+    JSON.parse(localStorage.getItem("user"))
+  );
+  const [admin, setAdmin] = useState(() =>
+    JSON.parse(localStorage.getItem("admin"))
+  );
 
-  const loginUser = (userData, token) => {
+  {
+    /*const loginUser = (userData, token) => {
     localStorage.setItem("userToken", token);
+    localStorage.setItem("user", JSON.stringify(userData));
+    setUser(userData);
+  };*/
+  }
+
+  const loginUser = (userData) => {
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
   };
 
-  const loginAdmin = (adminData, token) => {
+  {
+    /*const loginAdmin = (adminData, token) => {
     localStorage.setItem("adminToken", token);
+    localStorage.setItem("admin", JSON.stringify(adminData));
+    setAdmin(adminData);
+  };*/
+  }
+
+  const loginAdmin = (adminData) => {
     localStorage.setItem("admin", JSON.stringify(adminData));
     setAdmin(adminData);
   };
 
   const logoutUser = () => {
-  localStorage.removeItem("userToken");
-  localStorage.removeItem("user");
-  setUser(null);
-  navigate("/auth", { replace: true });
-};
-
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("user");
+    setUser(null);
+    navigate("/auth", { replace: true });
+  };
 
   const logoutAdmin = () => {
     localStorage.removeItem("adminToken");

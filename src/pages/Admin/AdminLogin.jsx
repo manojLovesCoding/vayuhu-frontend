@@ -24,7 +24,7 @@ const AdminLogin = () => {
       setMessage(result.message);
 
       if (result.status === "success" && result.admin) {
-        loginAdmin(result.admin, result.token); // ✅ Save admin in context
+        loginAdmin(result.admin); // ✅ Save admin in context
         navigate("/admin", { replace: true });
       }
     } catch (error) {
