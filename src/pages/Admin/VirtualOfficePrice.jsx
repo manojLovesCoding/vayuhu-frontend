@@ -13,8 +13,7 @@ const VirtualOfficePrice = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  // ✅ Get token from localStorage
-  const token = localStorage.getItem("adminToken");
+  // ✅ No need to get token from localStorage anymore
 
   const statusColors = {
     Active: "text-green-600 bg-green-100",
@@ -23,13 +22,11 @@ const VirtualOfficePrice = () => {
 
   const fetchPrices = async () => {
     try {
-      // ✅ Using Axios with Authorization Header
+      // ✅ Send cookies automatically
       const response = await axios.get(
         `${API_URL}/get_virtual_office_price_list.php`,
         {
-          headers: {
-            Authorization: token ? `Bearer ${token}` : "",
-          },
+          withCredentials: true, // 🟢 Important for HttpOnly cookie
         }
       );
 
@@ -37,7 +34,7 @@ const VirtualOfficePrice = () => {
       if (result.status === "success") {
         setPriceList(result.data || []);
       } else {
-        toast.error("No records found.");
+        toast.error(result.message || "No records found.");
       }
     } catch (error) {
       console.error("Error fetching prices:", error);
@@ -54,15 +51,14 @@ const VirtualOfficePrice = () => {
 
   const handleUpdate = async (updatedData) => {
     try {
-      // ✅ Using Axios POST with Authorization Header
       const response = await axios.post(
         `${API_URL}/update_virtual_office_price.php`,
         updatedData,
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : "",
           },
+          withCredentials: true, // 🟢 Important for HttpOnly cookie
         }
       );
 
@@ -137,14 +133,15 @@ const VirtualOfficePrice = () => {
                         ₹{totalPrice.toFixed(2)}
                       </td>
                       <td className="py-2 px-4 border">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          statusColors[item.status] || "bg-gray-100 text-gray-500"
-                        }`}
-                      >
-                        {item.status}
-                      </span>
-                    </td>
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                            statusColors[item.status] ||
+                            "bg-gray-100 text-gray-500"
+                          }`}
+                        >
+                          {item.status}
+                        </span>
+                      </td>
 
                       <td className="py-2 px-4 border">
                         <button

@@ -27,7 +27,6 @@ const AdminVisitorsOverview = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedVisitorId, setSelectedVisitorId] = useState(null);
 
-  const token = localStorage.getItem("adminToken");
   const adminData = JSON.parse(localStorage.getItem("admin") || "{}");
   const CURRENT_ADMIN_ID = adminData.id || 3;
 
@@ -49,9 +48,11 @@ const AdminVisitorsOverview = () => {
   const fetchVisitors = async () => {
     if (visitors.length === 0) setLoading(true);
     try {
-      const res = await axios.get(`${API_URL}/get_all_visitors.php`, {
-        headers: { Authorization: token ? `Bearer ${token}` : "" },
-      });
+      const res = await axios.get(
+        `${API_URL}/get_all_visitors.php`,
+        { withCredentials: true } // ✅ cookie sent automatically
+      );
+
       if (res.data.success) {
         setVisitors(res.data.visitors);
       } else {
@@ -59,7 +60,7 @@ const AdminVisitorsOverview = () => {
       }
     } catch (err) {
       console.error("Error fetching visitors:", err);
-      setMessage("Something went wrong while fetching visitors.");
+      setMessage("Authentication failed or session expired.");
     } finally {
       setLoading(false);
     }
@@ -108,10 +109,8 @@ const AdminVisitorsOverview = () => {
       };
 
       const res = await axios.post(endpoint, payload, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true, // ✅ required
       });
 
       if (res.data.success) {
@@ -129,7 +128,7 @@ const AdminVisitorsOverview = () => {
         alert(res.data.message);
       }
     } catch (error) {
-      alert("Failed to connect to server.");
+      alert("Session expired. Please login again.");
     } finally {
       setSubmitting(false);
     }

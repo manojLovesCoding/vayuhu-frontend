@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { RefreshCcw, User } from "lucide-react";
-import axios from "axios"; // ✅ Imported Axios
+import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -9,20 +9,16 @@ const AdminSeatMapView = () => {
   const [spaces, setSpaces] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Retrieve Bearer Token for Authorization
-  const token = localStorage.getItem("adminToken");
+  // 🔒 JWT is now stored in HttpOnly cookie (no localStorage access)
 
   const fetchData = () => {
     setLoading(true);
 
-    // ✅ Using Axios with Authorization Header
-    axios.get(`${API_BASE_URL}/get_spaces.php`, {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : "",
-      }
-    })
+    axios
+      .get(`${API_BASE_URL}/get_spaces.php`, {
+        withCredentials: true, // ✅ send HttpOnly cookie
+      })
       .then((res) => {
-        // Axios wraps response in 'data'
         const data = res.data;
         if (data.success) {
           setSpaces(data.spaces);

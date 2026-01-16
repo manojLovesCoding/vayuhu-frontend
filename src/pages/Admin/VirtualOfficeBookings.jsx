@@ -26,26 +26,25 @@ const VirtualOfficeBookings = () => {
   const token = localStorage.getItem("adminToken");
 
   // ✅ Fetch Bookings Function
+  // Fetch Bookings Function
   const fetchBookings = async () => {
     setLoading(true);
     try {
-      // ✅ Switched to Axios with Authorization Header
       const response = await axios.get(`${API_URL}/get_virtual_bookings.php`, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
+        withCredentials: true, // ✅ Send HttpOnly cookie automatically
       });
 
-      const data = response.data; // Axios stores body in .data
+      const data = response.data;
 
       if (data.success) {
         setBookings(data.bookings);
       } else {
-        toast.error("Failed to fetch bookings.");
+        toast.error(data.message || "Failed to fetch bookings.");
       }
     } catch (error) {
       console.error("Error:", error);
-      const errorMsg = error.response?.data?.message || "Network error. Please try again.";
+      const errorMsg =
+        error.response?.data?.message || "Network error. Please try again.";
       toast.error(errorMsg);
     } finally {
       setLoading(false);

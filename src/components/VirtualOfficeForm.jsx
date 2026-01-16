@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import axios from "axios"; // ✅ Added Axios
+import axios from "axios";
 import { User, Mail, Phone, MessageSquare } from "lucide-react";
 import VirtualOfficeBookingModal from "./VirtualOfficeBookingModal";
 
@@ -13,8 +13,8 @@ const VirtualOfficeForm = () => {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // ✅ Retrieve Bearer Token
-  const token = localStorage.getItem("userToken");
+  // ✅ No need to send token in header anymore; server reads HttpOnly cookie
+  // const token = localStorage.getItem("userToken");
 
   // ----------------------------------
   // Submit Form
@@ -34,19 +34,19 @@ const VirtualOfficeForm = () => {
     setLoading(true);
 
     try {
-      // ✅ Using Axios with Authorization Header
+      // ✅ Send request without Authorization header
       const response = await axios.post(
         `${API_BASE}/add_virtual_office_enquiry.php`,
         payload,
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: token ? `Bearer ${token}` : "",
           },
+          withCredentials: true, // ✅ ensure cookies are sent
         }
       );
 
-      const data = response.data; // Axios automatically parses JSON
+      const data = response.data;
 
       if (data.status === "success") {
         toast.success(data.message || "Enquiry submitted successfully");
@@ -102,8 +102,7 @@ const VirtualOfficeForm = () => {
 
       {/* Title */}
       <h2 className="text-2xl sm:text-3xl font-semibold mb-10">
-        Get Started with Your{" "}
-        <span className="text-orange-500">Virtual Office</span>
+        Get Started with Your <span className="text-orange-500">Virtual Office</span>
       </h2>
 
       {/* Form */}

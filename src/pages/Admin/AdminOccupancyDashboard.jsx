@@ -13,15 +13,21 @@ import {
   Cell,
 } from "recharts";
 import { motion } from "framer-motion";
-import { RefreshCcw, LayoutDashboard, CheckCircle, XCircle, MapPin } from "lucide-react";
-import axios from "axios"; // ✅ Imported Axios
+import {
+  RefreshCcw,
+  LayoutDashboard,
+  CheckCircle,
+  XCircle,
+  MapPin,
+} from "lucide-react";
+import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const COLORS = {
-  Available: "#22c55e", 
-  Booked: "#ef4444",    
-  Maintenance: "#f59e0b", 
+  Available: "#22c55e",
+  Booked: "#ef4444",
+  Maintenance: "#f59e0b",
 };
 
 const AdminOccupancyDashboard = () => {
@@ -30,20 +36,17 @@ const AdminOccupancyDashboard = () => {
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [activeTab, setActiveTab] = useState("All");
 
-  // ✅ Retrieve Bearer Token for Authorization
-  const token = localStorage.getItem("userToken");
+  // 🔒 JWT now lives in HttpOnly cookie (no localStorage access)
 
   const fetchData = () => {
     setLoading(true);
-    
-    // ✅ Switched to Axios with Authorization Header
-    axios.get(`${API_BASE_URL}/get_spaces.php`, {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : "",
-      }
-    })
+
+    axios
+      .get(`${API_BASE_URL}/get_spaces.php`, {
+        withCredentials: true, // ✅ IMPORTANT: send HttpOnly cookies
+      })
       .then((res) => {
-        const data = res.data; // Axios stores response in .data
+        const data = res.data;
         if (data.success) {
           setSpaces(data.spaces);
           setLastUpdated(new Date());
@@ -59,7 +62,7 @@ const AdminOccupancyDashboard = () => {
     fetchData();
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
-  }, [token]); // ✅ Added token to dependency array
+  }, []); // ✅ no token dependency anymore
 
   // 1. PIE CHART DATA
   const pieData = useMemo(() => {
@@ -104,8 +107,12 @@ const AdminOccupancyDashboard = () => {
   }, [spaces]);
 
   const totalSpaces = spaces.length;
-  const totalBooked = pieData.find((d) => d.name === "Booked")?.value || 0;
-  const occupancyRate = totalSpaces > 0 ? ((totalBooked / totalSpaces) * 100).toFixed(1) : 0;
+  const totalBooked =
+    pieData.find((d) => d.name === "Booked")?.value || 0;
+  const occupancyRate =
+    totalSpaces > 0
+      ? ((totalBooked / totalSpaces) * 100).toFixed(1)
+      : 0;
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import axios from "axios"; // ✅ Added Axios
+import axios from "axios"; // ✅ Already using Axios
 import "react-toastify/dist/ReactToastify.css";
 
 // ✅ Use environment variable for API base URL
@@ -12,20 +12,16 @@ const Reservations = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [entriesPerPage, setEntriesPerPage] = useState(10);
 
-  // ✅ Retrieve Bearer Token for Authorization
-  const token = localStorage.getItem("adminToken");
+  // ✅ No need to retrieve token manually from localStorage anymore
 
   // ✅ Fetch Reservations using Axios
   const fetchReservations = async () => {
     try {
-      // ✅ Switched to Axios with Authorization Header
+      // ✅ Send cookies with request
       const response = await axios.get(`${API_BASE}/get_reservations.php`, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
+        withCredentials: true, // 🟢 Important for HttpOnly cookies
       });
 
-      // Axios automatically parses JSON into response.data
       const data = response.data;
 
       if (data.success) {
@@ -35,15 +31,15 @@ const Reservations = () => {
       }
     } catch (error) {
       console.error("Error fetching reservations:", error);
-      // Access custom error message from backend if available
-      const errorMsg = error.response?.data?.message || "Something went wrong while fetching reservations!";
+      const errorMsg =
+        error.response?.data?.message || "Something went wrong while fetching reservations!";
       toast.error(errorMsg);
     }
   };
 
   useEffect(() => {
     fetchReservations();
-  }, [API_BASE, token]); // Re-fetch if token changes
+  }, [API_BASE]); // ✅ Removed token dependency
 
   // ✅ Filter by name, mobile, space, OR SPACE CODE (Updated)
   const filteredReservations = reservations.filter((res) => {
@@ -53,7 +49,7 @@ const Reservations = () => {
       (res.mobile_no && res.mobile_no.includes(term)) ||
       (res.space && res.space.toLowerCase().includes(term)) ||
       (res.space_code && res.space_code.toLowerCase().includes(term)) ||
-      (res.seat_codes && res.seat_codes.toLowerCase().includes(term)) // 🟢 Allow searching by multi-seat codes
+      (res.seat_codes && res.seat_codes.toLowerCase().includes(term))
     );
   });
 
@@ -135,7 +131,7 @@ const Reservations = () => {
                   <td className="py-2 px-4 border font-medium text-gray-800">{res.name}</td>
                   <td className="py-2 px-4 border">{res.mobile_no}</td>
                   <td className="py-2 px-4 border">{res.space}</td>
-                  
+
                   {/* 🟢 UPDATED: Display Multiple Codes if available */}
                   <td className="py-2 px-4 border">
                     {res.seat_codes ? (
