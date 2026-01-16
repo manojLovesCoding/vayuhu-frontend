@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { assets } from "../assets/assets";
 import { useAuth } from "../context/AuthContext"; // ✅ Import Auth context
+import api from "../api/axios";
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
   const { logoutUser } = useAuth(); // ✅ Get logout function from context
@@ -32,9 +33,9 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
          : "text-gray-700 hover:bg-orange-100 hover:text-orange-600"
      }`;
 
-  // ✅ Updated logout handler
-  const handleLogout = () => {
-    logoutUser();
+  const handleLogout = async () => {
+    await api.post("/logout.php", {}, { withCredentials: true });
+    logoutUser(); // clears context + redirects
   };
 
   return (
