@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import axios from "axios"; // ✅ Added Axios
+import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
@@ -9,22 +9,12 @@ const CouponList = () => {
   const [coupons, setCoupons] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch Coupons
   const fetchCoupons = async () => {
     setLoading(true);
 
-    // ✅ Get Bearer Token from localStorage
-    const token = localStorage.getItem("adminToken");
-
     try {
-      // ✅ Using Axios with Authorization Header
-      const res = await axios.get(`${API_URL}/get_coupons.php`, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "", // ✅ Bearer Token added
-        },
-      });
-
-      // ✅ Axios stores response in .data
+      // ✅ withCredentials ensures HttpOnly cookies are sent automatically
+      const res = await axios.get(`${API_URL}/get_coupons.php`, { withCredentials: true });
       const data = res.data;
 
       if (data.success) {
@@ -33,7 +23,6 @@ const CouponList = () => {
         toast.error(data?.message || "Failed to fetch coupons");
       }
     } catch (err) {
-      // ✅ Improved error handling for Axios
       const errorMsg = err.response?.data?.message || err.message || "Error fetching coupons";
       toast.error(errorMsg);
     } finally {

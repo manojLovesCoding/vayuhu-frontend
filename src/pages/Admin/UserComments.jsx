@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios"; // ✅ Added Axios
 
 // ✅ API base from environment variable
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
+const API_BASE =
+  import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
 
 const UserComments = ({ user, onBack, onStatusUpdate }) => {
   const [formData, setFormData] = useState({
@@ -25,20 +26,19 @@ const UserComments = ({ user, onBack, onStatusUpdate }) => {
   // ✅ Fetch comments dynamically using Axios
   useEffect(() => {
     if (user?.id) {
-      axios.get(`${API_BASE}/get_user_comments.php?user_id=${user.id}`, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      })
-      .then((response) => {
-        const data = response.data;
-        if (data.success) setComments(data.comments || []);
-      })
-      .catch((err) => {
-        console.error("Error fetching comments:", err);
-      });
+      axios
+        .get(`${API_BASE}/get_user_comments.php?user_id=${user.id}`, {
+          withCredentials: true, // ✅ send HttpOnly cookie
+        })
+        .then((response) => {
+          const data = response.data;
+          if (data.success) setComments(data.comments || []);
+        })
+        .catch((err) => {
+          console.error("Error fetching comments:", err);
+        });
     }
-  }, [user, token]);
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -83,18 +83,22 @@ const UserComments = ({ user, onBack, onStatusUpdate }) => {
     setLoading(true);
     try {
       // ✅ Using Axios POST with Authorization Header
-      const response = await axios.post(`${API_BASE}/add_user_comment.php`, {
-        user_id: user.id,
-        status: formData.status,
-        comment: formData.newComment,
-        follow_up_date: formData.status === "Follow-Up" ? formData.followUpDate : null,
-        follow_up_time: formData.status === "Follow-Up" ? formData.followUpTime : null,
-      }, {
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
+      const response = await axios.post(
+        `${API_BASE}/add_user_comment.php`,
+        {
+          user_id: user.id,
+          status: formData.status,
+          comment: formData.newComment,
+          follow_up_date:
+            formData.status === "Follow-Up" ? formData.followUpDate : null,
+          follow_up_time:
+            formData.status === "Follow-Up" ? formData.followUpTime : null,
+        },
+        {
+          withCredentials: true, // ✅ send HttpOnly cookie
+          headers: { "Content-Type": "application/json" },
         }
-      });
+      );
 
       const data = response.data;
 
@@ -104,8 +108,10 @@ const UserComments = ({ user, onBack, onStatusUpdate }) => {
           {
             status: formData.status,
             comment: formData.newComment,
-            follow_up_date: formData.status === "Follow-Up" ? formData.followUpDate : "-",
-            follow_up_time: formData.status === "Follow-Up" ? formData.followUpTime : "-",
+            follow_up_date:
+              formData.status === "Follow-Up" ? formData.followUpDate : "-",
+            follow_up_time:
+              formData.status === "Follow-Up" ? formData.followUpTime : "-",
             created_at: new Date().toLocaleString(),
           },
         ]);
@@ -168,13 +174,22 @@ const UserComments = ({ user, onBack, onStatusUpdate }) => {
 
       {/* User Info */}
       <div className="flex flex-wrap gap-6 mb-4 text-sm text-gray-600">
-        <p><strong>Name:</strong> {user.name}</p>
-        <p><strong>Phone:</strong> {user.phone}</p>
-        <p><strong>Email:</strong> {user.email}</p>
+        <p>
+          <strong>Name:</strong> {user.name}
+        </p>
+        <p>
+          <strong>Phone:</strong> {user.phone}
+        </p>
+        <p>
+          <strong>Email:</strong> {user.email}
+        </p>
       </div>
 
       {/* Add Comment Form */}
-      <form onSubmit={handleSubmit} className="border border-orange-300 rounded-lg p-4 mb-6 bg-white shadow-sm">
+      <form
+        onSubmit={handleSubmit}
+        className="border border-orange-300 rounded-lg p-4 mb-6 bg-white shadow-sm"
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <label className="text-sm font-medium text-gray-600 mb-1 block">
@@ -207,11 +222,15 @@ const UserComments = ({ user, onBack, onStatusUpdate }) => {
                   name="followUpDate"
                   value={formData.followUpDate}
                   onChange={handleChange}
-                  className={`w-full border ${dateError ? "border-red-500" : "border-orange-400"} rounded px-3 py-2`}
+                  className={`w-full border ${
+                    dateError ? "border-red-500" : "border-orange-400"
+                  } rounded px-3 py-2`}
                   min={new Date().toISOString().split("T")[0]}
                   required
                 />
-                {dateError && <p className="text-red-500 text-xs mt-1">{dateError}</p>}
+                {dateError && (
+                  <p className="text-red-500 text-xs mt-1">{dateError}</p>
+                )}
               </div>
 
               <div className="flex-1">
@@ -257,7 +276,9 @@ const UserComments = ({ user, onBack, onStatusUpdate }) => {
         <div className="flex justify-end">
           <button
             type="submit"
-            disabled={loading || (!!dateError && formData.status === "Follow-Up")}
+            disabled={
+              loading || (!!dateError && formData.status === "Follow-Up")
+            }
             className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition disabled:opacity-60"
           >
             {loading ? "Submitting..." : "Submit"}
@@ -296,8 +317,13 @@ const UserComments = ({ user, onBack, onStatusUpdate }) => {
             <tbody>
               {paginatedComments.length > 0 ? (
                 paginatedComments.map((c, i) => (
-                  <tr key={i} className="border-b hover:bg-orange-50/40 transition">
-                    <td className="px-3 py-2">{(currentPage - 1) * rowsPerPage + i + 1}</td>
+                  <tr
+                    key={i}
+                    className="border-b hover:bg-orange-50/40 transition"
+                  >
+                    <td className="px-3 py-2">
+                      {(currentPage - 1) * rowsPerPage + i + 1}
+                    </td>
                     <td className="px-3 py-2">{c.status}</td>
                     <td className="px-3 py-2">{c.follow_up_date || "-"}</td>
                     <td className="px-3 py-2">{c.follow_up_time || "-"}</td>
@@ -325,7 +351,9 @@ const UserComments = ({ user, onBack, onStatusUpdate }) => {
               className="border border-orange-300 rounded px-2 py-1"
             >
               {[5, 10, 20].map((num) => (
-                <option key={num} value={num}>{num}</option>
+                <option key={num} value={num}>
+                  {num}
+                </option>
               ))}
             </select>
             <span>entries</span>

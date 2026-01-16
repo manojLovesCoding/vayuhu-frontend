@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios"; // ✅ Imported Axios
+import axios from "axios";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
 
 const ContactComments = () => {
-  const { id } = useParams(); // ✅ Get contact ID from URL
+  const { id } = useParams(); // Get contact ID from URL
   const navigate = useNavigate();
 
   const [contact, setContact] = useState(null);
@@ -19,41 +19,47 @@ const ContactComments = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  // ✅ Retrieve token from localStorage
-  const token = localStorage.getItem("adminToken");
-
-  // ✅ Fetch contact details using Axios
+  // ------------------------------
+  // Fetch contact details
+  // ------------------------------
   useEffect(() => {
     if (id) {
       axios.get(`${API_BASE}/get_contact_details.php?id=${id}`, {
-        headers: { Authorization: token ? `Bearer ${token}` : "" }
+        withCredentials: true, // ✅ Include HttpOnly cookie automatically
       })
         .then((res) => {
           if (res.data.success) setContact(res.data.contact);
         })
         .catch((err) => console.error("Error fetching contact details:", err));
     }
-  }, [id, token]);
+  }, [id]);
 
-  // ✅ Fetch comments for this contact using Axios
+  // ------------------------------
+  // Fetch comments
+  // ------------------------------
   useEffect(() => {
     if (id) {
       axios.get(`${API_BASE}/get_contact_comments.php?contact_id=${id}`, {
-        headers: { Authorization: token ? `Bearer ${token}` : "" }
+        withCredentials: true, // ✅ Include HttpOnly cookie automatically
       })
         .then((res) => {
           if (res.data.success) setComments(res.data.comments || []);
         })
         .catch((err) => console.error("Error fetching contact comments:", err));
     }
-  }, [id, token]);
+  }, [id]);
 
+  // ------------------------------
+  // Handle form changes
+  // ------------------------------
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ✅ Submit new comment using Axios
+  // ------------------------------
+  // Submit new comment
+  // ------------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -64,21 +70,20 @@ const ContactComments = () => {
 
     setLoading(true);
     try {
-      // ✅ Axios POST with Authorization Header
-      const res = await axios.post(`${API_BASE}/add_contact_comment.php`, {
-        contact_id: id,
-        status: formData.status,
-        comment: formData.newComment,
-      }, {
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "" 
+      const res = await axios.post(
+        `${API_BASE}/add_contact_comment.php`,
+        {
+          contact_id: id,
+          status: formData.status,
+          comment: formData.newComment,
         },
-      });
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true, // ✅ Include cookie
+        }
+      );
 
-      const data = res.data;
-
-      if (data.success) {
+      if (res.data.success) {
         setComments((prev) => [
           ...prev,
           {
@@ -87,13 +92,9 @@ const ContactComments = () => {
             created_at: new Date().toLocaleString(),
           },
         ]);
-
-        setFormData({
-          status: "Pending",
-          newComment: "",
-        });
+        setFormData({ status: "Pending", newComment: "" });
       } else {
-        alert("Failed to add comment");
+        alert(res.data.message || "Failed to add comment");
       }
     } catch (err) {
       console.error(err);
@@ -104,7 +105,9 @@ const ContactComments = () => {
     }
   };
 
-  // ✅ Filter comments by search term
+  // ------------------------------
+  // Filter comments by search term
+  // ------------------------------
   const filteredComments = useMemo(() => {
     return comments.filter(
       (c) =>
@@ -113,6 +116,9 @@ const ContactComments = () => {
     );
   }, [comments, search]);
 
+  // ------------------------------
+  // Pagination
+  // ------------------------------
   const totalPages = Math.ceil(filteredComments.length / rowsPerPage);
   const paginatedComments = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
@@ -149,15 +155,9 @@ const ContactComments = () => {
 
       {/* Contact Info */}
       <div className="flex flex-wrap gap-6 mb-4 text-sm text-gray-600">
-        <p>
-          <strong>Name:</strong> {contact.name}
-        </p>
-        <p>
-          <strong>Phone:</strong> {contact.phone}
-        </p>
-        <p>
-          <strong>Email:</strong> {contact.email || "-"}
-        </p>
+        <p><strong>Name:</strong> {contact.name}</p>
+        <p><strong>Phone:</strong> {contact.phone}</p>
+        <p><strong>Email:</strong> {contact.email || "-"}</p>
         <p>
           <strong>Current Status:</strong>{" "}
           <span className="text-orange-600 font-medium">
@@ -247,13 +247,8 @@ const ContactComments = () => {
             <tbody>
               {paginatedComments.length > 0 ? (
                 paginatedComments.map((c, i) => (
-                  <tr
-                    key={i}
-                    className="border-b hover:bg-orange-50/40 transition"
-                  >
-                    <td className="px-3 py-2">
-                      {(currentPage - 1) * rowsPerPage + i + 1}
-                    </td>
+                  <tr key={i} className="border-b hover:bg-orange-50/40 transition">
+                    <td className="px-3 py-2">{(currentPage - 1) * rowsPerPage + i + 1}</td>
                     <td className="px-3 py-2">{c.status}</td>
                     <td className="px-3 py-2">{c.comment}</td>
                     <td className="px-3 py-2">{c.created_at}</td>
@@ -261,10 +256,7 @@ const ContactComments = () => {
                 ))
               ) : (
                 <tr>
-                  <td
-                    colSpan="4"
-                    className="text-center py-4 text-gray-500 italic"
-                  >
+                  <td colSpan="4" className="text-center py-4 text-gray-500 italic">
                     No comments found.
                   </td>
                 </tr>
@@ -283,9 +275,7 @@ const ContactComments = () => {
               className="border border-orange-300 rounded px-2 py-1"
             >
               {[5, 10, 20].map((num) => (
-                <option key={num} value={num}>
-                  {num}
-                </option>
+                <option key={num} value={num}>{num}</option>
               ))}
             </select>
             <span>entries</span>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { toast } from "react-toastify";
-import axios from "axios"; // ✅ Added Axios
+import axios from "axios";
 
 const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
@@ -18,7 +18,6 @@ const BlogEditModal = ({ blog, onClose, onSave }) => {
   const fileInputRef = useRef(null);
   const [loading, setLoading] = useState(false);
 
-  // Helper to normalize status values
   const normalizeStatus = (status) => {
     if (!status) return "Active";
     const s = status.toLowerCase();
@@ -71,9 +70,8 @@ const BlogEditModal = ({ blog, onClose, onSave }) => {
 
     setLoading(true);
 
-    // ✅ Prepare Multipart Form Data for Axios
     const payload = new FormData();
-    payload.append("id", blog.id); // Ensure ID is passed for update
+    payload.append("id", blog.id);
     payload.append("blog_heading", formData.blog_heading);
     payload.append("blog_description", formData.blog_description);
     payload.append("status", formData.status);
@@ -82,25 +80,18 @@ const BlogEditModal = ({ blog, onClose, onSave }) => {
       payload.append("blog_image", imageFile);
     }
 
-    // ✅ Get token from localStorage
-    const token = localStorage.getItem("adminToken");
-
     try {
-      // ✅ Axios POST with Authorization Header
       const response = await axios.post(`${API_URL}/update_blog.php`, payload, {
+        withCredentials: true, // ✅ HttpOnly cookie
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: token ? `Bearer ${token}` : "",
         },
       });
 
       const result = response.data;
 
-      
-
       if (result.success) {
         toast.success("Blog updated successfully!");
-        // ✅ Call the parent onSave to refresh list and close modal
         onSave();
       } else {
         toast.error(result.message || "Failed to update blog");
@@ -117,7 +108,6 @@ const BlogEditModal = ({ blog, onClose, onSave }) => {
   };
 
   if (!blog) return null;
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white w-full max-w-4xl rounded-lg shadow-lg overflow-hidden animate-fadeIn">

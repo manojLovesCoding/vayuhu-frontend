@@ -18,18 +18,16 @@ const EditContact = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  // ✅ Get token from localStorage
-  const token = localStorage.getItem("adminToken");
+  // ✅ No need to read token manually; cookies are automatically sent with Axios
+  // const token = localStorage.getItem("adminToken");
 
   // ✅ Fetch contact details for editing
   useEffect(() => {
     const fetchContact = async () => {
       try {
-        // ✅ Switched to Axios with Bearer Token
+        // ✅ Axios GET, credentials: include ensures cookies are sent
         const response = await axios.get(`${API_BASE}/get_contact_details.php?id=${id}`, {
-          headers: {
-            Authorization: token ? `Bearer ${token}` : "",
-          },
+          withCredentials: true, // Important for HttpOnly cookies
         });
         
         const data = response.data;
@@ -50,7 +48,7 @@ const EditContact = () => {
       }
     };
     fetchContact();
-  }, [id, API_BASE, token]);
+  }, [id, API_BASE]);
 
   // ✅ Handle field changes
   const handleChange = (e) => {
@@ -65,15 +63,15 @@ const EditContact = () => {
     setLoading(true);
 
     try {
-      // ✅ Switched to Axios POST with Bearer Token
+      // ✅ Axios POST, credentials included for HttpOnly cookie
       const res = await axios.post(`${API_BASE}/update_contact.php`, {
         id,
         ...formData,
       }, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "",
         },
+        withCredentials: true, // Important for HttpOnly cookies
       });
 
       const data = res.data;

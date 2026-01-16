@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // ✅ Added Axios
+import axios from "axios";
 
 const ContactList = () => {
   const API_BASE = import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
@@ -10,30 +10,22 @@ const ContactList = () => {
   const [filter, setFilter] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
 
-  // ✅ Retrieve Bearer Token for Authorization
-  const token = localStorage.getItem("adminToken");
-
   // Fetch contact data
   useEffect(() => {
     const fetchContacts = async () => {
       try {
-        // ✅ Switched to Axios with Authorization Header
         const response = await axios.get(`${API_BASE}/get_contacts.php`, {
-          headers: {
-            Authorization: token ? `Bearer ${token}` : "",
-          },
+          withCredentials: true, // ✅ Send HttpOnly cookies
         });
-        
-        // Axios stores the response body in .data
         setContacts(response.data || []);
       } catch (error) {
         console.error("Error fetching contacts:", error);
       }
     };
     fetchContacts();
-  }, [API_BASE, token]);
+  }, [API_BASE]);
 
-  // Filter by status
+  // Filter by status and search term
   const filteredContacts = contacts.filter((contact) => {
     const matchesStatus = filter === "All" || contact.status === filter;
     const matchesSearch =
@@ -135,7 +127,6 @@ const ContactList = () => {
                     <button
                       className="border border-orange-400 text-orange-500 px-3 py-1 rounded hover:bg-orange-50 text-sm"
                       onClick={() => navigate(`/admin/contact-comments/${contact.id}`)}
-
                     >
                       View
                     </button>

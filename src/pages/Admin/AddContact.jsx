@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // ✅ Imported Axios
+import axios from "axios";
 
 const AddContact = () => {
   const navigate = useNavigate();
@@ -21,20 +21,17 @@ const AddContact = () => {
     e.preventDefault();
     setMessage("");
 
-    // ✅ Get token from localStorage
-    const token = localStorage.getItem("adminToken");
-
     try {
-      // ✅ Using Axios for POST request
-      const response = await axios.post(`${API_BASE}/add_contact.php`, formData, {
-        headers: { 
-          "Content-Type": "application/json",
-          // ✅ Added Bearer Token to headers
-          "Authorization": token ? `Bearer ${token}` : "" 
-        },
-      });
+      // ✅ HttpOnly cookie is automatically sent; no Authorization header needed
+      const response = await axios.post(
+        `${API_BASE}/add_contact.php`,
+        formData,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true, // ✅ send cookies automatically
+        }
+      );
 
-      // ✅ Axios stores response in .data
       const result = response.data;
       setMessage(result.message);
 
@@ -43,7 +40,6 @@ const AddContact = () => {
       }
     } catch (error) {
       console.error("Error:", error);
-      // ✅ Handle Axios specific error messages
       const errorMsg = error.response?.data?.message || "Something went wrong. Please try again.";
       setMessage(errorMsg);
     }
@@ -67,7 +63,6 @@ const AddContact = () => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Name */}
           <div>
             <label className="block text-gray-700 mb-1 text-sm sm:text-base">
               Name <span className="text-orange-500">*</span>
@@ -83,7 +78,6 @@ const AddContact = () => {
             />
           </div>
 
-          {/* Email */}
           <div>
             <label className="block text-gray-700 mb-1 text-sm sm:text-base">
               Email
@@ -98,7 +92,6 @@ const AddContact = () => {
             />
           </div>
 
-          {/* Phone */}
           <div>
             <label className="block text-gray-700 mb-1 text-sm sm:text-base">
               Phone (IND) <span className="text-orange-500">*</span>
@@ -115,7 +108,6 @@ const AddContact = () => {
             />
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             className="w-full sm:w-auto bg-orange-500 text-white px-6 py-2 rounded hover:bg-orange-600 transition text-sm sm:text-base"
@@ -123,7 +115,6 @@ const AddContact = () => {
             Submit
           </button>
 
-          {/* Message */}
           {message && (
             <p
               className={`text-sm mt-3 text-center ${

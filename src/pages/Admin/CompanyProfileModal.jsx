@@ -3,7 +3,8 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
+const API_BASE =
+  import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
 
 const CompanyProfileModal = ({ userId, onClose, isAdmin = false }) => {
   const [formData, setFormData] = useState({
@@ -17,16 +18,18 @@ const CompanyProfileModal = ({ userId, onClose, isAdmin = false }) => {
   const [loading, setLoading] = useState(true);
   const fileInputRef = useRef(null);
 
-  const token = localStorage.getItem("adminToken");
-
   useEffect(() => {
     if (!userId) return;
 
     const fetchCompanyProfile = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/get_user_company_profile.php?user_id=${userId}`, {
-          headers: { Authorization: token ? `Bearer ${token}` : "" }
-        });
+        const res = await axios.get(
+          `${API_BASE}/get_user_company_profile.php?user_id=${userId}`,
+          {
+            withCredentials: true,
+          }
+        );
+
         const data = res.data;
 
         if (data.success && data.profile) {
@@ -44,7 +47,8 @@ const CompanyProfileModal = ({ userId, onClose, isAdmin = false }) => {
         }
       } catch (error) {
         console.error("Error fetching company profile:", error);
-        const errorMsg = error.response?.data?.message || "Failed to load company profile";
+        const errorMsg =
+          error.response?.data?.message || "Failed to load company profile";
         toast.error(errorMsg);
       } finally {
         setLoading(false);
@@ -52,7 +56,7 @@ const CompanyProfileModal = ({ userId, onClose, isAdmin = false }) => {
     };
 
     fetchCompanyProfile();
-  }, [userId, token]);
+  }, [userId]);
 
   if (loading) {
     return (
@@ -69,19 +73,28 @@ const CompanyProfileModal = ({ userId, onClose, isAdmin = false }) => {
       <div className="bg-white w-full max-w-2xl rounded-lg shadow-lg overflow-hidden animate-fadeIn">
         {/* Header */}
         <div className="flex justify-between items-center border-b px-6 py-3 bg-orange-50">
-          <h2 className="text-lg font-semibold text-gray-700">Company Profile</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-orange-500 text-2xl leading-none">×</button>
+          <h2 className="text-lg font-semibold text-gray-700">
+            Company Profile
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-orange-500 text-2xl leading-none"
+          >
+            ×
+          </button>
         </div>
 
         {/* Form */}
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Logo */}
           <div className="col-span-1 md:col-span-2 flex flex-col items-center justify-center mb-4">
-            <div
-              className="relative w-28 h-28 rounded-full border-2 border-orange-400 flex items-center justify-center bg-gray-50 text-gray-400 text-5xl cursor-not-allowed"
-            >
+            <div className="relative w-28 h-28 rounded-full border-2 border-orange-400 flex items-center justify-center bg-gray-50 text-gray-400 text-5xl cursor-not-allowed">
               {preview ? (
-                <img src={preview} alt="Logo Preview" className="w-full h-full rounded-full object-cover" />
+                <img
+                  src={preview}
+                  alt="Logo Preview"
+                  className="w-full h-full rounded-full object-cover"
+                />
               ) : (
                 "🏢"
               )}
@@ -90,7 +103,9 @@ const CompanyProfileModal = ({ userId, onClose, isAdmin = false }) => {
 
           {/* Company Name */}
           <div className="flex flex-col col-span-1 md:col-span-2">
-            <label className="text-sm font-medium text-gray-600 mb-1">Company Name</label>
+            <label className="text-sm font-medium text-gray-600 mb-1">
+              Company Name
+            </label>
             <input
               type="text"
               name="companyName"
@@ -102,7 +117,9 @@ const CompanyProfileModal = ({ userId, onClose, isAdmin = false }) => {
 
           {/* GST No */}
           <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-600 mb-1">GST No</label>
+            <label className="text-sm font-medium text-gray-600 mb-1">
+              GST No
+            </label>
             <input
               type="text"
               name="gstNo"
@@ -114,7 +131,9 @@ const CompanyProfileModal = ({ userId, onClose, isAdmin = false }) => {
 
           {/* Company Email */}
           <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-600 mb-1">Company Email</label>
+            <label className="text-sm font-medium text-gray-600 mb-1">
+              Company Email
+            </label>
             <input
               type="email"
               name="email"
@@ -126,7 +145,9 @@ const CompanyProfileModal = ({ userId, onClose, isAdmin = false }) => {
 
           {/* Contact */}
           <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-600 mb-1">Contact</label>
+            <label className="text-sm font-medium text-gray-600 mb-1">
+              Contact
+            </label>
             <input
               type="text"
               name="contact"
@@ -138,7 +159,9 @@ const CompanyProfileModal = ({ userId, onClose, isAdmin = false }) => {
 
           {/* Address */}
           <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-600 mb-1">Address</label>
+            <label className="text-sm font-medium text-gray-600 mb-1">
+              Address
+            </label>
             <textarea
               name="address"
               rows="2"

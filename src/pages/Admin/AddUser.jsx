@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios"; // ✅ Added Axios
+import axios from "axios";
 
 const AddUser = () => {
   const API_BASE = import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
@@ -19,19 +19,16 @@ const AddUser = () => {
     e.preventDefault();
     setMessage("");
 
-    // ✅ Get Bearer Token from localStorage
-    const token = localStorage.getItem("adminToken");
-
     try {
-      // ✅ Using Axios with Authorization Header
+      // ✅ JWT is sent automatically via HttpOnly cookie
       const response = await axios.post(`${API_BASE}/add_user.php`, formData, {
+        withCredentials: true, // Important! Sends cookies with request
         headers: {
           "Content-Type": "application/json",
-          Authorization: token ? `Bearer ${token}` : "", // ✅ Bearer Token added
+         
         },
       });
 
-      // ✅ Axios stores response in .data
       const result = response.data;
       setMessage(result.message);
 
@@ -40,7 +37,6 @@ const AddUser = () => {
       }
     } catch (error) {
       console.error("Error:", error);
-      // ✅ Extract error message from Axios response if available
       const errorMsg = error.response?.data?.message || "Something went wrong. Please try again.";
       setMessage(errorMsg);
     }

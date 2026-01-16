@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ReactQuill from "react-quill";
-import axios from "axios"; // ✅ Imported Axios
+import axios from "axios";
 import "react-quill/dist/quill.snow.css";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -22,7 +22,7 @@ const AddBlog = () => {
   const [preview, setPreview] = useState(null);
 
   // -------------------------
-  // ✅ Fetch User Info from LocalStorage (for added_by)
+  // Fetch User Info from LocalStorage (for added_by)
   // -------------------------
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -31,17 +31,11 @@ const AddBlog = () => {
     }
   }, []);
 
-  // -------------------------
-  // Handle Normal Input
-  // -------------------------
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  // -------------------------
-  // Image Handling + Memory Safe
-  // -------------------------
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -64,33 +58,19 @@ const AddBlog = () => {
     };
   }, [preview]);
 
-  // -------------------------
-  // Validation
-  // -------------------------
   const validate = () => {
     if (!form.added_by.trim()) return toast.error("Adding By is required");
     if (!form.blog_heading.trim()) return toast.error("Blog Heading is required");
-    if (!form.blog_description.trim())
-      return toast.error("Blog Description is required");
+    if (!form.blog_description.trim()) return toast.error("Blog Description is required");
     if (!image) return toast.error("Please upload a blog image");
     return true;
   };
 
-  // -------------------------
-  // ✅ Submit Handler (with JWT Authorization & Axios)
-  // -------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     setLoading(true);
-
-    const token = localStorage.getItem("adminToken");
-    if (!token) {
-      toast.error("You must be logged in to add a blog.");
-      setLoading(false);
-      return;
-    }
 
     try {
       const payload = new FormData();
@@ -99,15 +79,12 @@ const AddBlog = () => {
       payload.append("blog_description", form.blog_description);
       payload.append("blog_image", image);
 
-      // ✅ Switched to Axios for better header management
+      // ✅ Axios POST with HttpOnly cookie
       const res = await axios.post(`${API_URL}/add_blog.php`, payload, {
-        headers: {
-          Authorization: `Bearer ${token}`, // ✅ Send JWT Token
-          // Note: Axios sets Content-Type automatically for FormData
-        },
+        withCredentials: true, // ✅ Send HttpOnly cookie automatically
       });
 
-      const data = res.data; // Axios response data
+      const data = res.data;
 
       if (data.success) {
         toast.success("Blog added successfully!");
@@ -116,7 +93,6 @@ const AddBlog = () => {
         toast.error(data?.message || "Failed to add blog");
       }
     } catch (err) {
-      // Axios stores server error responses in err.response.data
       const errorMsg = err.response?.data?.message || "Error submitting blog";
       toast.error(errorMsg);
     } finally {
@@ -126,10 +102,8 @@ const AddBlog = () => {
 
   return (
     <div className="p-6">
-      {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">Add New Blog</h1>
-
         <button
           onClick={() => navigate("/admin/blog-list")}
           className="px-3 py-1 border border-orange-400 text-orange-500 rounded hover:bg-orange-50 transition"
@@ -138,12 +112,9 @@ const AddBlog = () => {
         </button>
       </div>
 
-      {/* FORM */}
       <form onSubmit={handleSubmit} className="bg-white shadow-sm rounded-lg p-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* LEFT SIDE (Fields) */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Adding By */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Adding By <span className="text-red-500">*</span>
@@ -157,7 +128,6 @@ const AddBlog = () => {
               />
             </div>
 
-            {/* Blog Heading */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Blog Heading <span className="text-red-500">*</span>
@@ -171,17 +141,13 @@ const AddBlog = () => {
               />
             </div>
 
-            {/* Blog Description (Rich Text Editor) */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Blog Description <span className="text-red-500">*</span>
               </label>
-
               <ReactQuill
                 value={form.blog_description}
-                onChange={(html) =>
-                  setForm((prev) => ({ ...prev, blog_description: html }))
-                }
+                onChange={(html) => setForm((prev) => ({ ...prev, blog_description: html }))}
                 className="bg-white border border-orange-400 rounded"
                 theme="snow"
                 placeholder="Write your blog details..."
@@ -189,17 +155,11 @@ const AddBlog = () => {
             </div>
           </div>
 
-          {/* RIGHT SIDE (Image + Submit) */}
           <div className="space-y-6 flex flex-col items-center">
-            {/* Image Preview */}
             <div className="w-full flex justify-center mt-2">
               <div className="p-2 border border-orange-300 rounded-lg bg-orange-50 shadow-sm">
                 {preview ? (
-                  <img
-                    src={preview}
-                    alt="Preview"
-                    className="w-64 h-64 object-cover rounded-md shadow-md"
-                  />
+                  <img src={preview} alt="Preview" className="w-64 h-64 object-cover rounded-md shadow-md" />
                 ) : (
                   <div className="w-64 h-64 flex items-center justify-center text-gray-400 text-sm">
                     No image selected
@@ -208,7 +168,6 @@ const AddBlog = () => {
               </div>
             </div>
 
-            {/* Image Upload */}
             <div className="w-full">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Blog Image <span className="text-red-500">*</span>
@@ -221,7 +180,6 @@ const AddBlog = () => {
               />
             </div>
 
-            {/* Submit */}
             <div className="pt-4 w-full">
               <button
                 type="submit"

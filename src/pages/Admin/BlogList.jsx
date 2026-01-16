@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import axios from "axios"; // ✅ Imported Axios
+import axios from "axios";
 import BlogEditModal from "./BlogEditModal";
 
-// ✅ Use environment variable or fallback to localhost
 const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
 
@@ -15,20 +14,16 @@ const BlogList = () => {
   const [previewImage, setPreviewImage] = useState(null);
   const [selectedBlog, setSelectedBlog] = useState(null);
 
-  // ✅ Get token from localStorage
-  const token = localStorage.getItem("adminToken");
+  // ❌ token no longer required (HttpOnly cookie)
+  // const token = localStorage.getItem("adminToken");
 
-  // Fetch Blog List
   const fetchBlogs = async () => {
     try {
-      // ✅ Using Axios with Authorization Header
       const response = await axios.get(`${API_URL}/blog_list.php`, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
+        withCredentials: true, // ✅ send HttpOnly cookie
       });
 
-      const data = response.data; // Axios stores body in .data
+      const data = response.data;
 
       if (data.success) {
         setBlogs(data.data || []);
@@ -37,7 +32,9 @@ const BlogList = () => {
       }
     } catch (error) {
       console.error("Error fetching blogs:", error);
-      const errorMsg = error.response?.data?.message || "Something went wrong while loading blogs";
+      const errorMsg =
+        error.response?.data?.message ||
+        "Something went wrong while loading blogs";
       toast.error(errorMsg);
     }
   };
@@ -46,7 +43,6 @@ const BlogList = () => {
     fetchBlogs();
   }, []);
 
-  // Filter (search by heading only)
   const filteredBlogs = blogs.filter((blog) =>
     (blog.blog_heading || "").toLowerCase().includes(search.toLowerCase())
   );
@@ -56,12 +52,10 @@ const BlogList = () => {
   const currentBlogs = filteredBlogs.slice(indexOfFirst, indexOfLast);
   const totalPages = Math.ceil(filteredBlogs.length / entriesPerPage);
 
-  // Handle save from modal
-  // ✅ Simplified handleSaveBlog: Just refreshes data and closes modal
-const handleSaveBlog = () => {
-  fetchBlogs();         // Get the updated list from the server
-  setSelectedBlog(null); // Close the modal
-};
+  const handleSaveBlog = () => {
+    fetchBlogs();
+    setSelectedBlog(null);
+  };
 
   return (
     <div className="p-6 mt-10">

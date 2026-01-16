@@ -24,28 +24,59 @@ const SpaceMasterList = () => {
   };
 
   // Fetch spaces dynamically
-  const fetchSpaces = async () => {
-    try {
-      // ✅ Switched to Axios with Authorization Header
-      const response = await axios.get(`${API_BASE}/get_spaces.php`, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      });
+const fetchSpaces = async () => {
+  try {
+    const response = await axios.get(`${API_BASE}/get_spaces.php`, {
+      withCredentials: true, // ✅ Send HttpOnly cookie automatically
+    });
 
-      const data = response.data; // Axios stores body in .data
+    const data = response.data;
 
-      if (data.success) {
-        setSpaces(data.spaces || []);
-      } else {
-        toast.error("Failed to load spaces");
-      }
-    } catch (error) {
-      console.error("Error fetching spaces:", error);
-      const errorMsg = error.response?.data?.message || "Something went wrong while loading spaces";
-      toast.error(errorMsg);
+    if (data.success) {
+      setSpaces(data.spaces || []);
+    } else {
+      toast.error("Failed to load spaces");
     }
-  };
+  } catch (error) {
+    console.error("Error fetching spaces:", error);
+    const errorMsg = error.response?.data?.message || "Something went wrong while loading spaces";
+    toast.error(errorMsg);
+  }
+};
+
+// Update space
+const handleUpdateSpace = async (data) => {
+  const formData = new FormData();
+  Object.keys(data).forEach((key) => {
+    if (data[key] !== null && data[key] !== undefined) {
+      formData.append(key, data[key]);
+    }
+  });
+
+  formData.append("id", selectedSpace.id);
+
+  try {
+    const res = await axios.post(`${API_BASE}/update_space.php`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+      withCredentials: true, // ✅ Send HttpOnly cookie automatically
+    });
+
+    const result = res.data;
+
+    if (result.success) {
+      toast.success("Updated successfully!");
+      fetchSpaces(); // reload list
+      setShowEditModal(false);
+    } else {
+      toast.error(result.message);
+    }
+  } catch (err) {
+    console.error("Update error:", err);
+    const errorMsg = err.response?.data?.message || "Network error!";
+    toast.error(errorMsg);
+  }
+};
+
 
   useEffect(() => {
     fetchSpaces();
@@ -59,40 +90,7 @@ const SpaceMasterList = () => {
   );
 
   // Handle updating a space
-  const handleUpdateSpace = async (data) => {
-    const formData = new FormData();
-    Object.keys(data).forEach((key) => {
-      if (data[key] !== null && data[key] !== undefined) {
-        formData.append(key, data[key]);
-      }
-    });
-
-    formData.append("id", selectedSpace.id);
-
-    try {
-      // ✅ Switched to Axios POST with Bearer Token and multipart header
-      const res = await axios.post(`${API_BASE}/update_space.php`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      });
-      
-      const result = res.data;
-
-      if (result.success) {
-        toast.success("Updated successfully!");
-        fetchSpaces(); // reload list
-        setShowEditModal(false);
-      } else {
-        toast.error(result.message);
-      }
-    } catch (err) {
-      console.error("Update error:", err);
-      const errorMsg = err.response?.data?.message || "Network error!";
-      toast.error(errorMsg);
-    }
-  };
+  
 
   // Pagination logic
   const indexOfLast = currentPage * entriesPerPage;

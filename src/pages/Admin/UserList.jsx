@@ -30,14 +30,14 @@ const UserList = () => {
   };
 
   // ✅ Fetch users using Axios with Bearer Token
+  // -----------------------------
+  // Fetch users using HttpOnly cookie
+  // -----------------------------
   const fetchUsers = async () => {
     try {
       const response = await axios.get(`${API_BASE}/get_users.php`, {
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "",
-        },
+        withCredentials: true, // ✅ send HttpOnly cookies
       });
-      // Axios automatically parses JSON into response.data
       setUsers(response.data.users || []);
     } catch (error) {
       console.error("Fetch error:", error);
@@ -46,11 +46,9 @@ const UserList = () => {
     }
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, [token]);
-
-  // ✅ Handle save using Axios with Bearer Token
+  // -----------------------------
+  // Save user using HttpOnly cookie
+  // -----------------------------
   const handleSaveUser = async (updatedData) => {
     try {
       const formData = new FormData();
@@ -64,12 +62,14 @@ const UserList = () => {
       if (updatedData.profilePic)
         formData.append("profilePic", updatedData.profilePic);
 
-      const response = await axios.post(`${API_BASE}/update_user.php`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: token ? `Bearer ${token}` : "",
-        },
-      });
+      const response = await axios.post(
+        `${API_BASE}/update_user.php`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true, // ✅ send HttpOnly cookies
+        }
+      );
 
       const data = response.data;
       if (data.success) {
@@ -85,6 +85,10 @@ const UserList = () => {
       toast.error(errorMsg);
     }
   };
+
+  useEffect(() => {
+    fetchUsers();
+  }, [token]);
 
   const filteredUsers = users.filter(
     (u) =>
