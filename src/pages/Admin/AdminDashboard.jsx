@@ -25,7 +25,7 @@ const ReservationsTable = React.memo(({ reservations }) => (
             "Space",
             "Space Code",
             "Pack",
-            "Date",
+            "Dates",
             "Timings",
             "Amount",
             "Discount",
@@ -47,7 +47,13 @@ const ReservationsTable = React.memo(({ reservations }) => (
             <td className="p-2 border">{r.space}</td>
             <td className="p-2 border">{r.space_code}</td>
             <td className="p-2 border">{r.pack}</td>
-            <td className="p-2 border">{formatDate(r.date)}</td>
+            {/*<td className="p-2 border">{formatDate(r.date)}</td> */}
+            <td className="py-2 px-4 border whitespace-nowrap">
+              {r.date && r.end_date
+                ? `${formatDate(r.date)} - ${formatDate(r.end_date)}`
+                : "-"}
+            </td>
+
             <td className="p-2 border">{r.timings}</td>
             <td className="p-2 border">{formatCurrency(r.amount)}</td>
             <td className="p-2 border">{formatCurrency(r.discount)}</td>
@@ -89,9 +95,7 @@ const AdminDashboard = () => {
         if (resRevenue.data.success) {
           setRevenue({
             categories: resRevenue.data.revenue.map((r) => r.month),
-            data: resRevenue.data.revenue.map((r) =>
-              Number(r.total_revenue)
-            ),
+            data: resRevenue.data.revenue.map((r) => Number(r.total_revenue)),
           });
         }
       } catch (error) {
@@ -116,15 +120,15 @@ const AdminDashboard = () => {
     last7Days.setDate(now.getDate() - 7);
 
     const newReservations = reservations.filter(
-      (r) => new Date(r.booked_on) >= last7Days
+      (r) => new Date(r.booked_on) >= last7Days,
     ).length;
 
     const completedReservations = reservations.filter(
-      (r) => new Date(r.date) < now
+      (r) => new Date(r.date) < now,
     ).length;
 
     const ongoingReservations = reservations.filter(
-      (r) => new Date(r.date) >= now
+      (r) => new Date(r.date) >= now,
     ).length;
 
     return [
@@ -149,7 +153,7 @@ const AdminDashboard = () => {
       colors: ["#f97316"],
       dataLabels: { enabled: false },
     }),
-    [revenue.categories]
+    [revenue.categories],
   );
 
   // Render
@@ -179,7 +183,9 @@ const AdminDashboard = () => {
           Monthly Revenue
         </h2>
         {loading ? (
-          <p className="text-center text-gray-500 py-10">Loading revenue data...</p>
+          <p className="text-center text-gray-500 py-10">
+            Loading revenue data...
+          </p>
         ) : (
           <Chart
             options={chartOptions}
@@ -195,9 +201,13 @@ const AdminDashboard = () => {
           Reservations
         </h2>
         {loading ? (
-          <p className="text-center text-gray-500 py-10">Loading reservations...</p>
+          <p className="text-center text-gray-500 py-10">
+            Loading reservations...
+          </p>
         ) : reservations.length === 0 ? (
-          <p className="text-center text-gray-500 py-10">No reservations found.</p>
+          <p className="text-center text-gray-500 py-10">
+            No reservations found.
+          </p>
         ) : (
           <ReservationsTable reservations={reservations} />
         )}

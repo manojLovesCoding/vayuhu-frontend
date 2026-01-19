@@ -4,7 +4,8 @@ import axios from "axios"; // ✅ Already using Axios
 import "react-toastify/dist/ReactToastify.css";
 
 // ✅ Use environment variable for API base URL
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
+const API_BASE =
+  import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
 
 const Reservations = () => {
   const [reservations, setReservations] = useState([]);
@@ -32,7 +33,8 @@ const Reservations = () => {
     } catch (error) {
       console.error("Error fetching reservations:", error);
       const errorMsg =
-        error.response?.data?.message || "Something went wrong while fetching reservations!";
+        error.response?.data?.message ||
+        "Something went wrong while fetching reservations!";
       toast.error(errorMsg);
     }
   };
@@ -56,7 +58,10 @@ const Reservations = () => {
   // ✅ Pagination
   const indexOfLast = currentPage * entriesPerPage;
   const indexOfFirst = indexOfLast - entriesPerPage;
-  const currentReservations = filteredReservations.slice(indexOfFirst, indexOfLast);
+  const currentReservations = filteredReservations.slice(
+    indexOfFirst,
+    indexOfLast,
+  );
   const totalPages = Math.ceil(filteredReservations.length / entriesPerPage);
 
   // ✅ Helper to format date & time
@@ -111,7 +116,7 @@ const Reservations = () => {
               <th className="py-2 px-4 border">Space</th>
               <th className="py-2 px-4 border">Space Code</th>
               <th className="py-2 px-4 border">Pack</th>
-              <th className="py-2 px-4 border">Date</th>
+              <th className="py-2 px-4 border whitespace-nowrap">Dates</th>
               <th className="py-2 px-4 border">Timings</th>
               <th className="py-2 px-4 border text-right">Amount</th>
               <th className="py-2 px-4 border text-right">Discount</th>
@@ -127,8 +132,12 @@ const Reservations = () => {
                   key={res.id || index}
                   className="text-center hover:bg-orange-50 transition"
                 >
-                  <td className="py-2 px-4 border">{indexOfFirst + index + 1}</td>
-                  <td className="py-2 px-4 border font-medium text-gray-800">{res.name}</td>
+                  <td className="py-2 px-4 border">
+                    {indexOfFirst + index + 1}
+                  </td>
+                  <td className="py-2 px-4 border font-medium text-gray-800">
+                    {res.name}
+                  </td>
                   <td className="py-2 px-4 border">{res.mobile_no}</td>
                   <td className="py-2 px-4 border">{res.space}</td>
 
@@ -144,14 +153,25 @@ const Reservations = () => {
                   </td>
 
                   <td className="py-2 px-4 border capitalize">{res.pack}</td>
-                  <td className="py-2 px-4 border whitespace-nowrap">{formatDate(res.date)}</td>
-                  <td className="py-2 px-4 border whitespace-nowrap">{res.timings}</td>
+                  <td className="py-2 px-4 border whitespace-nowrap">
+                    {res.date && res.end_date
+                      ? `${formatDate(res.date)} - ${formatDate(res.end_date)}`
+                      : "-"}
+                  </td>
+
+                  <td className="py-2 px-4 border whitespace-nowrap">
+                    {res.timings}
+                  </td>
                   <td className="py-2 px-4 border text-right">₹{res.amount}</td>
                   <td className="py-2 px-4 border text-right text-green-600">
                     {Number(res.discount) > 0 ? `-₹${res.discount}` : "₹0"}
                   </td>
-                  <td className="py-2 px-4 border text-right font-bold">₹{res.final_total}</td>
-                  <td className="py-2 px-4 border text-xs text-gray-500">{res.booked_on}</td>
+                  <td className="py-2 px-4 border text-right font-bold">
+                    ₹{res.final_total}
+                  </td>
+                  <td className="py-2 px-4 border text-xs text-gray-500">
+                    {res.booked_on}
+                  </td>
                 </tr>
               ))
             ) : (
@@ -168,7 +188,8 @@ const Reservations = () => {
       {/* Pagination */}
       <div className="flex flex-col md:flex-row justify-between items-center mt-4 text-sm text-gray-600 gap-2">
         <p>
-          Showing {indexOfFirst + 1} to {Math.min(indexOfLast, filteredReservations.length)} of{" "}
+          Showing {indexOfFirst + 1} to{" "}
+          {Math.min(indexOfLast, filteredReservations.length)} of{" "}
           {filteredReservations.length} entries
         </p>
         <div className="flex gap-1">
@@ -184,14 +205,18 @@ const Reservations = () => {
               key={idx}
               onClick={() => setCurrentPage(idx + 1)}
               className={`px-3 py-1 border rounded ${
-                currentPage === idx + 1 ? "bg-orange-500 text-white" : "hover:bg-gray-100"
+                currentPage === idx + 1
+                  ? "bg-orange-500 text-white"
+                  : "hover:bg-gray-100"
               }`}
             >
               {idx + 1}
             </button>
           ))}
           <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
             disabled={currentPage === totalPages}
             className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-100"
           >
