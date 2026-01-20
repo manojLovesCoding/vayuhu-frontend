@@ -12,62 +12,34 @@ import WorkspacePricing from "../components/WorkspacePricing";
 import Amenities from "../components/Amenities";
 
 const Home = () => {
-   {/*const [showPopup, setShowPopup] = useState(false);
-
-  useEffect(() => {
-    const alreadyShown = sessionStorage.getItem("visitPopup");
-
-    if (!alreadyShown) {
-      const timer = setTimeout(() => {
-        setShowPopup(true);
-        sessionStorage.setItem("visitPopup", "true");
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-  }, []);*/}
-
   return (
     <>
-      {/* ---------- POPUP MODAL ----------- 
-      {showPopup && (
-        <div
-          className="
-            fixed inset-0 bg-black/60 
-            flex justify-center items-center 
-            z-[9999]
-          "
-        >
-          <div
-            className="
-              relative bg-white rounded-xl shadow-2xl 
-              max-w-4xl w-[95%] overflow-hidden
-            "
-          >
-           
-            <button
-              className="
-                absolute top-3 right-3 bg-black text-white 
-                w-8 h-8 rounded-full flex items-center 
-                justify-center text-lg
-              "
-              onClick={() => setShowPopup(false)}
-            >
-              ✕
-            </button>
+      {/* ABOUT */}
+      <section className="bg-white">
+        <About />
+      </section>
 
-            <CoworkingPromo />
-          </div>
-        </div>
-      )}*/}
+      {/* AMENITIES */}
+      <section className="bg-gray-50">
+        <Amenities />
+      </section>
 
-      {/* ---------- PAGE CONTENT ----------- */}
-      <About />
-      <Amenities/>
-      <WorkspacePricing />
-      <Testimonials />
-      {/*<Team /> */}
-      <Contact />
+      {/* WORKSPACE PRICING */}
+      <section className="bg-gradient-to-b from-orange-50 via-white to-orange-50">
+        <WorkspacePricing />
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="bg-gray-900 text-white">
+        <Testimonials />
+      </section>
+
+      {/* CONTACT */}
+      <section className="bg-white">
+        <Contact />
+      </section>
+
+      {/* FOOTER */}
       <Footer />
     </>
   );

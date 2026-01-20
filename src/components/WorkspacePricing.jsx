@@ -107,7 +107,7 @@ const getDaysOfWeekInDateRange = (start, end) => {
   }
   if (daysFoundIndices.size === 0) return "";
   const presentWorkingDays = standardWorkingOrder.filter((day) =>
-    daysFoundIndices.has(dayNames.indexOf(day))
+    daysFoundIndices.has(dayNames.indexOf(day)),
   );
   const startDayName = dayNames[startObj.getDay()];
   const startIndex = presentWorkingDays.indexOf(startDayName);
@@ -158,8 +158,6 @@ const WorkspacePricing = () => {
 
   const { cart, addToCart } = useCart(); // Ensure cart is destructured here
   const [cartOpen, setCartOpen] = useState(false);
-
-  
 
   useEffect(() => {
     // ✅ Switched to Axios
@@ -278,7 +276,7 @@ const WorkspacePricing = () => {
           total_amount: calculateBaseAmount(),
           user_id: getUserId(),
         },
-        { withCredentials: true } // important for HttpOnly cookie
+        { withCredentials: true }, // important for HttpOnly cookie
       );
 
       const data = res.data;
@@ -337,34 +335,35 @@ const WorkspacePricing = () => {
   };
 
   const handlePlanClick = (group, planType) => {
-  if (!isAuthenticated()) {
-    toast.error("Please log in to book a workspace!");
-    setTimeout(() => navigate("/auth"), 1000);
-    return;
-  }
+    if (!isAuthenticated()) {
+      toast.error("Please log in to book a workspace!");
+      setTimeout(() => navigate("/auth"), 1000);
+      return;
+    }
 
-  const normalizedPlan = planType.charAt(0).toUpperCase() + planType.slice(1).toLowerCase();
+    const normalizedPlan =
+      planType.charAt(0).toUpperCase() + planType.slice(1).toLowerCase();
 
-  // 1. Search the cart for this specific group/plan
-  // We match by Title and Plan Type to find the correct "entry"
-  const itemInCart = cart.find(
-    (c) => c.title === group.title && c.plan_type === normalizedPlan
-  );
+    // 1. Search the cart for this specific group/plan
+    // We match by Title and Plan Type to find the correct "entry"
+    const itemInCart = cart.find(
+      (c) => c.title === group.title && c.plan_type === normalizedPlan,
+    );
 
-  // 2. Extract the IDs we previously saved
-  // If the item exists in cart, use its saved IDs, otherwise empty array
-  const rememberedIds = itemInCart?.all_space_ids || [];
+    // 2. Extract the IDs we previously saved
+    // If the item exists in cart, use its saved IDs, otherwise empty array
+    const rememberedIds = itemInCart?.all_space_ids || [];
 
-  if (group.items.length > 1) {
-    setCodeSelectModal({
-      groupTitle: group.title,
-      codes: group.items,
-      planType: normalizedPlan,
-      price: normalizedPlan === "Hourly" ? group.hourly : group.daily,
-      selectedIds: rememberedIds, // ✅ Now correctly passes current cart selection
-    });
-    return;
-  }
+    if (group.items.length > 1) {
+      setCodeSelectModal({
+        groupTitle: group.title,
+        codes: group.items,
+        planType: normalizedPlan,
+        price: normalizedPlan === "Hourly" ? group.hourly : group.daily,
+        selectedIds: rememberedIds, // ✅ Now correctly passes current cart selection
+      });
+      return;
+    }
     const sole = group.items[0];
     const chosenRaw = sole.raw;
 
@@ -379,8 +378,8 @@ const WorkspacePricing = () => {
         normalizedPlan === "Hourly"
           ? group.hourly
           : normalizedPlan === "Daily"
-          ? group.daily
-          : group.monthly,
+            ? group.daily
+            : group.monthly,
       raw: chosenRaw,
       seatCount: 1,
       selectedCodes: sole.code,
@@ -425,8 +424,8 @@ const WorkspacePricing = () => {
       planType.toLowerCase() === "hourly"
         ? "Hourly"
         : planType.toLowerCase() === "daily"
-        ? "Daily"
-        : "Monthly";
+          ? "Daily"
+          : "Monthly";
 
     setModalData({
       id: primary.id,
@@ -440,8 +439,8 @@ const WorkspacePricing = () => {
         normalizedPlan === "Hourly"
           ? primary.hourly
           : normalizedPlan === "Daily"
-          ? primary.daily
-          : primary.monthly,
+            ? primary.daily
+            : primary.monthly,
       raw: primary.raw,
       all_space_ids: selectedIds, // ✅ Store the IDs array so we can find it later
       seatCount: selectedIds.length,
@@ -502,7 +501,7 @@ const WorkspacePricing = () => {
           end_time: endTime,
           all_space_ids: modalData.allIds || [modalData.id],
         },
-       { withCredentials: true } // important for HttpOnly cookie
+        { withCredentials: true }, // important for HttpOnly cookie
       );
 
       const data = response.data;
@@ -521,7 +520,7 @@ const WorkspacePricing = () => {
                 <p>{data.available_dates.from}</p>
               </div>
             </div>,
-            { autoClose: 8000 }
+            { autoClose: 8000 },
           );
           return;
         }
@@ -540,7 +539,7 @@ const WorkspacePricing = () => {
                 <pre className="whitespace-pre-wrap mt-1">{slots}</pre>
               </div>
             </div>,
-            { autoClose: 8000 }
+            { autoClose: 8000 },
           );
           return;
         }
@@ -582,8 +581,8 @@ const WorkspacePricing = () => {
                 return reason;
               })()
             : isSelected
-            ? "Click to Deselect"
-            : "Available"
+              ? "Click to Deselect"
+              : "Available"
         }
         onClick={() => {
           if (!isDisabled) {
@@ -605,8 +604,8 @@ const WorkspacePricing = () => {
           isDisabled
             ? "bg-gray-200 text-gray-400 cursor-not-allowed"
             : isSelected
-            ? "bg-orange-500 text-white border-orange-600 scale-105 shadow-md"
-            : "bg-green-100 text-gray-700 border-green-300 hover:bg-green-200"
+              ? "bg-orange-500 text-white border-orange-600 scale-105 shadow-md"
+              : "bg-green-100 text-gray-700 border-green-300 hover:bg-green-200"
         }`}
       >
         {c.code}
@@ -620,8 +619,8 @@ const WorkspacePricing = () => {
     const options = [];
     const start = new Date(startDate);
 
-   // Change '12' to '2' to restrict the dropdown to only 2 months
-  for (let i = 1; i <= 2; i++) {
+    // Change '12' to '2' to restrict the dropdown to only 2 months
+    for (let i = 1; i <= 2; i++) {
       const end = new Date(start);
       end.setMonth(start.getMonth() + i);
       end.setDate(end.getDate() - 1);
@@ -669,69 +668,80 @@ const WorkspacePricing = () => {
       {error && (
         <div className="text-center py-10 text-red-500 text-lg">{error}</div>
       )}
-
       {!loading && !error && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
           {groupedWorkspaces.map((group, idx) => (
             <motion.div
               key={`${group.title}-${idx}`}
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{
-                duration: 0.5,
-                delay: idx * 0.1,
-                ease: "easeOut",
-              }}
-              whileHover={{
-                scale: 1.03,
-                transition: { duration: 0.2, delay: 0 },
-              }}
-              className="relative rounded-2xl overflow-hidden shadow-lg border border-gray-200"
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: idx * 0.08 }}
+              whileHover={{ scale: 1.03 }}
+              className="relative h-[420px] rounded-3xl overflow-hidden shadow-xl group"
             >
+              {/* Background Image */}
               <img
                 src={group.image}
                 alt={group.title}
-                className="w-full h-56 bg-gray-100 overflow-hidden rounded-t-lg object-cover"
+                className="absolute inset-0 w-full h-full object-cover 
+                     transition-transform duration-700 group-hover:scale-110"
               />
-              <div className="p-6 bg-white">
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+
+              {/* Dark Overlay */}
+              <div
+                className="absolute inset-0 bg-gradient-to-t 
+                        from-black/80 via-black/40 to-transparent"
+              />
+
+              {/* Content */}
+              <div className="relative z-10 h-full flex flex-col justify-end p-7">
+                <h3 className="text-2xl font-bold text-white mb-2">
                   {group.title}
                 </h3>
-                <p className="text-gray-600 mb-2">{group.desc}</p>
-                <p className="text-sm text-gray-500 mb-2">
+
+                <p className="text-gray-200 text-sm mb-3 line-clamp-2">
+                  {group.desc}
+                </p>
+
+                <p className="text-xs text-gray-300 mb-4">
                   {group.items.length > 1 ? (
-                    <span className="italic text-sm text-gray-600">
-                      Multiple space codes available ({group.items.length})
-                    </span>
+                    `${group.items.length} space options available`
                   ) : (
-                    <span className="text-sm text-gray-500">
-                      Code: {group.items[0].code}
-                    </span>
+                    <>Code: {group.items[0].code}</>
                   )}
                 </p>
 
-                <div className="flex flex-wrap">
+                {/* Buttons */}
+                <div className="flex flex-wrap gap-3">
                   {group.hourly && (
                     <button
                       onClick={() => handlePlanClick(group, "hourly")}
-                      className="bg-orange-500 text-white px-4 py-2 rounded-lg font-medium mr-2 mb-2 hover:bg-orange-600 transition"
+                      className="px-4 py-2 rounded-lg text-sm font-semibold
+                           bg-orange-500 text-white hover:bg-orange-600
+                           shadow-lg transition"
                     >
                       Hourly ₹{group.hourly}
                     </button>
                   )}
+
                   {group.daily && (
                     <button
                       onClick={() => handlePlanClick(group, "daily")}
-                      className="bg-orange-500 text-white px-4 py-2 rounded-lg font-medium mr-2 mb-2 hover:bg-orange-600 transition"
+                      className="px-4 py-2 rounded-lg text-sm font-semibold
+                           bg-white/90 text-gray-900 hover:bg-white
+                           transition"
                     >
                       Daily ₹{group.daily}
                     </button>
                   )}
+
                   {group.monthly && (
                     <button
                       onClick={() => handlePlanClick(group, "monthly")}
-                      className="bg-orange-500 text-white px-4 py-2 rounded-lg font-medium mr-2 mb-2 hover:bg-orange-600 transition"
+                      className="px-4 py-2 rounded-lg text-sm font-semibold
+                           bg-black/70 text-white border border-white/20
+                           hover:bg-black/90 transition"
                     >
                       Monthly ₹{group.monthly}
                     </button>
@@ -742,6 +752,7 @@ const WorkspacePricing = () => {
           ))}
         </div>
       )}
+
       {/* BookMyShow-style Space Code Selection Modal */}
       <AnimatePresence>
         {codeSelectModal && (
@@ -777,7 +788,7 @@ const WorkspacePricing = () => {
               <div className="flex flex-col items-center gap-5 mb-6">
                 {(() => {
                   const seats = [...codeSelectModal.codes].sort((a, b) =>
-                    a.code.localeCompare(b.code, undefined, { numeric: true })
+                    a.code.localeCompare(b.code, undefined, { numeric: true }),
                   );
 
                   const noWalkway = [
@@ -857,7 +868,7 @@ const WorkspacePricing = () => {
                   onClick={() => {
                     confirmCodeSelection(
                       codeSelectModal.selectedIds,
-                      codeSelectModal.planType
+                      codeSelectModal.planType,
                     );
                   }}
                   className={`px-5 py-2 rounded-lg font-semibold transition-all ${
@@ -927,7 +938,7 @@ const WorkspacePricing = () => {
                     const day = new Date(dateStr).getUTCDay();
                     if (day === 0) {
                       toast.error(
-                        "Workspaces are closed on Sundays. Please select another date."
+                        "Workspaces are closed on Sundays. Please select another date.",
                       );
                       setStartDate("");
                     } else {
@@ -1044,8 +1055,8 @@ const WorkspacePricing = () => {
                               1,
                               Math.min(
                                 modalData.capacity,
-                                parseInt(e.target.value) || 1
-                              )
+                                parseInt(e.target.value) || 1,
+                              ),
                             );
                             setNumAttendees(val);
                           }}
@@ -1276,8 +1287,8 @@ const WorkspacePricing = () => {
                         modalData.planType === "Monthly"
                           ? getDaysOfWeekInDateRange(startDate, endDate)
                           : days === 1
-                          ? getDayAbbreviation(startDate)
-                          : `${days} Days Recurrence`
+                            ? getDayAbbreviation(startDate)
+                            : `${days} Days Recurrence`
                       }
                       readOnly
                       className="w-full border rounded-lg px-3 py-2"
@@ -1474,7 +1485,7 @@ const WorkspacePricing = () => {
                             end_time: endTime,
                             all_space_ids: modalData.allIds || [modalData.id],
                           },
-                          { withCredentials: true } // important for HttpOnly cookie
+                          { withCredentials: true }, // important for HttpOnly cookie
                         );
 
                         const availData = availabilityResponse.data;
@@ -1486,7 +1497,7 @@ const WorkspacePricing = () => {
                               .join("\n");
                             toast.error(
                               `${availData.message}\n\nAvailable Slots:\n${slots}`,
-                              { autoClose: 5000 }
+                              { autoClose: 5000 },
                             );
                           } else {
                             toast.error(availData.message);
@@ -1529,7 +1540,7 @@ const WorkspacePricing = () => {
                             {
                               amount: bookingData.final_amount,
                             },
-                            { withCredentials: true } // important for HttpOnly cookie
+                            { withCredentials: true }, // important for HttpOnly cookie
                           );
 
                           const orderData = orderRes.data;
@@ -1548,7 +1559,7 @@ const WorkspacePricing = () => {
                               const verifyRes = await axios.post(
                                 `${API_BASE_URL}/verify_payment.php`,
                                 response,
-                               { withCredentials: true } // important for HttpOnly cookie
+                                { withCredentials: true }, // important for HttpOnly cookie
                               );
 
                               if (verifyRes.data.success) {
@@ -1556,13 +1567,13 @@ const WorkspacePricing = () => {
                                 const finalBooking = await axios.post(
                                   `${API_BASE_URL}/add_workspace_booking.php`,
                                   bookingData,
-                                  { withCredentials: true } // important for HttpOnly cookie
+                                  { withCredentials: true }, // important for HttpOnly cookie
                                 );
 
                                 if (finalBooking.data.success) {
                                   toast.success("🎉 Booking confirmed!");
                                   const userData = JSON.parse(
-                                    localStorage.getItem("user")
+                                    localStorage.getItem("user"),
                                   );
                                   const bookingId =
                                     finalBooking.data.booking_id ||
@@ -1586,14 +1597,14 @@ const WorkspacePricing = () => {
                                       total_amount: finalTotal,
                                       seat_codes: modalData.selectedCodes,
                                     },
-                                    { withCredentials: true } // important for HttpOnly cookie
+                                    { withCredentials: true }, // important for HttpOnly cookie
                                   );
 
                                   setTimeout(() => resetState(), 2000);
                                 } else {
                                   toast.error(
                                     finalBooking.data.message ||
-                                      "Booking registration failed"
+                                      "Booking registration failed",
                                   );
                                 }
                               } else {
@@ -1608,7 +1619,7 @@ const WorkspacePricing = () => {
                       } catch (err) {
                         toast.error(
                           "Process failed: " +
-                            (err.response?.data?.message || err.message)
+                            (err.response?.data?.message || err.message),
                         );
                       }
                     }}
