@@ -1555,7 +1555,7 @@ const WorkspacePricing = () => {
                             description: `${modalData.title} Booking`,
                             order_id: orderData.order_id,
                             handler: async (response) => {
-                              // 2. Verify Payment
+                              // 1. Verify payment
                               const verifyRes = await axios.post(
                                 `${API_BASE_URL}/verify_payment.php`,
                                 response,
@@ -1563,10 +1563,15 @@ const WorkspacePricing = () => {
                               );
 
                               if (verifyRes.data.success) {
-                                // 3. Finalize Booking
+                                // 🔑 Attach payment_id to booking data
+                                const bookingWithPayment = {
+                                  ...bookingData,
+                                  payment_id: response.razorpay_payment_id,
+                                };
+                                // 2. Finalize Booking
                                 const finalBooking = await axios.post(
                                   `${API_BASE_URL}/add_workspace_booking.php`,
-                                  bookingData,
+                                  bookingWithPayment,
                                   { withCredentials: true }, // important for HttpOnly cookie
                                 );
 
