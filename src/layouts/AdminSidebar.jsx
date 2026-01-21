@@ -20,6 +20,7 @@ import {
   FileText as BlogText,
   CreditCard,
   Settings,
+  BarChart3, // ✅ ADD THIS
 } from "lucide-react";
 import { assets } from "../assets/assets";
 import { useAuth } from "../context/AuthContext";
@@ -148,7 +149,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
             >
               <List size={16} /> User List
             </NavLink>
-          </>
+          </>,
         )}
 
         {/* --- Reservation --- */}
@@ -158,6 +159,15 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
           onClick={handleLinkClick}
         >
           <Calendar size={18} /> Reservations
+        </NavLink>
+
+        {/* --- Occupancy --- */}
+        <NavLink
+          to="/admin/occupancy"
+          className={linkClasses}
+          onClick={handleLinkClick}
+        >
+          <BarChart3 size={18} /> Occupancy
         </NavLink>
 
         {/* --- Visitors --- */}
@@ -189,7 +199,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
             >
               <List size={16} /> Coupon List
             </NavLink>
-          </>
+          </>,
         )}
 
         {/* --- Space Master --- */}
@@ -212,7 +222,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
             >
               <List size={16} /> Space Master List
             </NavLink>
-          </>
+          </>,
         )}
 
         {/* --- Contact Request --- */}
@@ -235,7 +245,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
             >
               <List size={16} /> Contact Request List
             </NavLink>
-          </>
+          </>,
         )}
 
         {/* --- Blog --- */}
@@ -258,7 +268,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
             >
               <List size={16} /> View Blog List
             </NavLink>
-          </>
+          </>,
         )}
 
         {/* --- Virtual Office --- */}
@@ -288,7 +298,7 @@ const AdminSidebar = ({ isOpen, setIsOpen }) => {
             >
               <Mail size={16} /> Enquiries
             </NavLink>
-          </>
+          </>,
         )}
 
         {/* --- Settings --- */}
