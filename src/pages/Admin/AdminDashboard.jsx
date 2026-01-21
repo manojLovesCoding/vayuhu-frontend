@@ -138,6 +138,13 @@ const AdminDashboard = () => {
     ];
   }, [reservations]);
 
+  // Filter only ongoing reservations (today or in the future)
+const ongoingReservationsList = useMemo(() => {
+  const now = new Date();
+  return reservations.filter((r) => new Date(r.date) >= now);
+}, [reservations]);
+
+
   // Chart Options (Memoized)
   const chartOptions = useMemo(
     () => ({
@@ -198,18 +205,18 @@ const AdminDashboard = () => {
 
       <div className="bg-white border border-orange-100 rounded-2xl p-4">
         <h2 className="text-lg font-semibold mb-4 text-orange-600">
-          Reservations
+          Ongoing Reservations
         </h2>
         {loading ? (
           <p className="text-center text-gray-500 py-10">
-            Loading reservations...
+            Loading ongoing reservations...
           </p>
-        ) : reservations.length === 0 ? (
+        ) : ongoingReservationsList.length === 0 ? (
           <p className="text-center text-gray-500 py-10">
-            No reservations found.
+            No ongoing reservations.
           </p>
         ) : (
-          <ReservationsTable reservations={reservations} />
+          <ReservationsTable reservations={ongoingReservationsList} />
         )}
       </div>
     </div>
