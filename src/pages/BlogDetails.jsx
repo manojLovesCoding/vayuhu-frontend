@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios"; // ✅ Added Axios
+import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const BlogDetails = () => {
   const { id } = useParams();
@@ -12,15 +12,8 @@ const BlogDetails = () => {
 
   const fetchBlog = async () => {
     try {
-      // ✅ Retrieve token from localStorage
-      const token = localStorage.getItem("userToken");
-
-      // ✅ Switched to Axios with Bearer Token header
       const res = await axios.get(`${API_URL}/blog_detail.php`, {
-        params: { id: id },
-        headers: {
-          Authorization: token ? `Bearer ${token}` : "", // ✅ Bearer Token added
-        },
+        params: { id },
       });
 
       const data = res.data;
@@ -79,7 +72,10 @@ const BlogDetails = () => {
 
       <div className="text-sm text-gray-500 mb-6 flex items-center gap-3">
         <span>
-          Posted by <span className="text-orange-500 font-medium">{blog.added_by}</span>
+          Posted by{" "}
+          <span className="text-orange-500 font-medium">
+            {blog.added_by}
+          </span>
         </span>
         <span>•</span>
         <span>{formatDate(blog.created_at)}</span>
@@ -89,8 +85,11 @@ const BlogDetails = () => {
       {blog.blog_image && (
         <div className="mb-8">
           <img
-            // ✅ Ensure image path works with backend URL
-            src={blog.blog_image.startsWith('http') ? blog.blog_image : `${API_URL}/${blog.blog_image}`}
+            src={
+              blog.blog_image.startsWith("http")
+                ? blog.blog_image
+                : `${API_URL}/${blog.blog_image}`
+            }
             alt={blog.blog_heading}
             className="w-full rounded-lg shadow-md"
           />
@@ -101,7 +100,7 @@ const BlogDetails = () => {
       <div
         className="text-gray-700 leading-relaxed"
         dangerouslySetInnerHTML={{ __html: blog.blog_description }}
-      ></div>
+      />
     </div>
   );
 };

@@ -6,8 +6,10 @@ const Contact = () => {
   const [result, setResult] = React.useState("");
 
   // ✅ Load API URL and access key from environment variables
-  const API_URL = import.meta.env.VITE_CONTACT_API_URL || "https://api.web3forms.com/submit";
-  const ACCESS_KEY = import.meta.env.VITE_CONTACT_ACCESS_KEY || "your-default-access-key";
+  const API_URL =
+    import.meta.env.VITE_CONTACT_API_URL || "https://api.web3forms.com/submit";
+  const ACCESS_KEY =
+    import.meta.env.VITE_CONTACT_ACCESS_KEY || "your-default-access-key";
 
   const onSubmit = async (event) => {
     event.preventDefault();
@@ -52,11 +54,14 @@ const Contact = () => {
         Get in <span className="text-orange-500">Touch</span>
       </h1>
       <p className="text-gray-500 mb-12 max-w-md mx-auto">
-        Have questions or want to book your workspace? Let’s connect and make something amazing together.
+        Have questions or want to book your workspace? Let’s connect and make
+        something amazing together.
       </p>
 
-      <form onSubmit={onSubmit} className="max-w-2xl mx-auto text-gray-700 pt-4">
-        {/* Name & Email */}
+      <form
+        onSubmit={onSubmit}
+        className="max-w-2xl mx-auto text-gray-700 pt-4"
+      >
         <div className="flex flex-wrap gap-6">
           <div className="w-full md:flex-1 text-left">
             <label className="block font-medium mb-2">Your Name</label>
@@ -76,6 +81,17 @@ const Contact = () => {
               type="email"
               name="Email"
               placeholder="example@domain.com"
+              required
+            />
+          </div>
+
+          <div className="w-full md:flex-1 text-left">
+            <label className="block font-medium mb-2">Phone Number</label>
+            <input
+              className="w-full border border-gray-300 rounded-xl py-3 px-4 focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none transition"
+              type="tel"
+              name="Phone"
+              placeholder="+91 9111111111"
               required
             />
           </div>

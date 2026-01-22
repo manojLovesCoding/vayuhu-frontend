@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import axios from "axios"; // ✅ Already using Axios
+import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 
-// ✅ Use environment variable for API base URL
-const API_BASE =
-  import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
+const API_BASE = import.meta.env.VITE_API_URL;
 
 const Reservations = () => {
   const [reservations, setReservations] = useState([]);
@@ -13,49 +11,40 @@ const Reservations = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [entriesPerPage, setEntriesPerPage] = useState(10);
 
-  // ✅ No need to retrieve token manually from localStorage anymore
-
-  // ✅ Fetch Reservations using Axios
   const fetchReservations = async () => {
     try {
-      // ✅ Send cookies with request
       const response = await axios.get(`${API_BASE}/get_reservations.php`, {
-        withCredentials: true, // 🟢 Important for HttpOnly cookies
+        withCredentials: true,
       });
 
-      const data = response.data;
-
-      if (data.success) {
-        setReservations(data.reservations || []);
+      if (response.data.success) {
+        setReservations(response.data.reservations || []);
       } else {
         toast.error("Failed to load reservations");
       }
     } catch (error) {
-      console.error("Error fetching reservations:", error);
-      const errorMsg =
+      toast.error(
         error.response?.data?.message ||
-        "Something went wrong while fetching reservations!";
-      toast.error(errorMsg);
+          "Something went wrong while fetching reservations!",
+      );
     }
   };
 
   useEffect(() => {
     fetchReservations();
-  }, [API_BASE]); // ✅ Removed token dependency
+  }, []);
 
-  // ✅ Filter by name, mobile, space, OR SPACE CODE (Updated)
   const filteredReservations = reservations.filter((res) => {
     const term = search.toLowerCase();
     return (
-      (res.name && res.name.toLowerCase().includes(term)) ||
-      (res.mobile_no && res.mobile_no.includes(term)) ||
-      (res.space && res.space.toLowerCase().includes(term)) ||
-      (res.space_code && res.space_code.toLowerCase().includes(term)) ||
-      (res.seat_codes && res.seat_codes.toLowerCase().includes(term))
+      res.name?.toLowerCase().includes(term) ||
+      res.mobile_no?.includes(term) ||
+      res.space?.toLowerCase().includes(term) ||
+      res.space_code?.toLowerCase().includes(term) ||
+      res.seat_codes?.toLowerCase().includes(term)
     );
   });
 
-  // ✅ Pagination
   const indexOfLast = currentPage * entriesPerPage;
   const indexOfFirst = indexOfLast - entriesPerPage;
   const currentReservations = filteredReservations.slice(
@@ -64,21 +53,20 @@ const Reservations = () => {
   );
   const totalPages = Math.ceil(filteredReservations.length / entriesPerPage);
 
-  // ✅ Helper to format date & time
   const formatDate = (dateStr) => {
     if (!dateStr) return "-";
-    const d = new Date(dateStr);
-    return d.toLocaleDateString("en-GB");
+    return new Date(dateStr).toLocaleDateString("en-GB");
   };
 
   return (
-    <div className="p-6 mt-10">
-      {/* Header & Search */}
-      <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-2">
+    <div className="p-4 md:p-6 mt-10">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
         <h2 className="text-2xl font-semibold">Reservations</h2>
-        <div className="flex flex-wrap items-center gap-3">
-          <div>
-            <span className="mr-2">Show</span>
+
+        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+          <div className="flex items-center gap-2">
+            <span>Show</span>
             <select
               className="border rounded px-2 py-1"
               value={entriesPerPage}
@@ -91,85 +79,120 @@ const Reservations = () => {
               <option value={25}>25</option>
               <option value={50}>50</option>
             </select>
-            <span className="ml-1">entries</span>
+            <span>entries</span>
           </div>
-          <div>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="border px-3 py-1 rounded w-64"
-              placeholder="Search name, mobile, or code..."
-            />
-          </div>
+
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border px-3 py-1 rounded w-full sm:w-64"
+            placeholder="Search name, mobile, or code..."
+          />
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto shadow-sm rounded-lg border border-gray-200">
+      {/* ================= MOBILE VIEW ================= */}
+      <div className="md:hidden space-y-4">
+        {currentReservations.length ? (
+          currentReservations.map((res, index) => (
+            <div
+              key={res.id || index}
+              className="border rounded-lg p-4 shadow-sm bg-white"
+            >
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-semibold text-lg">{res.name}</h3>
+                <span className="text-sm text-gray-500">
+                  #{indexOfFirst + index + 1}
+                </span>
+              </div>
+
+              <div className="text-sm space-y-1">
+                <p><b>Mobile:</b> {res.mobile_no}</p>
+                <p><b>Space:</b> {res.space}</p>
+                <p><b>Code:</b> {res.seat_codes || res.space_code}</p>
+                <p><b>Pack:</b> {res.pack}</p>
+                <p>
+                  <b>Dates:</b>{" "}
+                  {res.date && res.end_date
+                    ? `${formatDate(res.date)} - ${formatDate(res.end_date)}`
+                    : "-"}
+                </p>
+                <p><b>Time:</b> {res.timings}</p>
+                <p><b>Amount:</b> ₹{res.amount}</p>
+                <p className="text-green-600">
+                  <b>Discount:</b>{" "}
+                  {Number(res.discount) > 0 ? `-₹${res.discount}` : "₹0"}
+                </p>
+                <p className="font-bold">
+                  <b>Total:</b> ₹{res.final_total}
+                </p>
+                <p className="text-xs text-gray-500">
+                  Booked on: {res.booked_on}
+                </p>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-gray-500">No reservations found.</p>
+        )}
+      </div>
+
+      {/* ================= DESKTOP TABLE ================= */}
+      <div className="hidden md:block overflow-x-auto border rounded-lg">
         <table className="min-w-full bg-white text-sm">
           <thead>
-            <tr className="bg-orange-50 text-left text-gray-700">
-              <th className="py-2 px-4 border">S.No.</th>
-              <th className="py-2 px-4 border">Name</th>
-              <th className="py-2 px-4 border">Mobile No</th>
-              <th className="py-2 px-4 border">Space</th>
-              <th className="py-2 px-4 border">Space Code</th>
-              <th className="py-2 px-4 border">Pack</th>
-              <th className="py-2 px-4 border whitespace-nowrap">Dates</th>
-              <th className="py-2 px-4 border">Timings</th>
-              <th className="py-2 px-4 border text-right">Amount</th>
-              <th className="py-2 px-4 border text-right">Discount</th>
-              <th className="py-2 px-4 border text-right">Final Total</th>
-              <th className="py-2 px-4 border">Booked On</th>
+            <tr className="bg-orange-50 text-gray-700">
+              <th className="border px-4 py-2">S.No</th>
+              <th className="border px-4 py-2">Name</th>
+              <th className="border px-4 py-2">Mobile</th>
+              <th className="border px-4 py-2">Space</th>
+              <th className="border px-4 py-2">Code</th>
+              <th className="border px-4 py-2 hidden lg:table-cell">Pack</th>
+              <th className="border px-4 py-2">Dates</th>
+              <th className="border px-4 py-2">Time</th>
+              <th className="border px-4 py-2 text-right">Amount</th>
+              <th className="border px-4 py-2 hidden lg:table-cell text-right">
+                Discount
+              </th>
+              <th className="border px-4 py-2 text-right">Total</th>
+              <th className="border px-4 py-2">Booked</th>
             </tr>
           </thead>
 
           <tbody>
-            {currentReservations.length > 0 ? (
+            {currentReservations.length ? (
               currentReservations.map((res, index) => (
                 <tr
                   key={res.id || index}
-                  className="text-center hover:bg-orange-50 transition"
+                  className="hover:bg-orange-50 text-center"
                 >
-                  <td className="py-2 px-4 border">
+                  <td className="border px-4 py-2">
                     {indexOfFirst + index + 1}
                   </td>
-                  <td className="py-2 px-4 border font-medium text-gray-800">
-                    {res.name}
+                  <td className="border px-4 py-2 font-medium">{res.name}</td>
+                  <td className="border px-4 py-2">{res.mobile_no}</td>
+                  <td className="border px-4 py-2">{res.space}</td>
+                  <td className="border px-4 py-2">
+                    {res.seat_codes || res.space_code}
                   </td>
-                  <td className="py-2 px-4 border">{res.mobile_no}</td>
-                  <td className="py-2 px-4 border">{res.space}</td>
-
-                  {/* 🟢 UPDATED: Display Multiple Codes if available */}
-                  <td className="py-2 px-4 border">
-                    {res.seat_codes ? (
-                      <span className="bg-orange-50 text-orange-700 px-2 py-0.5 rounded border border-orange-100 font-medium text-xs break-words max-w-[150px] inline-block">
-                        {res.seat_codes}
-                      </span>
-                    ) : (
-                      <span>{res.space_code}</span>
-                    )}
+                  <td className="border px-4 py-2 hidden lg:table-cell">
+                    {res.pack}
                   </td>
-
-                  <td className="py-2 px-4 border capitalize">{res.pack}</td>
-                  <td className="py-2 px-4 border whitespace-nowrap">
+                  <td className="border px-4 py-2">
                     {res.date && res.end_date
                       ? `${formatDate(res.date)} - ${formatDate(res.end_date)}`
                       : "-"}
                   </td>
-
-                  <td className="py-2 px-4 border whitespace-nowrap">
-                    {res.timings}
-                  </td>
-                  <td className="py-2 px-4 border text-right">₹{res.amount}</td>
-                  <td className="py-2 px-4 border text-right text-green-600">
+                  <td className="border px-4 py-2">{res.timings}</td>
+                  <td className="border px-4 py-2 text-right">₹{res.amount}</td>
+                  <td className="border px-4 py-2 hidden lg:table-cell text-green-600 text-right">
                     {Number(res.discount) > 0 ? `-₹${res.discount}` : "₹0"}
                   </td>
-                  <td className="py-2 px-4 border text-right font-bold">
+                  <td className="border px-4 py-2 text-right font-bold">
                     ₹{res.final_total}
                   </td>
-                  <td className="py-2 px-4 border text-xs text-gray-500">
+                  <td className="border px-4 py-2 text-xs text-gray-500">
                     {res.booked_on}
                   </td>
                 </tr>
@@ -186,39 +209,42 @@ const Reservations = () => {
       </div>
 
       {/* Pagination */}
-      <div className="flex flex-col md:flex-row justify-between items-center mt-4 text-sm text-gray-600 gap-2">
+      <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-2 text-sm">
         <p>
           Showing {indexOfFirst + 1} to{" "}
           {Math.min(indexOfLast, filteredReservations.length)} of{" "}
-          {filteredReservations.length} entries
+          {filteredReservations.length}
         </p>
-        <div className="flex gap-1">
+
+        <div className="flex flex-wrap gap-1 justify-center">
           <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-100"
+            className="px-3 py-1 border rounded disabled:opacity-50"
           >
             Prev
           </button>
-          {[...Array(totalPages)].map((_, idx) => (
+
+          {[...Array(totalPages)].map((_, i) => (
             <button
-              key={idx}
-              onClick={() => setCurrentPage(idx + 1)}
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
               className={`px-3 py-1 border rounded ${
-                currentPage === idx + 1
+                currentPage === i + 1
                   ? "bg-orange-500 text-white"
-                  : "hover:bg-gray-100"
+                  : ""
               }`}
             >
-              {idx + 1}
+              {i + 1}
             </button>
           ))}
+
           <button
             onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              setCurrentPage((p) => Math.min(p + 1, totalPages))
             }
             disabled={currentPage === totalPages}
-            className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-100"
+            className="px-3 py-1 border rounded disabled:opacity-50"
           >
             Next
           </button>

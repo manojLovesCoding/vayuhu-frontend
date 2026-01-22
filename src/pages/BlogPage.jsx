@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // ✅ Added Axios for Bearer Token support
+import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost/vayuhu_backend";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const BlogPage = () => {
     const [blogs, setBlogs] = useState([]);
@@ -11,18 +11,11 @@ const BlogPage = () => {
 
     const fetchBlogs = async () => {
         try {
-            // ✅ Retrieve token from localStorage
-            const token = localStorage.getItem("userToken");
-
-            // ✅ Switched to Axios to send Bearer Token
             const res = await axios.get(`${API_URL}/blog_list.php`, {
                 params: { nocache: Date.now() },
-                headers: {
-                    Authorization: token ? `Bearer ${token}` : "", // ✅ Bearer Token added
-                },
             });
 
-            const data = res.data; // Axios puts response in .data
+            const data = res.data;
 
             if (data.success) {
                 // Filter blogs with status "active" (case-insensitive)
@@ -64,9 +57,8 @@ const BlogPage = () => {
                 <p className="text-gray-500 text-center">No blogs found.</p>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-
                     {blogs.map((blog, index) => {
-                        // ✅ Simulate dynamic date based on position
+                        // Simulated date based on position
                         const simulatedDate = new Date();
                         simulatedDate.setDate(simulatedDate.getDate() - index);
 
@@ -81,7 +73,7 @@ const BlogPage = () => {
                                         <img
                                             src={`${API_URL}/${blog.blog_image}`}
                                             alt={blog.blog_heading}
-                                            className="w-full h-56 bg-gray-100 overflow-hidden rounded-t-lg"
+                                            className="w-full h-56 object-cover rounded-t-lg"
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-gray-400">
@@ -96,41 +88,38 @@ const BlogPage = () => {
                                         {blog.blog_heading}
                                     </h2>
 
-                                    {/* Short description (HTML) */}
+                                    {/* Short description */}
                                     <div
                                         className="text-sm text-gray-600 line-clamp-3"
-                                        dangerouslySetInnerHTML={{ __html: blog.blog_description }}
-                                    ></div>
+                                        dangerouslySetInnerHTML={{
+                                            __html: blog.blog_description,
+                                        }}
+                                    />
 
-                                    {/* Footer Row: Author + Date + Read More */}
+                                    {/* Footer */}
                                     <div className="mt-4 text-xs flex flex-wrap items-center justify-between gap-2">
-
-                                        {/* Posted By */}
                                         <span className="text-gray-500 whitespace-nowrap">
                                             Posted by{" "}
-                                            <span className="text-orange-500 font-medium">{blog.added_by}</span>
+                                            <span className="text-orange-500 font-medium">
+                                                {blog.added_by}
+                                            </span>
                                         </span>
 
-                                        {/* ✅ Simulated Rotating Date */}
                                         <span className="text-gray-400 whitespace-nowrap">
                                             {formatDate(simulatedDate)}
                                         </span>
 
-                                        {/* Read More Button */}
                                         <button
                                             onClick={() => navigate(`/blog/${blog.id}`)}
                                             className="px-3 py-1 bg-orange-500 text-white text-xs rounded-md hover:bg-orange-600 transition whitespace-nowrap"
                                         >
                                             Read More →
                                         </button>
-
                                     </div>
-
                                 </div>
                             </div>
                         );
                     })}
-
                 </div>
             )}
         </div>
