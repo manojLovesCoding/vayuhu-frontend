@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Menu } from "lucide-react";
 import { assets } from "../assets/assets";
 import AdminSidebar from "./AdminSidebar";
+import { Code } from "lucide-react"; // ✅ import the icon
 
 const AdminLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -47,6 +48,13 @@ const AdminLayout = ({ children }) => {
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-[1400px] mx-auto">{children}</div>
         </main>
+
+        <footer className="text-center py-3 text-xs text-orange-500 border-t border-gray-200 bg-white flex items-center justify-center gap-1">
+          <Code className="w-4 h-4 inline" />
+          <span className="italic">
+            Developed by Manoj Kumar P Vishwakarma at Vayuhu
+          </span>
+        </footer>
       </div>
     </div>
   );

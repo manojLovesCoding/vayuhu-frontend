@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Sidebar from "./Sidebar";
 import { Menu } from "lucide-react";
 import { assets } from "../assets/assets"; // ✅ import your logo asset
+import { Code } from "lucide-react"; // ✅ import the icon
 
 const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -30,7 +31,7 @@ const Layout = ({ children }) => {
       <div className="flex flex-col flex-1 h-screen overflow-hidden">
         {/* Top Bar (Mobile Only) */}
         <header className="lg:hidden flex items-center justify-between px-4 py-3 border-b bg-white shadow-sm">
-          {/* ✅ Replace text with logo */}
+          {/* ✅ Logo */}
           <img
             src={assets.brandLogo}
             alt="Vayuhu Logo"
@@ -52,6 +53,13 @@ const Layout = ({ children }) => {
         <main className="flex-1 overflow-y-auto px-3 sm:px-6 lg:px-8 py-6">
           <div className="max-w-[1400px] mx-auto">{children}</div>
         </main>
+
+        <footer className="text-center py-3 text-xs text-orange-500 border-t border-gray-200 bg-white flex items-center justify-center gap-1">
+          <Code className="w-4 h-4 inline" />
+          <span className="italic">
+            Developed by Manoj Kumar P Vishwakarma at Vayuhu
+          </span>
+        </footer>
       </div>
     </div>
   );

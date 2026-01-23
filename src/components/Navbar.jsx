@@ -1,30 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { Rotate3D } from "lucide-react"; // ✅ 360° icon
 import { assets } from "../assets/assets";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-
 const Navbar = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { user } = useAuth(); // ✅ get logged-in user
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Handle scroll background
+  // ✅ Detect scroll background
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Scroll helper
+  // ✅ Smooth scroll helper
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
+  // ✅ Handle nav item click
   const handleNavClick = (id) => {
     setShowMobileMenu(false);
     if (location.pathname !== "/") {
@@ -35,6 +36,7 @@ const Navbar = () => {
     }
   };
 
+  // ✅ Handle Virtual Office
   const handleVirtualOffice = () => {
     setShowMobileMenu(false);
     if (location.pathname !== "/virtual") {
@@ -45,12 +47,33 @@ const Navbar = () => {
     }
   };
 
+  // ✅ Navigation Items
   const navItems = [
     { label: "Home", action: () => handleNavClick("Header") },
     { label: "About", action: () => handleNavClick("About") },
     { label: "WorkSpaces", action: () => handleNavClick("WorkSpaces") },
     { label: "Testimonials", action: () => handleNavClick("Testimonials") },
     { label: "Virtual Office", action: handleVirtualOffice },
+    {
+      label: (
+        <div className="flex items-center gap-2">
+          {/* Continuous spinning animation */}
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{
+              duration: 3,
+              ease: "linear",
+              repeat: Infinity,
+            }}
+          >
+            <Rotate3D className="w-5 h-5" />
+          </motion.div>
+          <span>Virtual Tour</span>
+        </div>
+      ),
+      action: () => window.open("/vtour/index.html", "_blank"),
+      isActive: true, // ✅ Highlight this one permanently
+    },
   ];
 
   return (
@@ -58,7 +81,9 @@ const Navbar = () => {
       {/* Navbar */}
       <div
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-          isScrolled ? "bg-black/80 backdrop-blur-md shadow-md" : "bg-transparent"
+          isScrolled
+            ? "bg-black/80 backdrop-blur-md shadow-md"
+            : "bg-transparent"
         }`}
       >
         <div className="container mx-auto flex items-center py-3 px-4 sm:px-8 md:px-16 lg:px-24 justify-between">
@@ -72,7 +97,10 @@ const Navbar = () => {
                 setShowMobileMenu(false);
                 if (location.pathname !== "/") {
                   navigate("/");
-                  setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 400);
+                  setTimeout(
+                    () => window.scrollTo({ top: 0, behavior: "smooth" }),
+                    400
+                  );
                 } else {
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }
@@ -82,37 +110,42 @@ const Navbar = () => {
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-4">
-            {navItems.map((item) => (
+            {navItems.map((item, i) => (
               <motion.button
-                key={item.label}
+                key={i}
                 onClick={item.action}
                 whileHover={{
                   scale: 1.05,
                   boxShadow: "0px 10px 20px rgba(255,127,80,0.4)",
                 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 rounded-full font-medium text-orange-400 bg-white/0 border border-orange-400 text-sm sm:text-base transition-all duration-300 hover:bg-gradient-to-r hover:from-orange-400 hover:to-orange-600 hover:text-white"
+                className={`flex items-center justify-center gap-2 px-6 py-3 rounded-full font-medium border text-sm sm:text-base transition-all duration-300 ${
+                  item.isActive
+                    ? "bg-gradient-to-r from-orange-400 to-orange-600 text-white border-transparent"
+                    : "text-orange-400 bg-white/0 border border-orange-400 hover:bg-gradient-to-r hover:from-orange-400 hover:to-orange-600 hover:text-white"
+                }`}
               >
                 {item.label}
               </motion.button>
             ))}
-          </div>
 
-          {/* CTA & Mobile Icon */}
-          <div className="flex justify-end flex-1 items-center gap-4">
-            {/* User Button */}
-            <button
-              onClick={() => navigate(user ? "/dashboard" : "/auth")} // ✅ Always goes to user auth
-               className="hidden md:block bg-black text-white font-semibold px-6 py-3 rounded-full hover:text-white hover: bg-orange-500 transition-all duration-300"
+            {/* Sign up / Login button always highlighted */}
+            <motion.button
+              onClick={() => navigate(user ? "/dashboard" : "/auth")}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-gradient-to-r from-orange-400 to-orange-600 text-white font-semibold px-6 py-3 rounded-full shadow-md transition-all duration-300"
             >
               {user ? "My Account" : "Sign up / Login"}
-            </button>
+            </motion.button>
+          </div>
 
-            {/* Mobile Menu Icon */}
+          {/* Mobile Menu Icon */}
+          <div className="flex justify-end flex-1 items-center gap-4 md:hidden">
             <img
               onClick={() => setShowMobileMenu(true)}
               src={assets.menu_icon}
-              className="md:hidden w-6 sm:w-7 cursor-pointer invert"
+              className="w-6 sm:w-7 cursor-pointer invert"
               alt="menu icon"
             />
           </div>
@@ -135,32 +168,38 @@ const Navbar = () => {
 
         {/* Mobile Nav Links */}
         <ul className="flex flex-col items-center gap-6 text-lg font-semibold">
-          {navItems.map((item) => (
+          {navItems.map((item, i) => (
             <motion.button
-              key={item.label}
+              key={i}
               onClick={item.action}
               whileHover={{
                 scale: 1.05,
                 boxShadow: "0px 10px 20px rgba(255,127,80,0.4)",
               }}
               whileTap={{ scale: 0.95 }}
-              className="px-6 py-3 rounded-full text-orange-400 bg-white/0 hover:bg-gradient-to-r hover:from-orange-400 hover:via-red-900 hover:to-orange-600 hover:text-white transition-all duration-300"
+              className={`flex items-center justify-center gap-2 px-6 py-3 rounded-full transition-all duration-300 ${
+                item.isActive
+                  ? "bg-gradient-to-r from-orange-400 to-orange-600 text-white"
+                  : "text-orange-400 bg-white/0 hover:bg-gradient-to-r hover:from-orange-400 hover:via-red-900 hover:to-orange-600 hover:text-white"
+              }`}
             >
               {item.label}
             </motion.button>
           ))}
         </ul>
 
-        {/* Mobile CTA */}
-        <button
+        {/* Mobile CTA - always orange gradient */}
+        <motion.button
           onClick={() => {
             setShowMobileMenu(false);
-            navigate(user ? "/dashboard" : "/auth"); // ✅ Always goes to /auth for users
+            navigate(user ? "/dashboard" : "/auth");
           }}
-          className="mt-8 bg-orange-500 hover:bg-orange-600 text-white font-medium px-8 py-3 rounded-full transition-all duration-300"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="mt-8 bg-gradient-to-r from-orange-400 to-orange-600 text-white font-semibold px-8 py-3 rounded-full shadow-md transition-all duration-300"
         >
           {user ? "My Account" : "Sign up / Login"}
-        </button>
+        </motion.button>
       </div>
     </>
   );

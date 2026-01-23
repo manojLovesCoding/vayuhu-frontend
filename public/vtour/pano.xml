@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tour start="node1" apprev="17956" appversion="6.1.8">
+  <panorama hideabout="1" id="node1">
+    <input levelingroll="0" leveltilesize="510" levelbiashidpi="1.000" width="4196" levelbias="0.400" height="4196" overlap="1" levelingpitch="0" leveltileurl="tiles/node1/cf_%c/l_%l/c_%x/tile_%y.jpg">
+      <level width="4196" preload="0" height="4196" predecode="0"/>
+      <level width="2098" preload="0" height="2098" predecode="0"/>
+      <level width="1049" preload="0" height="1049" predecode="0"/>
+      <level width="524" preload="0" height="524" predecode="0"/>
+      <level width="262" preload="1" height="262" predecode="1"/>
+      <preview strip="1" color="0x808080"/>
+    </input>
+    <view fovmode="0" pannorth="0">
+      <start projection="4" pan="-0.423154" tilt="2.19714" fov="105.791"/>
+      <flyin projection="9" pan="0" tilt="-90" fov="170"/>
+      <min fovpixel="2" pan="0" tilt="-90"/>
+      <max scaletofit="1" pan="360" tilt="90" fov="120" fovstereographic="270" fovfisheye="360"/>
+    </view>
+    <userdata info="www.switchto360.com" comment="" latitude="" customnodeid="entrence01" source="" nodeid="node1" tags="BIRD|SHOWROOM|SHOWROOMMM|IndividualWorkSpace" datetime="07-05-2020 18:03" longitude="" description="Calm. Quiet. Peaceful. That is the best kind of place to co-work.&#xa;&#xa;We call it Vayuhu!&#xa;&#xa;Welcome to Vayuhu, where work meets community in the heart of Bengaluru. We offer a vibrant and collaborative environment designed to inspire innovation and productivity. Our flexible workspaces cater to freelancers, startups and established businesses, providing the perfect setting to grow and succeed." title="Individual Working Space" author="" copyright="switchto360" heading="0"/>
+    <hotspots width="180" height="20" wordwrap="1">
+      <label backgroundalpha="1" backgroundcolor="0xffffff" width="180" borderradius="1" enabled="1" bordercolor="0x000000" height="20" textalpha="1" wordwrap="1" background="1" textcolor="0x000000" borderalpha="1" border="1"/>
+      <polystyle backgroundalpha="0.25098" backgroundcolor="0x0000ff" handcursor="1" bordercolor="0x0000ff" mode="0" borderalpha="1"/>
+      <hotspot id="Point01" url="{node19}" skinid="ht_node" pan="-171.21" tilt="0" description="" target="-169.4/-4.9/70.0" title="Pathway"/>
+      <hotspot id="Point02" url="{node6}" skinid="ht_node" pan="-2.9" tilt="0" description="" target="-5.1/0.0/70.0" title="Individual Working Space"/>
+      <hotspot id="Point03" url="{node5}" skinid="ht_node" pan="-51.16" tilt="0" description="" target="-57.3/-1.4/70.0" title="Individual Working Space"/>
+    </hotspots>
+    <media/>
+    <transition zoomspeed="2" zoomout="0" enabled="1" zoomoutpause="1" type="crossdissolve" softedge="0" zoomin="0" zoomfov="20" blendtime="1" blendcolor="0x000000"/>
+    <autorotate nodedelay="0.00" noderandom="1" startloaded="0" enabled="1" returntohorizon="0.000" nodefilter="" speed="0.100" useanimation="0" delay="1.00"/>
+    <animation syncanimationwithvideo="0" useinautorotation="0" animsequence="Animation01"/>
+    <control hideabout="1" contextfullscreen="1" lockedkeyboard="0" dblclickfullscreen="0" lockedwheel="0" invertwheel="0" invertcontrol="1" rubberband="0" speedwheel="1" simulatemass="1" sensitivity="5" lockedmouse="0" lockedkeyboardzoom="0" contextprojections="0">
+      <menulink text="Created By Switch to 360" url="https://www.switchto360.com"/>
+      <menulink text="Version" url="4.0"/>
+    </control>
+  </panorama>
+  <panorama hideabout="1" id="node2">
+    <input levelingroll="0" leveltilesize="510" levelbiashidpi="1.000" width="4180" levelbias="0.400" height="4180" overlap="1" levelingpitch="0" leveltileurl="tiles/node2/cf_%c/l_%l/c_%x/tile_%y.jpg">
+      <level width="4180" preload="0" height="4180" predecode="0"/>
+      <level width="2090" preload="0" height="2090" predecode="0"/>
+      <level width="1045" preload="0" height="1045" predecode="0"/>
+      <level width="522" preload="0" height="522" predecode="0"/>
+      <level width="261" preload="1" height="261" predecode="1"/>
+      <preview strip="1" color="0x808080"/>
+    </input>
+    <view fovmode="0" pannorth="0">
+      <start projection="4" pan="90.8221" tilt="0.974016" fov="83.6522"/>
+      <flyin projection="9" pan="0" tilt="-90" fov="170"/>
+      <min fovpixel="2" pan="0" tilt="-90"/>
+      <max scaletofit="1" pan="360" tilt="90" fov="120" fovstereographic="270" fovfisheye="360"/>
+    </view>
+    <userdata info="www.switchto360.com" comment="" latitude="" customnodeid="" source="" nodeid="node2" tags="12k|Pathway" datetime="" longitude="" description="Add Project Description" title="Pathway" author="" copyright="switchto360" heading="0"/>
+    <hotspots width="180" height="20" wordwrap="1">
+      <label backgroundalpha="1" backgroundcolor="0xffffff" width="180" borderradius="1" enabled="1" bordercolor="0x000000" height="20" textalpha="1" wordwrap="1" background="1" textcolor="0x000000" borderalpha="1" border="1"/>
+      <polystyle backgroundalpha="0.25098" backgroundcolor="0x0000ff" handcursor="1" bordercolor="0x0000ff" mode="0" borderalpha="1"/>
+      <hotspot id="Point01" url="{node20}" skinid="ht_node" pan="-181.08" tilt="0" description="" target="103.0/-0.6/70.0" title="Pathway"/>
+      <hotspot id="Point02" url="{node9}" skinid="ht_node" pan="-357.95" tilt="0" description="" target="173.2/0.0/70.0" title="Reception"/>
+      <hotspot id="Point03" url="{node12}" skinid="ht_node" pan="-82.56" tilt="0" description="" target="-17.2/-5.9/83.7" title="Video Conferencing Room"/>
+      <hotspot id="Point04" url="{node18}" skinid="ht_node" pan="-268.23" tilt="0" description="" target="171.1/-1.2/70.0" title="Manager's Cubicle"/>
+    </hotspots>
+    <media/>
+    <transition zoomspeed="2" zoomout="0" enabled="1" zoomoutpause="1" type="crossdissolve" softedge="0" zoomin="0" zoomfov="20" blendtime="1" blendcolor="0x000000"/>
+    <autorotate nodedelay="0.00" noderandom="1" startloaded="0" enabled="1" returntohorizon="0.000" nodefilter="" speed="0.100" useanimation="0" delay="1.00"/>
+    <animation syncanimationwithvideo="0" useinautorotation="0" animsequence="Animation01"/>
+    <control hideabout="1" contextfullscreen="1" lockedkeyboard="0" dblclickfullscreen="0" lockedwheel="0" invertwheel="0" invertcontrol="1" rubberband="0" speedwheel="1" simulatemass="1" sensitivity="5" lockedmouse="0" lockedkeyboardzoom="0" contextprojections="0">
+      <menulink text="Created By Switch to 360" url="https://www.switchto360.com"/>
+      <menulink text="Version" url="4.0"/>
+    </control>
+  </panorama>
+  <panorama hideabout="1" id="node7">
+    <input levelingroll="0" leveltilesize="510" levelbiashidpi="1.000" width="4193" levelbias="0.400" height="4193" overlap="1" levelingpitch="0" leveltileurl="tiles/node7/cf_%c/l_%l/c_%x/tile_%y.jpg">
+      <level width="4193" preload="0" height="4193" predecode="0"/>
+      <level width="2096" preload="0" height="2096" predecode="0"/>
+      <level width="1048" preload="0" height="1048" predecode="0"/>
+      <level width="524" preload="0" height="524" predecode="0"/>
+      <level width="262" preload="1" height="262" predecode="1"/>
+      <preview strip="1" color="0x808080"/>
+    </input>
+    <view fovmode="0" pannorth="0">
+      <start projection="4" pan="14.02" tilt="-0.095841" fov="90.8731"/>
+      <flyin projection="9" pan="0" tilt="-90" fov="170"/>
+      <min fovpixel="2" pan="0" tilt="-90"/>
+      <max scaletofit="1" pan="360" tilt="90" fov="120" fovstereographic="270" fovfisheye="360"/>
+    </view>
+    <userdata info="www.switchto360.com" comment="" latitude="" customnodeid="" source="" nodeid="node7" tags="12k|IndividualWorkSpace" datetime="" longitude="" description="Add Project Description" title="Individual Working Space" author="" copyright="switchto360" heading="0"/>
+    <hotspots width="180" height="20" wordwrap="1">
+      <label backgroundalpha="1" backgroundcolor="0xffffff" width="180" borderradius="1" enabled="1" bordercolor="0x000000" height="20" textalpha="1" wordwrap="1" background="1" textcolor="0x000000" borderalpha="1" border="1"/>
+      <polystyle backgroundalpha="0.25098" backgroundcolor="0x0000ff" handcursor="1" bordercolor="0x0000ff" mode="0" borderalpha="1"/>
+      <hotspot id="Point01" url="{node5}" skinid="ht_node" pan="-40.46" tilt="0" description="" target="138.0/-0.4/70.0" title="Individual Working Space"/>
+      <hotspot id="Point02" url="{node8}" skinid="ht_node" pan="-208.44" tilt="0" description="" target="23.1/-3.8/70.0" title="Dining Lounge"/>
+    </hotspots>
+    <media/>
+    <transition zoomspeed="2" zoomout="0" enabled="1" zoomoutpause="1" type="crossdissolve" softedge="0" zoomin="0" zoomfov="20" blendtime="1" blendcolor="0x000000"/>
+    <autorotate nodedelay="0.00" noderandom="1" startloaded="0" enabled="1" returntohorizon="0.000" nodefilter="" speed="0.100" useanimation="0" delay="1.00"/>
+    <animation syncanimationwithvideo="0" useinautorotation="0" animsequence="Animation01"/>
+    <control hideabout="1" contextfullscreen="1" lockedkeyboard="0" dblclickfullscreen="0" lockedwheel="0" invertwheel="0" invertcontrol="1" rubberband="0" speedwheel="1" simulatemass="1" sensitivity="5" lockedmouse="0" lockedkeyboardzoom="0" contextprojections="0">
+      <menulink text="Created By Switch to 360" url="https://www.switchto360.com"/>
+      <menulink text="Version" url="4.0"/>
+    </control>
+  </panorama>
+  <panorama hideabout="1" id="node5">
+    <input levelingroll="0" leveltilesize="510" levelbiashidpi="1.000" width="4196" levelbias="0.400" height="4196" overlap="1" levelingpitch="0" leveltileurl="tiles/node5/cf_%c/l_%l/c_%x/tile_%y.jpg">
+      <level width="4196" preload="0" height="4196" predecode="0"/>
+      <level width="2098" preload="0" height="2098" predecode="0"/>
+      <level width="1049" preload="0" height="1049" predecode="0"/>
+      <level width="524" preload="0" height="524" predecode="0"/>
+      <level width="262" preload="1" height="262" predecode="1"/>
+      <preview strip="1" color="0x808080"/>
+    </input>
+    <view fovmode="0" pannorth="0">
+      <start projection="4" pan="0" tilt="0" fov="90.8731"/>
+      <flyin projection="9" pan="0" tilt="-90" fov="170"/>
+      <min fovpixel="2" pan="0" tilt="-90"/>
+      <max scaletofit="1" pan="360" tilt="90" fov="120" fovstereographic="270" fovfisheye="360"/>
+    </view>
+    <userdata info="www.switchto360.com" comment="" latitude="" customnodeid="" source="" nodeid="node5" tags="12k|IndividualWorkSpace" datetime="" longitude="" description="Add Project Description" title="Individual Working Space" author="" copyright="switchto360" heading="0"/>
+    <hotspots width="180" height="20" wordwrap="1">
+      <label backgroundalpha="1" backgroundcolor="0xffffff" width="180" borderradius="1" enabled="1" bordercolor="0x000000" height="20" textalpha="1" wordwrap="1" background="1" textcolor="0x000000" borderalpha="1" border="1"/>
+      <polystyle backgroundalpha="0.25098" backgroundcolor="0x0000ff" handcursor="1" bordercolor="0x0000ff" mode="0" borderalpha="1"/>
+      <hotspot id="Point01" url="{node1}" skinid="ht_node" pan="-206.88" tilt="0" description="" target="168.4/-2.5/97.8" title="Individual Working Space"/>
+      <hotspot id="Point02" url="{node6}" skinid="ht_node" pan="-319.16" tilt="0" description="" target="29.4/-3.1/70.0" title="Individual Working Space"/>
+      <hotspot id="Point03" url="{node7}" skinid="ht_node" pan="-35.64" tilt="0" description="" target="-171.4/-2.3/70.0" title="Individual Working Space"/>
+    </hotspots>
+    <media/>
+    <transition zoomspeed="2" zoomout="0" enabled="1" zoomoutpause="1" type="crossdissolve" softedge="0" zoomin="0" zoomfov="20" blendtime="1" blendcolor="0x000000"/>
+    <autorotate nodedelay="0.00" noderandom="1" startloaded="0" enabled="1" returntohorizon="0.000" nodefilter="" speed="0.100" useanimation="0" delay="1.00"/>
+    <animation syncanimationwithvideo="0" useinautorotation="0" animsequence="Animation01"/>
+    <control hideabout="1" contextfullscreen="1" lockedkeyboard="0" dblclickfullscreen="0" lockedwheel="0" invertwheel="0" invertcontrol="1" rubberband="0" speedwheel="1" simulatemass="1" sensitivity="5" lockedmouse="0" lockedkeyboardzoom="0" contextprojections="0">
+      <menulink text="Created By Switch to 360" url="https://www.switchto360.com"/>
+      <menulink text="Version" url="4.0"/>
+    </control>
+  </panorama>
+  <panorama hideabout="1" id="node6">
+    <input levelingroll="0" leveltilesize="510" levelbiashidpi="1.000" width="4191" levelbias="0.400" height="4191" overlap="1" levelingpitch="0" leveltileurl="tiles/node6/cf_%c/l_%l/c_%x/tile_%y.jpg">
+      <level width="4191" preload="0" height="4191" predecode="0"/>
+      <level width="2095" preload="0" height="2095" predecode="0"/>
+      <level width="1047" preload="0" height="1047" predecode="0"/>
+      <level width="523" preload="0" height="523" predecode="0"/>
+      <level width="261" preload="1" height="261" predecode="1"/>
+      <preview strip="1" color="0x808080"/>
+    </input>
+    <view fovmode="0" pannorth="0">
+      <start projection="4" pan="177.882" tilt="-0.335224" fov="70"/>
+      <flyin projection="9" pan="0" tilt="-90" fov="170"/>
+      <min fovpixel="2" pan="0" tilt="-90"/>
+      <max scaletofit="1" pan="360" tilt="90" fov="120" fovstereographic="270" fovfisheye="360"/>
+    </view>
+    <userdata info="www.switchto360.com" comment="" latitude="" customnodeid="" source="" nodeid="node6" tags="12k|IndividualWorkSpace" datetime="" longitude="" description="Add Project Description" title="Individual Working Space" author="" copyright="switchto360" heading="0"/>
+    <hotspots width="180" height="20" wordwrap="1">
+      <label backgroundalpha="1" backgroundcolor="0xffffff" width="180" borderradius="1" enabled="1" bordercolor="0x000000" height="20" textalpha="1" wordwrap="1" background="1" textcolor="0x000000" borderalpha="1" border="1"/>
+      <polystyle backgroundalpha="0.25098" backgroundcolor="0x0000ff" handcursor="1" bordercolor="0x0000ff" mode="0" borderalpha="1"/>
+      <hotspot id="Point01" url="{node1}" skinid="ht_node" pan="-180.75" tilt="0" description="" target="168.1/-0.2/97.8" title="Individual Working Space"/>
+      <hotspot id="Point02" url="{node5}" skinid="ht_node" pan="-115.09" tilt="0.1" description="" target="-127.9/-2.0/70.0" title="Individual Working Space"/>
+    </hotspots>
+    <media/>
+    <transition zoomspeed="2" zoomout="0" enabled="1" zoomoutpause="1" type="crossdissolve" softedge="0" zoomin="0" zoomfov="20" blendtime="1" blendcolor="0x000000"/>
+    <autorotate nodedelay="0.00" noderandom="1" startloaded="0" enabled="1" returntohorizon="0.000" nodefilter="" speed="0.100" useanimation="0" delay="1.00"/>
+    <animation syncanimationwithvideo="0" useinautorotation="0" animsequence="Animation01"/>
+    <control hideabout="1" contextfullscreen="1" lockedkeyboard="0" dblclickfullscreen="0" lockedwheel="0" invertwheel="0" invertcontrol="1" rubberband="0" speedwheel="1" simulatemass="1" sensitivity="5" lockedmouse="0" lockedkeyboardzoom="0" contextprojections="0">
+      <menulink text="Created By Switch to 360" url="https://www.switchto360.com"/>
+      <menulink text="Version" url="4.0"/>
+    </control>
+  </panorama>
+  <panorama hideabout="1" id="node8">
+    <input levelingroll="0" leveltilesize="510" levelbiashidpi="1.000" width="4197" levelbias="0.400" height="4197" overlap="1" levelingpitch="0" leveltileurl="tiles/node8/cf_%c/l_%l/c_%x/tile_%y.jpg">
+      <level width="4197" preload="0" height="4197" predecode="0"/>
+      <level width="2098" preload="0" height="2098" predecode="0"/>
+      <level width="1049" preload="0" height="1049" predecode="0"/>
+      <level width="524" preload="0" height="524" predecode="0"/>
+      <level width="262" preload="1" height="262" predecode="1"/>
+      <preview strip="1" color="0x808080"/>
+    </input>
+    <view fovmode="0" pannorth="0">
+      <start projection="4" pan="15.6154" tilt="0" fov="77.3492"/>
+      <flyin projection="9" pan="0" tilt="-90" fov="170"/>
+      <min fovpixel="2" pan="0" tilt="-90"/>
+      <max scaletofit="1" pan="360" tilt="90" fov="120" fovstereographic="270" fovfisheye="360"/>
+    </view>
+    <userdata info="www.switchto360.com" comment="" latitude="" customnodeid="" source="" nodeid="node8" tags="12k|SmokingZone|diningloungeee" datetime="" longitude="" description="Add Project Description" title="Dining Lounge" author="" copyright="switchto360" heading="0"/>
+    <hotspots width="180" height="20" wordwrap="1">
+      <label backgroundalpha="1" backgroundcolor="0xffffff" width="180" borderradius="1" enabled="1" bordercolor="0x000000" height="20" textalpha="1" wordwrap="1" background="1" textcolor="0x000000" borderalpha="1" border="1"/>
+      <polystyle backgroundalpha="0.25098" backgroundcolor="0x0000ff" handcursor="1" bordercolor="0x0000ff" mode="0" borderalpha="1"/>
+      <hotspot id="Point01" url="{node7}" skinid="ht_node" pan="-191.5" tilt="0" description="" target="0.0/0.0/70.0" title="Individual Working Space"/>
+    </hotspots>
+    <media/>
+    <transition zoomspeed="2" zoomout="0" enabled="1" zoomoutpause="1" type="crossdissolve" softedge="0" zoomin="0" zoomfov="20" blendtime="1" blendcolor="0x000000"/>
+    <autorotate nodedelay="0.00" noderandom="1" startloaded="0" enabled="1" returntohorizon="0.000" nodefilter="" speed="0.100" useanimation="0" delay="1.00"/>
+    <animation syncanimationwithvideo="0" useinautorotation="0" animsequence="Animation01"/>
+    <control hideabout="1" contextfullscreen="1" lockedkeyboard="0" dblclickfullscreen="0" lockedwheel="0" invertwheel="0" invertcontrol="1" rubberband="0" speedwheel="1" simulatemass="1" sensitivity="5" lockedmouse="0" lockedkeyboardzoom="0" contextprojections="0">
+      <menulink text="Created By Switch to 360" url="https://www.switchto360.com"/>
+      <menulink text="Version" url="4.0"/>
+    </control>
+  </panorama>
+  <panorama hideabout="1" id="node9">
+    <input levelingroll="0" leveltilesize="510" levelbiashidpi="1.000" width="4186" levelbias="0.400" height="4186" overlap="1" levelingpitch="0" leveltileurl="tiles/node9/cf_%c/l_%l/c_%x/tile_%y.jpg">
+      <level width="4186" preload="0" height="4186" predecode="0"/>
+      <level width="2093" preload="0" height="2093" predecode="0"/>
+      <level width="1046" preload="0" height="1046" predecode="0"/>
+      <level width="523" preload="0" height="523" predecode="0"/>
+      <level width="261" preload="1" height="261" predecode="1"/>
+      <preview strip="1" color="0x808080"/>
+    </input>
+    <view fovmode="0" pannorth="0">
+      <start projection="4" pan="-59.9269" tilt="-1.08473" fov="83.6522"/>
+      <flyin projection="9" pan="0" tilt="-90" fov="170"/>
+      <min fovpixel="2" pan="0" tilt="-90"/>
+      <max scaletofit="1" pan="360" tilt="90" fov="120" fovstereographic="270" fovfisheye="360"/>
+    </view>
+    <userdata info="www.switchto360.com" comment="" latitude="" customnodeid="" source="" nodeid="node9" tags="12k|Reception" datetime="" longitude="" description="Add Project Description" title="Reception" author="" copyright="switchto360" heading="0"/>
+    <hotspots width="180" height="20" wordwrap="1">
+      <label backgroundalpha="1" backgroundcolor="0xffffff" width="180" borderradius="1" enabled="1" bordercolor="0x000000" height="20" textalpha="1" wordwrap="1" background="1" textcolor="0x000000" borderalpha="1" border="1"/>
+      <polystyle backgroundalpha="0.25098" backgroundcolor="0x0000ff" handcursor="1" bordercolor="0x0000ff" mode="0" borderalpha="1"/>
+      <hotspot id="Point01" url="{node2}" skinid="ht_node" pan="-357.84" tilt="0" description="" target="179.2/0.1/70.0" title="Pathway"/>
+      <hotspot id="Point02" url="{node11}" skinid="ht_node" pan="-197.52" tilt="0" description="" target="-5.3/3.1/83.7" title="Entrance"/>
+    </hotspots>
+    <media/>
+    <transition zoomspeed="2" zoomout="0" enabled="1" zoomoutpause="1" type="crossdissolve" softedge="0" zoomin="0" zoomfov="20" blendtime="1" blendcolor="0x000000"/>
+    <autorotate nodedelay="0.00" noderandom="1" startloaded="0" enabled="1" returntohorizon="0.000" nodefilter="" speed="0.100" useanimation="0" delay="1.00"/>
+    <animation syncanimationwithvideo="0" useinautorotation="0" animsequence="Animation01"/>
+    <control hideabout="1" contextfullscreen="1" lockedkeyboard="0" dblclickfullscreen="0" lockedwheel="0" invertwheel="0" invertcontrol="1" rubberband="0" speedwheel="1" simulatemass="1" sensitivity="5" lockedmouse="0" lockedkeyboardzoom="0" contextprojections="0">
+      <menulink text="Created By Switch to 360" url="https://www.switchto360.com"/>
+      <menulink text="Version" url="4.0"/>
+    </control>
+  </panorama>
+  <panorama hideabout="1" id="node10">
+    <input levelingroll="0" leveltilesize="510" levelbiashidpi="1.000" width="4178" levelbias="0.400" height="4178" overlap="1" levelingpitch="0" leveltileurl="tiles/node10/cf_%c/l_%l/c_%x/tile_%y.jpg">
+      <level width="4178" preload="0" height="4178" predecode="0"/>
+      <level width="2089" preload="0" height="2089" predecode="0"/>
+      <level width="1044" preload="0" height="1044" predecode="0"/>
+      <level width="522" preload="0" height="522" predecode="0"/>
+      <level width="261" preload="1" height="261" predecode="1"/>
+      <preview strip="1" color="0x808080"/>
+    </input>
+    <view fovmode="0" pannorth="0">
+      <start projection="4" pan="-9.04177" tilt="18.4515" fov="64.472"/>
+      <flyin projection="9" pan="0" tilt="-90" fov="170"/>
+      <min fovpixel="2" pan="0" tilt="-90"/>
+      <max scaletofit="1" pan="360" tilt="90" fov="120" fovstereographic="270" fovfisheye="360"/>
+    </view>
+    <userdata info="www.switchto360.com" comment="" latitude="" customnodeid="" source="" nodeid="node10" tags="12k|MainEntrance" datetime="" longitude="" description="Add Project Description" title="Main Entrance" author="" copyright="switchto360" heading="0"/>
+    <hotspots width="180" height="20" wordwrap="1">
+      <label backgroundalpha="1" backgroundcolor="0xffffff" width="180" borderradius="1" enabled="1" bordercolor="0x000000" height="20" textalpha="1" wordwrap="1" background="1" textcolor="0x000000" borderalpha="1" border="1"/>
+      <polystyle backgroundalpha="0.25098" backgroundcolor="0x0000ff" handcursor="1" bordercolor="0x0000ff" mode="0" borderalpha="1"/>
+      <hotspot id="Point01" url="{node11}" skinid="ht_node" pan="-20.27" tilt="0" description="" target="-5.8/1.5/90.9" title="Entrance"/>
+    </hotspots>
+    <media/>
+    <transition zoomspeed="2" zoomout="0" enabled="1" zoomoutpause="1" type="crossdissolve" softedge="0" zoomin="0" zoomfov="20" blendtime="1" blendcolor="0x000000"/>
+    <autorotate nodedelay="0.00" noderandom="1" startloaded="0" enabled="1" returntohorizon="0.000" nodefilter="" speed="0.100" useanimation="0" delay="1.00"/>
+    <animation syncanimationwithvideo="0" useinautorotation="0" animsequence="Animation01"/>
+    <control hideabout="1" contextfullscreen="1" lockedkeyboard="0" dblclickfullscreen="0" lockedwheel="0" invertwheel="0" invertcontrol="1" rubberband="0" speedwheel="1" simulatemass="1" sensitivity="5" lockedmouse="0" lockedkeyboardzoom="0" contextprojections="0">
+      <menulink text="Created By Switch to 360" url="https://www.switchto360.com"/>
+      <menulink text="Version" url="4.0"/>
+    </control>
+  </panorama>
+  <panorama hideabout="1" id="node11">
+    <input levelingroll="0" leveltilesize="510" levelbiashidpi="1.000" width="4196" levelbias="0.400" height="4196" overlap="1" levelingpitch="0" leveltileurl="tiles/node11/cf_%c/l_%l/c_%x/tile_%y.jpg">
+      <level width="4196" preload="0" height="4196" predecode="0"/>
+      <level width="2098" preload="0" height="2098" predecode="0"/>
+      <level width="1049" preload="0" height="1049" predecode="0"/>
+      <level width="524" preload="0" height="524" predecode="0"/>
+      <level width="262" preload="1" height="262" predecode="1"/>
+      <preview strip="1" color="0x808080"/>
+    </input>
+    <view fovmode="0" pannorth="0">
+      <start projection="4" pan="-1.82219" tilt="2.74351" fov="90.8731"/>
+      <flyin projection="9" pan="0" tilt="-90" fov="170"/>
+      <min fovpixel="2" pan="0" tilt="-90"/>
+      <max scaletofit="1" pan="360" tilt="90" fov="120" fovstereographic="270" fovfisheye="360"/>
+    </view>
+    <userdata info="www.switchto360.com" comment="" latitude="" customnodeid="" source="" nodeid="node11" tags="12k" datetime="" longitude="" description="Add Project Description" title="Entrance" author="" copyright="switchto360" heading="0"/>
+    <hotspots width="180" height="20" wordwrap="1">
+      <label backgroundalpha="1" backgroundcolor="0xffffff" width="180" borderradius="1" enabled="1" bordercolor="0x000000" height="20" textalpha="1" wordwrap="1" background="1" textcolor="0x000000" borderalpha="1" border="1"/>
+      <polystyle backgroundalpha="0.25098" backgroundcolor="0x0000ff" handcursor="1" bordercolor="0x0000ff" mode="0" borderalpha="1"/>
+      <hotspot id="Point01" url="{node10}" skinid="ht_node" pan="-101.31" tilt="0" description="" target="-12.9/13.1/58.4" title="Main Entrance"/>
+      <hotspot id="Point02" url="{node9}" skinid="ht_node" pan="-7.62" tilt="0" description="" target="-22.3/-1.1/98.3" title="Reception"/>
+    </hotspots>
+    <media/>
+    <transition zoomspeed="2" zoomout="0" enabled="1" zoomoutpause="1" type="crossdissolve" softedge="0" zoomin="0" zoomfov="20" blendtime="1" blendcolor="0x000000"/>
+    <autorotate nodedelay="0.00" noderandom="1" startloaded="0" enabled="1" returntohorizon="0.000" nodefilter="" speed="0.100" useanimation="0" delay="1.00"/>
+    <animation syncanimationwithvideo="0" useinautorotation="0" animsequence="Animation01"/>
+    <control hideabout="1" contextfullscreen="1" lockedkeyboard="0" dblclickfullscreen="0" lockedwheel="0" invertwheel="0" invertcontrol="1" rubberband="0" speedwheel="1" simulatemass="1" sensitivity="5" lockedmouse="0" lockedkeyboardzoom="0" contextprojections="0">
+      <menulink text="Created By Switch to 360" url="https://www.switchto360.com"/>
+      <menulink text="Version" url="4.0"/>
+    </control>
+  </panorama>
+  <panorama hideabout="1" id="node12">
+    <input levelingroll="0" leveltilesize="510" levelbiashidpi="1.000" width="4189" levelbias="0.400" height="4189" overlap="1" levelingpitch="0" leveltileurl="tiles/node12/cf_%c/l_%l/c_%x/tile_%y.jpg">
+      <level width="4189" preload="0" height="4189" predecode="0"/>
+      <level width="2094" preload="0" height="2094" predecode="0"/>
+      <level width="1047" preload="0" height="1047" predecode="0"/>
+      <level width="523" preload="0" height="523" predecode="0"/>
+      <level width="261" preload="1" height="261" predecode="1"/>
+      <preview strip="1" color="0x808080"/>
+    </input>
+    <view fovmode="0" pannorth="0">
+      <start projection="4" pan="-20.7261" tilt="-4.23807" fov="98.3008"/>
+      <flyin projection="9" pan="0" tilt="-90" fov="170"/>
+      <min fovpixel="2" pan="0" tilt="-90"/>
+      <max scaletofit="1" pan="360" tilt="90" fov="120" fovstereographic="270" fovfisheye="360"/>
+    </view>
+    <userdata info="www.switchto360.com" comment="" latitude="" customnodeid="" source="" nodeid="node12" tags="12k|VideoConferencingRoom" datetime="" longitude="" description="Add Project Description" title="Video Conferencing Room" author="" copyright="switchto360" heading="0"/>
+    <hotspots width="180" height="20" wordwrap="1">
+      <label backgroundalpha="1" backgroundcolor="0xffffff" width="180" borderradius="1" enabled="1" bordercolor="0x000000" height="20" textalpha="1" wordwrap="1" background="1" textcolor="0x000000" borderalpha="1" border="1"/>
+      <polystyle backgroundalpha="0.25098" backgroundcolor="0x0000ff" handcursor="1" bordercolor="0x0000ff" mode="0" borderalpha="1"/>
+      <hotspot id="Point01" url="{node2}" skinid="ht_node" pan="-234.83" tilt="0" description="" target="87.5/-0.5/70.0" title="Pathway"/>
+    </hotspots>
+    <media/>
+    <transition zoomspeed="2" zoomout="0" enabled="1" zoomoutpause="1" type="crossdissolve" softedge="0" zoomin="0" zoomfov="20" blendtime="1" blendcolor="0x000000"/>
+    <autorotate nodedelay="0.00" noderandom="1" startloaded="0" enabled="1" returntohorizon="0.000" nodefilter="" speed="0.100" useanimation="0" delay="1.00"/>
+    <animation syncanimationwithvideo="0" useinautorotation="0" animsequence="Animation01"/>
+    <control hideabout="1" contextfullscreen="1" lockedkeyboard="0" dblclickfullscreen="0" lockedwheel="0" invertwheel="0" invertcontrol="1" rubberband="0" speedwheel="1" simulatemass="1" sensitivity="5" lockedmouse="0" lockedkeyboardzoom="0" contextprojections="0">
+      <menulink text="Created By Switch to 360" url="https://www.switchto360.com"/>
+      <menulink text="Version" url="4.0"/>
+    </control>
+  </panorama>
+  <panorama hideabout="1" id="node14">
+    <input levelingroll="0" leveltilesize="510" levelbiashidpi="1.000" width="4194" levelbias="0.400" height="4194" overlap="1" levelingpitch="0" leveltileurl="tiles/node14/cf_%c/l_%l/c_%x/tile_%y.jpg">
+      <level width="4194" preload="0" height="4194" predecode="0"/>
+      <level width="2097" preload="0" height="2097" predecode="0"/>
+      <level width="1048" preload="0" height="1048" predecode="0"/>
+      <level width="524" preload="0" height="524" predecode="0"/>
+      <level width="262" preload="1" height="262" predecode="1"/>
+      <preview strip="1" color="0x808080"/>
+    </input>
+    <view fovmode="0" pannorth="0">
+      <start projection="4" pan="75.3166" tilt="-4.2097" fov="90.8731"/>
+      <flyin projection="9" pan="0" tilt="-90" fov="170"/>
+      <min fovpixel="2" pan="0" tilt="-90"/>
+      <max scaletofit="1" pan="360" tilt="90" fov="120" fovstereographic="270" fovfisheye="360"/>
+    </view>
+    <userdata info="www.switchto360.com" comment="" latitude="" customnodeid="" source="" nodeid="node14" tags="12k|CEOsCabin" datetime="" longitude="" description="Add Project Description" title="CEO's Cabin" author="" copyright="switchto360" heading="0"/>
+    <hotspots width="180" height="20" wordwrap="1">
+      <label backgroundalpha="1" backgroundcolor="0xffffff" width="180" borderradius="1" enabled="1" bordercolor="0x000000" height="20" textalpha="1" wordwrap="1" background="1" textcolor="0x000000" borderalpha="1" border="1"/>
+      <polystyle backgroundalpha="0.25098" backgroundcolor="0x0000ff" handcursor="1" bordercolor="0x0000ff" mode="0" borderalpha="1"/>
+      <hotspot id="Point01" url="{node20}" skinid="ht_node" pan="-43.28" tilt="0" description="" target="12.9/-0.3/70.0" title="Pathway"/>
+    </hotspots>
+    <media/>
+    <transition zoomspeed="2" zoomout="0" enabled="1" zoomoutpause="1" type="crossdissolve" softedge="0" zoomin="0" zoomfov="20" blendtime="1" blendcolor="0x000000"/>
+    <autorotate nodedelay="0.00" noderandom="1" startloaded="0" enabled="1" returntohorizon="0.000" nodefilter="" speed="0.100" useanimation="0" delay="1.00"/>
+    <animation syncanimationwithvideo="0" useinautorotation="0" animsequence="Animation01"/>
+    <control hideabout="1" contextfullscreen="1" lockedkeyboard="0" dblclickfullscreen="0" lockedwheel="0" invertwheel="0" invertcontrol="1" rubberband="0" speedwheel="1" simulatemass="1" sensitivity="5" lockedmouse="0" lockedkeyboardzoom="0" contextprojections="0">
+      <menulink text="Created By Switch to 360" url="https://www.switchto360.com"/>
+      <menulink text="Version" url="4.0"/>
+    </control>
+  </panorama>
+  <panorama hideabout="1" id="node16">
+    <input levelingroll="0" leveltilesize="510" levelbiashidpi="1.000" width="4180" levelbias="0.400" height="4180" overlap="1" levelingpitch="0" leveltileurl="tiles/node16/cf_%c/l_%l/c_%x/tile_%y.jpg">
+      <level width="4180" preload="0" height="4180" predecode="0"/>
+      <level width="2090" preload="0" height="2090" predecode="0"/>
+      <level width="1045" preload="0" height="1045" predecode="0"/>
+      <level width="522" preload="0" height="522" predecode="0"/>
+      <level width="261" preload="1" height="261" predecode="1"/>
+      <preview strip="1" color="0x808080"/>
+    </input>
+    <view fovmode="0" pannorth="0">
+      <start projection="4" pan="-6.65624" tilt="-2.39564" fov="90.8731"/>
+      <flyin projection="9" pan="0" tilt="-90" fov="170"/>
+      <min fovpixel="2" pan="0" tilt="-90"/>
+      <max scaletofit="1" pan="360" tilt="90" fov="120" fovstereographic="270" fovfisheye="360"/>
+    </view>
+    <userdata info="www.switchto360.com" comment="" latitude="" customnodeid="" source="" nodeid="node16" tags="12k|ExecutiveCabin" datetime="" longitude="" description="Add Project Description" title="Executive Cabin 1" author="" copyright="switchto360" heading="0"/>
+    <hotspots width="180" height="20" wordwrap="1">
+      <label backgroundalpha="1" backgroundcolor="0xffffff" width="180" borderradius="1" enabled="1" bordercolor="0x000000" height="20" textalpha="1" wordwrap="1" background="1" textcolor="0x000000" borderalpha="1" border="1"/>
+      <polystyle backgroundalpha="0.25098" backgroundcolor="0x0000ff" handcursor="1" bordercolor="0x0000ff" mode="0" borderalpha="1"/>
+      <hotspot id="Point01" url="{node20}" skinid="ht_node" pan="-158.27" tilt="0" description="" target="-76.8/-0.4/70.0" title="Pathway"/>
+    </hotspots>
+    <media/>
+    <transition zoomspeed="2" zoomout="0" enabled="1" zoomoutpause="1" type="crossdissolve" softedge="0" zoomin="0" zoomfov="20" blendtime="1" blendcolor="0x000000"/>
+    <autorotate nodedelay="0.00" noderandom="1" startloaded="0" enabled="1" returntohorizon="0.000" nodefilter="" speed="0.100" useanimation="0" delay="1.00"/>
+    <animation syncanimationwithvideo="0" useinautorotation="0" animsequence="Animation01"/>
+    <control hideabout="1" contextfullscreen="1" lockedkeyboard="0" dblclickfullscreen="0" lockedwheel="0" invertwheel="0" invertcontrol="1" rubberband="0" speedwheel="1" simulatemass="1" sensitivity="5" lockedmouse="0" lockedkeyboardzoom="0" contextprojections="0">
+      <menulink text="Created By Switch to 360" url="https://www.switchto360.com"/>
+      <menulink text="Version" url="4.0"/>
+    </control>
+  </panorama>
+  <panorama hideabout="1" id="node17">
+    <input levelingroll="0" leveltilesize="510" levelbiashidpi="1.000" width="4191" levelbias="0.400" height="4191" overlap="1" levelingpitch="0" leveltileurl="tiles/node17/cf_%c/l_%l/c_%x/tile_%y.jpg">
+      <level width="4191" preload="0" height="4191" predecode="0"/>
+      <level width="2095" preload="0" height="2095" predecode="0"/>
+      <level width="1047" preload="0" height="1047" predecode="0"/>
+      <level width="523" preload="0" height="523" predecode="0"/>
+      <level width="261" preload="1" height="261" predecode="1"/>
+      <preview strip="1" color="0x808080"/>
+    </input>
+    <view fovmode="0" pannorth="0">
+      <start projection="4" pan="0" tilt="0" fov="90.8731"/>
+      <flyin projection="9" pan="0" tilt="-90" fov="170"/>
+      <min fovpixel="2" pan="0" tilt="-90"/>
+      <max scaletofit="1" pan="360" tilt="90" fov="120" fovstereographic="270" fovfisheye="360"/>
+    </view>
+    <userdata info="www.switchto360.com" comment="" latitude="" customnodeid="" source="" nodeid="node17" tags="12k|ExecutiveCabin" datetime="" longitude="" description="Add Project Description" title="Executive Cabin 2" author="" copyright="switchto360" heading="0"/>
+    <hotspots width="180" height="20" wordwrap="1">
+      <label backgroundalpha="1" backgroundcolor="0xffffff" width="180" borderradius="1" enabled="1" bordercolor="0x000000" height="20" textalpha="1" wordwrap="1" background="1" textcolor="0x000000" borderalpha="1" border="1"/>
+      <polystyle backgroundalpha="0.25098" backgroundcolor="0x0000ff" handcursor="1" bordercolor="0x0000ff" mode="0" borderalpha="1"/>
+      <hotspot id="Point01" url="{node19}" skinid="ht_node" pan="-139.03" tilt="0" description="" target="-77.1/-0.9/76.9" title="Pathway"/>
+    </hotspots>
+    <media/>
+    <transition zoomspeed="2" zoomout="0" enabled="1" zoomoutpause="1" type="crossdissolve" softedge="0" zoomin="0" zoomfov="20" blendtime="1" blendcolor="0x000000"/>
+    <autorotate nodedelay="0.00" noderandom="1" startloaded="0" enabled="1" returntohorizon="0.000" nodefilter="" speed="0.100" useanimation="0" delay="1.00"/>
+    <animation syncanimationwithvideo="0" useinautorotation="0" animsequence="Animation01"/>
+    <control hideabout="1" contextfullscreen="1" lockedkeyboard="0" dblclickfullscreen="0" lockedwheel="0" invertwheel="0" invertcontrol="1" rubberband="0" speedwheel="1" simulatemass="1" sensitivity="5" lockedmouse="0" lockedkeyboardzoom="0" contextprojections="0">
+      <menulink text="Created By Switch to 360" url="https://www.switchto360.com"/>
+      <menulink text="Version" url="4.0"/>
+    </control>
+  </panorama>
+  <panorama hideabout="1" id="node18">
+    <input levelingroll="0" leveltilesize="510" levelbiashidpi="1.000" width="4187" levelbias="0.400" height="4187" overlap="1" levelingpitch="0" leveltileurl="tiles/node18/cf_%c/l_%l/c_%x/tile_%y.jpg">
+      <level width="4187" preload="0" height="4187" predecode="0"/>
+      <level width="2093" preload="0" height="2093" predecode="0"/>
+      <level width="1046" preload="0" height="1046" predecode="0"/>
+      <level width="523" preload="0" height="523" predecode="0"/>
+      <level width="261" preload="1" height="261" predecode="1"/>
+      <preview strip="1" color="0x808080"/>
+    </input>
+    <view fovmode="0" pannorth="0">
+      <start projection="4" pan="33.0979" tilt="-11.7915" fov="90.8731"/>
+      <flyin projection="9" pan="0" tilt="-90" fov="170"/>
+      <min fovpixel="2" pan="0" tilt="-90"/>
+      <max scaletofit="1" pan="360" tilt="90" fov="120" fovstereographic="270" fovfisheye="360"/>
+    </view>
+    <userdata info="www.switchto360.com" comment="" latitude="" customnodeid="" source="" nodeid="node18" tags="12k|ManagersCubicle" datetime="" longitude="" description="Add Project Description" title="Manager's Cubicle" author="" copyright="switchto360" heading="0"/>
+    <hotspots width="180" height="20" wordwrap="1">
+      <label backgroundalpha="1" backgroundcolor="0xffffff" width="180" borderradius="1" enabled="1" bordercolor="0x000000" height="20" textalpha="1" wordwrap="1" background="1" textcolor="0x000000" borderalpha="1" border="1"/>
+      <polystyle backgroundalpha="0.25098" backgroundcolor="0x0000ff" handcursor="1" bordercolor="0x0000ff" mode="0" borderalpha="1"/>
+      <hotspot id="Point01" url="{node2}" skinid="ht_node" pan="-357.8" tilt="0" description="" target="-88.9/-1.4/70.0" title="Pathway"/>
+    </hotspots>
+    <media/>
+    <transition zoomspeed="2" zoomout="0" enabled="1" zoomoutpause="1" type="crossdissolve" softedge="0" zoomin="0" zoomfov="20" blendtime="1" blendcolor="0x000000"/>
+    <autorotate nodedelay="0.00" noderandom="1" startloaded="0" enabled="1" returntohorizon="0.000" nodefilter="" speed="0.100" useanimation="0" delay="1.00"/>
+    <animation syncanimationwithvideo="0" useinautorotation="0" animsequence="Animation01"/>
+    <control hideabout="1" contextfullscreen="1" lockedkeyboard="0" dblclickfullscreen="0" lockedwheel="0" invertwheel="0" invertcontrol="1" rubberband="0" speedwheel="1" simulatemass="1" sensitivity="5" lockedmouse="0" lockedkeyboardzoom="0" contextprojections="0">
+      <menulink text="Created By Switch to 360" url="https://www.switchto360.com"/>
+      <menulink text="Version" url="4.0"/>
+    </control>
+  </panorama>
+  <panorama hideabout="1" id="node19">
+    <input levelingroll="0" leveltilesize="510" levelbiashidpi="1.000" width="4191" levelbias="0.400" height="4191" overlap="1" levelingpitch="0" leveltileurl="tiles/node19/cf_%c/l_%l/c_%x/tile_%y.jpg">
+      <level width="4191" preload="0" height="4191" predecode="0"/>
+      <level width="2095" preload="0" height="2095" predecode="0"/>
+      <level width="1047" preload="0" height="1047" predecode="0"/>
+      <level width="523" preload="0" height="523" predecode="0"/>
+      <level width="261" preload="1" height="261" predecode="1"/>
+      <preview strip="1" color="0x808080"/>
+    </input>
+    <view fovmode="0" pannorth="0">
+      <start projection="4" pan="-67.8337" tilt="-0.169708" fov="106.335"/>
+      <flyin projection="9" pan="0" tilt="-90" fov="170"/>
+      <min fovpixel="2" pan="0" tilt="-90"/>
+      <max scaletofit="1" pan="360" tilt="90" fov="120" fovstereographic="270" fovfisheye="360"/>
+    </view>
+    <userdata info="www.switchto360.com" comment="" latitude="" customnodeid="" source="" nodeid="node19" tags="12k|Pathway" datetime="" longitude="" description="Add Project Description" title="Pathway" author="" copyright="switchto360" heading="0"/>
+    <hotspots width="180" height="20" wordwrap="1">
+      <label backgroundalpha="1" backgroundcolor="0xffffff" width="180" borderradius="1" enabled="1" bordercolor="0x000000" height="20" textalpha="1" wordwrap="1" background="1" textcolor="0x000000" borderalpha="1" border="1"/>
+      <polystyle backgroundalpha="0.25098" backgroundcolor="0x0000ff" handcursor="1" bordercolor="0x0000ff" mode="0" borderalpha="1"/>
+      <hotspot id="Point01" url="{node1}" skinid="ht_node" pan="-338.46" tilt="0" description="" target="" title="Individual Working Space"/>
+      <hotspot id="Point02" url="{node20}" skinid="ht_node" pan="-167.91" tilt="0" description="" target="-166.8/0.2/70.0" title="Pathway"/>
+      <hotspot id="Point03" url="{node17}" skinid="ht_node" pan="-249.22" tilt="0" description="" target="9.3/-4.8/70.0" title="Executive Cabin 2"/>
+    </hotspots>
+    <media/>
+    <transition zoomspeed="2" zoomout="0" enabled="1" zoomoutpause="1" type="crossdissolve" softedge="0" zoomin="0" zoomfov="20" blendtime="1" blendcolor="0x000000"/>
+    <autorotate nodedelay="0.00" noderandom="1" startloaded="0" enabled="1" returntohorizon="0.000" nodefilter="" speed="0.100" useanimation="0" delay="1.00"/>
+    <animation syncanimationwithvideo="0" useinautorotation="0" animsequence="Animation01"/>
+    <control hideabout="1" contextfullscreen="1" lockedkeyboard="0" dblclickfullscreen="0" lockedwheel="0" invertwheel="0" invertcontrol="1" rubberband="0" speedwheel="1" simulatemass="1" sensitivity="5" lockedmouse="0" lockedkeyboardzoom="0" contextprojections="0">
+      <menulink text="Created By Switch to 360" url="https://www.switchto360.com"/>
+      <menulink text="Version" url="4.0"/>
+    </control>
+  </panorama>
+  <panorama hideabout="1" id="node20">
+    <input levelingroll="0" leveltilesize="510" levelbiashidpi="1.000" width="4184" levelbias="0.400" height="4184" overlap="1" levelingpitch="0" leveltileurl="tiles/node20/cf_%c/l_%l/c_%x/tile_%y.jpg">
+      <level width="4184" preload="0" height="4184" predecode="0"/>
+      <level width="2092" preload="0" height="2092" predecode="0"/>
+      <level width="1046" preload="0" height="1046" predecode="0"/>
+      <level width="523" preload="0" height="523" predecode="0"/>
+      <level width="261" preload="1" height="261" predecode="1"/>
+      <preview strip="1" color="0x808080"/>
+    </input>
+    <view fovmode="0" pannorth="0">
+      <start projection="4" pan="-25.0721" tilt="1.66038" fov="90.8731"/>
+      <flyin projection="9" pan="0" tilt="-90" fov="170"/>
+      <min fovpixel="2" pan="0" tilt="-90"/>
+      <max scaletofit="1" pan="360" tilt="90" fov="120" fovstereographic="270" fovfisheye="360"/>
+    </view>
+    <userdata info="www.switchto360.com" comment="" latitude="" customnodeid="" source="" nodeid="node20" tags="12k|Pathway" datetime="" longitude="" description="Add Project Description" title="Pathway" author="" copyright="switchto360" heading="0"/>
+    <hotspots width="180" height="20" wordwrap="1">
+      <label backgroundalpha="1" backgroundcolor="0xffffff" width="180" borderradius="1" enabled="1" bordercolor="0x000000" height="20" textalpha="1" wordwrap="1" background="1" textcolor="0x000000" borderalpha="1" border="1"/>
+      <polystyle backgroundalpha="0.25098" backgroundcolor="0x0000ff" handcursor="1" bordercolor="0x0000ff" mode="0" borderalpha="1"/>
+      <hotspot id="Point01" url="{node19}" skinid="ht_node" pan="-342.57" tilt="0" description="" target="20.1/-0.0/70.0" title="Pathway"/>
+      <hotspot id="Point02" url="{node2}" skinid="ht_node" pan="-75" tilt="0" description="" target="0.0/0.0/70.0" title="Pathway"/>
+      <hotspot id="Point03" url="{node14}" skinid="ht_node" pan="-167.94" tilt="0" description="" target="87.8/-4.3/83.7" title="CEO's Cabin"/>
+      <hotspot id="Point04" url="{node16}" skinid="ht_node" pan="-252.58" tilt="0" description="" target="-3.5/-5.3/83.7" title="Executive Cabin 1"/>
+    </hotspots>
+    <media/>
+    <transition zoomspeed="2" zoomout="0" enabled="1" zoomoutpause="1" type="crossdissolve" softedge="0" zoomin="0" zoomfov="20" blendtime="1" blendcolor="0x000000"/>
+    <autorotate nodedelay="0.00" noderandom="1" startloaded="0" enabled="1" returntohorizon="0.000" nodefilter="" speed="0.100" useanimation="0" delay="1.00"/>
+    <animation syncanimationwithvideo="0" useinautorotation="0" animsequence="Animation01"/>
+    <control hideabout="1" contextfullscreen="1" lockedkeyboard="0" dblclickfullscreen="0" lockedwheel="0" invertwheel="0" invertcontrol="1" rubberband="0" speedwheel="1" simulatemass="1" sensitivity="5" lockedmouse="0" lockedkeyboardzoom="0" contextprojections="0">
+      <menulink text="Created By Switch to 360" url="https://www.switchto360.com"/>
+      <menulink text="Version" url="4.0"/>
+    </control>
+  </panorama>
+  <masternode>
+    <userdata info="https://turiya.co/360/" comment="" latitude="" customnodeid="" source="" nodeid="master" tags="" datetime="" longitude="" description="Add Project Description" title="Add Project Title" author="" copyright="" heading="0"/>
+  </masternode>
+</tour>
