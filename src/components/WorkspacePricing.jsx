@@ -32,13 +32,17 @@ const DAY_ABBREVIATIONS_MAP = {
 
 const generateTimeOptions = () => {
   const times = [];
-  // Workspace hours 08:00 AM → 07:59 PM
-  for (let i = 8; i <= 19; i++) {
-    const hour = i % 12 === 0 ? 12 : i % 12;
-    const ampm = i < 12 ? "AM" : "PM";
-    const timeValue = `${i.toString().padStart(2, "0")}:00`;
-    const display = `${hour.toString().padStart(2, "0")}:00 ${ampm}`;
-    times.push({ value: timeValue, display });
+  // Workspace hours 08:00 AM → 07:45 PM
+  for (let hour = 8; hour <= 19; hour++) {
+    for (let min = 0; min < 60; min += 15) {
+      const h12 = hour % 12 === 0 ? 12 : hour % 12;
+      const ampm = hour < 12 ? "AM" : "PM";
+
+      const timeValue = `${hour.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}`;
+      const display = `${h12.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")} ${ampm}`;
+
+      times.push({ value: timeValue, display });
+    }
   }
   return times;
 };
@@ -256,11 +260,38 @@ const WorkspacePricing = () => {
 
   useEffect(() => {
     if (modalData?.planType === "Hourly" && startTime) {
-      const startHour = parseInt(startTime.split(":")[0]);
-      const endHour = Math.min(19, startHour);
-      setEndTime(`${endHour.toString().padStart(2, "0")}:59`);
+      const [startH, startM] = startTime.split(":").map(Number);
+
+      let endH = startH + 1;
+      let endM = startM;
+
+      // Cap at 08:00 PM
+      if (endH > 20 || (endH === 20 && endM > 0)) {
+        endH = 20;
+        endM = 0;
+      }
+
+      const formattedEnd = `${endH.toString().padStart(2, "0")}:${endM.toString().padStart(2, "0")}`;
+      setEndTime(formattedEnd);
     }
   }, [startTime, modalData?.planType]);
+
+  useEffect(() => {
+    if (startTime && endTime && modalData?.planType === "Hourly") {
+      const [startH, startM] = startTime.split(":").map(Number);
+      const [endH, endM] = endTime.split(":").map(Number);
+
+      // Convert everything to total minutes from the start of the day
+      const startTotalMinutes = startH * 60 + startM;
+      const endTotalMinutes = endH * 60 + endM;
+
+      // Calculate the difference in hours
+      const diffInMinutes = endTotalMinutes - startTotalMinutes;
+      const hours = Math.round(diffInMinutes / 60);
+
+      setTotalHours(hours > 0 ? hours : 1);
+    }
+  }, [startTime, endTime, modalData?.planType]);
 
   const handleApplyCoupon = async () => {
     if (!coupon) return toast.error("Please enter a coupon code");
@@ -969,15 +1000,14 @@ const WorkspacePricing = () => {
                           </option>
                           {TIME_OPTIONS.map((t) => {
                             const now = new Date();
-                            const currentTimeValue = `${now
-                              .getHours()
-                              .toString()
-                              .padStart(2, "0")}:00`;
+                            // Get current time in HH:mm format for precise comparison
+                            const currentTimeValue = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
 
                             const isToday =
                               startDate ===
                               new Date().toISOString().split("T")[0];
 
+                            // Disables any 15-min slot that has already passed today
                             const isPast =
                               isToday && t.value <= currentTimeValue;
 
@@ -1008,35 +1038,40 @@ const WorkspacePricing = () => {
                             Select End Time
                           </option>
                           {(() => {
-                            const startHour = startTime
-                              ? parseInt(startTime.split(":")[0])
-                              : -1;
-
+                            if (!startTime) return [];
+                            const [startH, startM] = startTime
+                              .split(":")
+                              .map(Number);
                             const options = [];
-                            for (let i = startHour; i <= 19; i++) {
-                              if (i >= startHour) {
-                                const hour24 = i;
-                                const labelHour =
-                                  hour24 % 12 === 0 ? 12 : hour24 % 12;
-                                const ampm = hour24 < 12 ? "AM" : "PM";
-                                options.push({
-                                  value: `${hour24
-                                    .toString()
-                                    .padStart(2, "0")}:59`,
-                                  label: `${labelHour
-                                    .toString()
-                                    .padStart(2, "0")}:59 ${ampm}`,
-                                });
-                              }
-                            }
 
-                            return options.map((t) => (
-                              <option key={t.value} value={t.value}>
-                                {t.label}
-                              </option>
-                            ));
+                            // Loop to add full hour increments
+                            // Start at 1 hour after start, and keep adding 1 hour (60 mins)
+                            for (let hourStep = 1; hourStep <= 12; hourStep++) {
+                              let h = startH + hourStep;
+                              let m = startM;
+
+                              // Stop if the end time exceeds 08:00 PM (20:00)
+                              if (h > 20 || (h === 20 && m > 0)) break;
+
+                              const displayH = h % 12 === 0 ? 12 : h % 12;
+                              const ampm = h < 12 ? "AM" : "PM";
+                              const val = `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+                              const lbl = `${displayH.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")} ${ampm}`;
+
+                              options.push(
+                                <option key={val} value={val}>
+                                  {lbl}
+                                </option>,
+                              );
+                            }
+                            return options;
                           })()}
                         </select>
+                        {startTime && (
+                          <p className="text-[10px] text-orange-600 mt-1">
+                            * Bookings are accepted in full-hour intervals only.
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -1344,12 +1379,9 @@ const WorkspacePricing = () => {
                   <div>
                     <label className="block text-gray-700 mb-1">
                       Amount (
-                      {modalData.title === "Video Conferencing" &&
-                      modalData.planType === "Hourly"
-                        ? `₹${modalData.price}/hr/person`
-                        : `₹${
-                            modalData.price
-                          }/${modalData.planType.toLowerCase()}`}
+                      {modalData.planType === "Hourly"
+                        ? `₹${modalData.price} × ${totalHours} ${totalHours > 1 ? "hrs" : "hr"}`
+                        : `₹${modalData.price}/${modalData.planType.toLowerCase()}`}
                       )
                     </label>
                     <input
