@@ -294,35 +294,44 @@ const WorkspacePricing = () => {
   }, [startTime, endTime, modalData?.planType]);
 
   const handleApplyCoupon = async () => {
-    if (!coupon) return toast.error("Please enter a coupon code");
+  if (!coupon) return toast.error("Please enter a coupon code");
 
-    try {
-      // ✅ Switched to Axios with Authorization header
-      const res = await axios.post(
-        `${API_BASE_URL}/apply_coupon.php`,
-        {
-          coupon_code: coupon,
-          workspace_title: modalData?.title,
-          plan_type: modalData?.planType,
-          total_amount: calculateBaseAmount(),
-          user_id: getUserId(),
-        },
-        { withCredentials: true }, // important for HttpOnly cookie
-      );
+  try {
+    const res = await axios.post(
+      `${API_BASE_URL}/apply_coupon.php`,
+      {
+        coupon_code: coupon,
+        workspace_title: modalData?.title,
+        plan_type: modalData?.planType,
+        total_amount: calculateBaseAmount(),
+        // user_id removed, handled securely server-side
+      },
+      { withCredentials: true } // important for HttpOnly cookie
+    );
 
-      const data = res.data;
+    const data = res.data;
 
-      if (data.success) {
-        setDiscount(Number(data.discount_amount || 0));
-        toast.success(data.message || "Coupon applied successfully!");
-      } else {
-        setDiscount(0);
-        toast.error(data.message || "Invalid coupon code");
+    if (data.success) {
+      setDiscount(Number(data.discount_amount || 0));
+      toast.success(data.message || "Coupon applied successfully!");
+    } else {
+      setDiscount(0);
+
+      // Keep the original server message
+      let errorMessage = data.message || "Invalid coupon code";
+
+      // Add extra note if coupon is VC01
+      if (coupon === "VC01") {
+        errorMessage += " Please contact admin.";
       }
-    } catch (err) {
-      toast.error("Error validating coupon. Please try again.");
+
+      toast.error(errorMessage);
     }
-  };
+  } catch (err) {
+    toast.error("Error validating coupon. Please try again.");
+  }
+};
+
 
   const calculateBaseAmount = () => {
     const price = modalData?.price || 0;
